@@ -29,6 +29,6 @@ Windows & Web HTML with emscripten, to build use:
 
 To run on Web you need to execute ./run_web.bat in a command line inside root project folder
 
-- Be always sure to include data folder in both places otherwise it won't work: 
+#### Be always sure to copy and include data folder in both places otherwise it won't work: 
 - > LuaVermelha\build 					// for emscripten
 - > LuaVermelha\intermediate\build\x64-Debug   		// for MVC 

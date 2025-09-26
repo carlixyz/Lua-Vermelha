@@ -1,0 +1,8 @@
+Gamecore/.vs/
+Gamecore/CMakeSettings.json
+Gamecore/build/cmake_install.cmake
+Gamecore/build/CMakeCache.txt
+Gamecore/build/Makefile
+Gamecore/build/CMakeFiles/
+Gamecore/intermediate/
+Gamecore/build/data/
