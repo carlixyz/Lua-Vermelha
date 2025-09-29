@@ -5,6 +5,7 @@
 bool LuaManager::Init()
 {
     L = luaL_newstate();
+
     luaL_openlibs(L);
 
     std::cout << "Lua version: " << LUA_VERSION << std::endl;
@@ -14,12 +15,13 @@ bool LuaManager::Init()
 
     RegisterLuaFunctions();
 
-    // Load script and create coroutine
-    assert(LoadScript("data/Scripts/test1.lua"));
+    if (!LoadScript("data/Scripts/utils.lua"))
+        std::cout << "Failed to load script!" << " utils.lua" << std::endl;
 
-    coId = CreateCoroutine("Cutscene");
+    if (!LoadScript("data/Scripts/test1.lua")) 
+        std::cout << "Failed to load script!" << " test1.lua" << std::endl;
 
-    state = StepCoroutine(coId); // first step
+    StartSequence("Talk");
 
     return true;
 }
@@ -33,29 +35,64 @@ bool LuaManager::Deinit()
 
 void LuaManager::Update()
 {
+    if (!sequence || !sequence->IsRunning()) return;
 
-    if (IsKeyPressed(KEY_SPACE) && state != "FINISHED") 
+    if (sequence->IsMultiChoice())
     {
-        state = StepCoroutine(coId);
+        if (IsKeyPressed(KEY_DOWN))
+            sequence->SelectedIndex = (int)Wrap((float)(sequence->SelectedIndex +1), 
+                0.0f, (float)sequence->CurrentOptions.size());
+        else if (IsKeyPressed(KEY_UP))
+            sequence->SelectedIndex = (int)Wrap((float)(sequence->SelectedIndex -1), 
+                0.0f, (float)sequence->CurrentOptions.size());
+
+        if (IsKeyPressed(KEY_SPACE))
+            if (StepResult::Error == sequence->ResumeChoice(sequence->SelectedIndex + 1))
+                std::cout << "Error resuming with choice!" << std::endl;
+    }
+    else
+    {
+        if (IsKeyPressed(KEY_SPACE))
+            if (StepResult::Error == sequence->Step())
+                std::cout << "Error stepping sequence!" << std::endl;
     }
 }
 
 void LuaManager::Render()
 {
-    DrawText("Press SPACE to advance cutscene", 20, 20, 20, DARKGRAY);
+    if (!sequence) return;
 
-    DrawText(TextFormat("State: %s", state.c_str()), 20, 60, 20, BLUE);
-
+    if (!sequence->CurrentOptions.empty())
+    {
+        if (sequence->IsMultiChoice())                          // CHOICE
+        {
+            for (int i = 0; i < (int)sequence->CurrentOptions.size(); i++)
+            {
+                Color color = (i == sequence->SelectedIndex) ? YELLOW : DARKGRAY;
+                DrawText(sequence->CurrentOptions[i].c_str(),
+                    40, 120 + 30 * (int)i, 20, color);
+            }
+        }
+        else                                                    // SAY
+        {
+            DrawText(sequence->CurrentOptions[0].c_str(), 20, 60, 20, BLUE);
+        }
+    }
 }
 
-bool LuaManager::LoadScript(const std::string& path)
+bool LuaManager::LoadScript(const std::string& path) 
 {
+    std::cout << "Loading script: " << path << std::endl;
+
     if (luaL_dofile(L, path.c_str()) != LUA_OK) 
     {
-        std::cerr << "Lua error: " << lua_tostring(L, -1) << std::endl;
+        const char* err = lua_tostring(L, -1);
+        std::cout << "Lua error: " << (err ? err : "unknown") << std::endl;
         lua_pop(L, 1);
         return false;
     }
+
+    std::cout << "Script loaded successfully." << std::endl;
     return true;
 }
 
@@ -64,55 +101,20 @@ void LuaManager::RegisterFunction(const std::string& funcName, lua_CFunction fun
     lua_register(L, funcName.c_str(), func);
 }
 
-int LuaManager::CreateCoroutine(const std::string& funcName)
+inline void LuaManager::StartSequence(const std::string& funcName)  // Start a scripted sequence
 {
-    lua_State* co = lua_newthread(L);
-    lua_getglobal(co, funcName.c_str());
-
-    if (!lua_isfunction(co, -1)) 
-    {
-        std::cerr << "Function not found: " << funcName << std::endl;
-        lua_pop(co, 1);
-        return -1;
-    }
-    int id = nextCoroutineId++;
-    Coroutines[id] = co;
-    return id;
+    sequence = std::make_unique<ScriptedSequence>(L, funcName);
+    sequence->Step();                                               // run first line immediately
 }
 
-std::string LuaManager::StepCoroutine(int id)
+void LuaManager::StepSequence()                                     // Step explicitly (for SAY)
 {
-    auto it = Coroutines.find(id);
-    if (it == Coroutines.end()) return "INVALID";
+    if (sequence && sequence->IsRunning())
+        sequence->Step();
+}
 
-    lua_State* co = it->second;
-    int nres = 0;
-    int status = lua_resume(co, nullptr, 0, &nres);
-
-    if (status == LUA_YIELD)
-    {
-        std::string reason;
-        if (nres >= 1 && lua_isstring(co, -1)) {
-            reason = lua_tostring(co, -1);
-        }
-        else {
-            reason = "YIELDED";
-        }
-        lua_pop(co, nres); // pop yield values
-        return reason;
-    }
-    else if (status == LUA_OK)
-    {
-        lua_pop(co, nres); // clean up results
-        Coroutines.erase(it);
-        return "FINISHED";
-    }
-    else
-    {
-        const char* msg = lua_tostring(co, -1);
-        if (msg) std::cerr << "Lua error: " << msg << std::endl;
-        lua_pop(co, 1); // pop error
-        Coroutines.erase(it);
-        return "ERROR";
-    }
+void LuaManager::ResumeChoice(int choiceIndex)
+{
+    if (sequence && sequence->IsRunning())
+        sequence->ResumeChoice(choiceIndex);
 }

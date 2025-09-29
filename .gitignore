@@ -6,3 +6,8 @@ Gamecore/build/Makefile
 Gamecore/build/CMakeFiles/
 Gamecore/intermediate/
 Gamecore/build/data/
+.vs/
+Gamecore/build/LuaVermelha.data
+Gamecore/build/LuaVermelha.html
+Gamecore/build/LuaVermelha.js
+Gamecore/build/LuaVermelha.wasm

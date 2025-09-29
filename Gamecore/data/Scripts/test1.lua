@@ -1,10 +1,63 @@
-function Cutscene()
-    ShowDialog("Hello there!")
-    coroutine.yield("WAIT_DIALOG")  -- stop here
+Condition1 = false
+Condition2 = false
 
-    ShowDialog("It’s dangerous to go alone!")
-    coroutine.yield("WAIT_DIALOG")  -- stop again
-
-    GiveItem("Sword")
-    coroutine.yield("DONE")         -- finish
+function OnInit()
 end
+
+function OnDeinit()
+end
+
+function OnLook()
+end
+
+function OnGoTo()
+end
+
+function OnUse()
+end
+
+function OnTalk()
+
+    Say("Hello Stranger.")
+    Choice(
+        -- Branch using an ACTION TABLE (deferred calls)
+        { Condition1 == false, "Who are you?", {
+            { Say, "I’m just a humble villager." },
+            { Say, "Take this present" },
+            { GiveItem, "Sword" },
+            { Set, "Condition1", true },
+            OnTalk
+        } },
+
+        -- Branch using an inline function (also deferred)
+        { "Any quests for me?", 
+            function()
+                Say("Yes! Please collect 10 herbs for me.")
+                Say("Ok, I have work.")
+                Say("See you later.")
+                --Condition1 = true
+                DoTalk_2()                       -- plain function ref is fine
+            end },
+
+        -- Mixed: single action table with one Say
+        { "Goodbye.", {
+            { Say, "Farewell." }
+        } },
+                -- Mixed: single action table with one Say
+        { "Goodbye too.", {
+            { Say, "Farewell." }
+        } }
+    )
+end
+
+function DoTalk_2()
+    if Condition2 == false then
+        Say("Still here?")
+        Condition2 = true
+        OnTalk()
+    else
+        Say("Go away")
+        Say("")
+    end
+end
+
