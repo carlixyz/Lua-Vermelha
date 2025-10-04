@@ -2,7 +2,7 @@
 
 #include "../Utility/Singleton.h"
 #include "../Graphics/ApplicationProperties.h"
-#include "States/FSM.h"
+#include "Scenes/FSM.h"
 
 
 class Game : public Singleton<Game>
@@ -13,7 +13,7 @@ class Game : public Singleton<Game>
 public:
 	friend class Singleton<Game>;
 	ApplicationProperties appProperties;
-	FSM States;
+	FSM Scenes;
 
 	bool Init();
 	void Update();
@@ -24,11 +24,10 @@ public:
 	inline bool HasFinished() const	{ return finish; }
 	//inline bool IsDebugMode() const { return appProperties.DebugMode; }
 	//inline bool SkipIntro()	  const { return appProperties.SkipIntro; }
+
 protected:
 	Game() { ; } // Protected Constructor
 
-	//int Score = 0;
-	//int TopScore = 0;
 };
 
 

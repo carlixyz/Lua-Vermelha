@@ -1,22 +1,7 @@
 Condition1 = false
 Condition2 = false
 
-function OnInit()
-end
-
-function OnDeinit()
-end
-
-function OnLook()
-end
-
-function OnGoTo()
-end
-
-function OnUse()
-end
-
-function OnTalk()
+function OurTalkTest()
 
     Say("Hello Stranger.")
     Choice(
@@ -26,7 +11,7 @@ function OnTalk()
             { Say, "Take this present" },
             { GiveItem, "Sword" },
             { Set, "Condition1", true },
-            OnTalk
+            OurTalkTest
         } },
 
         -- Branch using an inline function (also deferred)
@@ -54,7 +39,7 @@ function DoTalk_2()
     if Condition2 == false then
         Say("Still here?")
         Condition2 = true
-        OnTalk()
+        OurTalkTest()
     else
         Say("Go away")
         Say("")

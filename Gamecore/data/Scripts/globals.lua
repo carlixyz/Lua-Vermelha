@@ -11,16 +11,27 @@
 -- Call GiveItem (C++ already registered)
 -- function GiveItem(item) -- from C++
 
+Globals = {}
 
--- Assign to globals safely
+
+-- Assign to globals safely (Don't rewrite this function!')
 function Set(varName, value)
     _G[varName] = value
 end
 
-
-function Say(line)
+function Say(line)          
     coroutine.yield({ type = "SAY", text = line })
 end
+
+--[[
+function Say(line)
+    if _inBlock then
+        return function() coroutine.yield({ type="SAY", text=line }) end
+    else
+        coroutine.yield({ type="SAY", text=line })
+    end
+end
+]]--
 
 -- Core executor
 local function run_action(a)
@@ -80,3 +91,67 @@ function Choice(...)
         end
     end
 end
+
+function Globals.OnInit(args)
+    if args then
+        print("Default OnInit -> " .. tostring(args))
+        return { NameId = args }
+    else
+        print("Default OnInit -> (no args)")
+    end
+end
+
+
+function Globals.OnDeinit()
+    print("Default DeInit ")
+end
+
+
+function Globals.OnUpdate()
+    print("Default OnUpdate ")
+end
+
+
+function Globals.OnRender()
+    print("Default OnRender ")
+end
+
+
+function Globals.OnEnter()
+    print("Default OnEnter ")
+end
+
+
+function Globals.OnExit()
+    print("Default OnExit ")
+end
+
+
+function Globals.OnInteract()
+    print("Nothing to do here")
+end
+
+
+function Globals.OnTalk()
+    print("Nothing to talk")
+end
+
+
+function Globals.OnUse()
+    print("Nothing to do")
+end
+
+
+function Globals.OnLook()
+    print("There's nothing interesting")
+end
+
+
+function Globals.OnCombine(args)
+    if args and type(args) == "string" then
+        print("Can't mix up those " .. tostring(args))
+    else
+        print("Can't mix up those.. (invalid)")
+    end
+end
+

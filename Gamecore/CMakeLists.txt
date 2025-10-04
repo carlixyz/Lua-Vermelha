@@ -22,6 +22,13 @@ if (MSVC)
     target_link_libraries(${PROJECT_NAME} PRIVATE winmm)
     target_compile_options(${PROJECT_NAME} PRIVATE /wd4251 /wd4275)
     #target_link_options
+
+
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_SOURCE_DIR}/data/"
+        "$<TARGET_FILE_DIR:${PROJECT_NAME}>/data/"
+)
 endif()
 
 if(EMSCRIPTEN)
@@ -29,6 +36,12 @@ if(EMSCRIPTEN)
     target_link_libraries(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/lib/libraylib.a)
     target_link_libraries(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/lib/liblua.a)
     set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".html")
+
+    add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_SOURCE_DIR}/data/"
+        "${CMAKE_BINARY_DIR}/data/"
+)
 
     set(LINK_OPTS
       "-s USE_GLFW=3"

@@ -24,16 +24,16 @@ bool Game::Init()
 
 	//result = result && Assets::Get().Init();
 
-	result = result && States.Init();							//	States.Init(States.introState);
-
 	result = result && LuaManager::Get().Init();				
+
+	result = result && Scenes.Init();							//	Scenes.Init(Scenes.introState);
 
 	return result;
 }
 
 bool Game::Deinit()
 {
-	bool result = States.Deinit();								// cleanup the all states
+	bool result = Scenes.Deinit();								// cleanup the all states
 
 	//ConversationManager::Get().Deinit();
 
@@ -50,6 +50,7 @@ bool Game::Deinit()
 	return result;
 }
 
+
 void Game::Update()
 {
 	finish = (finish || Graphics::Get().GetCloseApplication());
@@ -57,7 +58,7 @@ void Game::Update()
 
 	Graphics::Get().Update();
 
-	States.CurrentState().OnUpdate();						/// statesStack.top()->OnUpdate(timeStep);
+	Scenes.GetCurrent().OnUpdate();						/// statesStack.top()->OnUpdate(timeStep);
 
 	//VisualDialogManager::Get().Update();
 
@@ -76,7 +77,7 @@ void Game::Render()
 
 	Graphics::Get().Render();
 
-	States.CurrentState().OnRender();						/// statesStack.top()->OnRender();
+	Scenes.GetCurrent().OnRender();						/// statesStack.top()->OnRender();
 
 	LuaManager::Get().Render();
 

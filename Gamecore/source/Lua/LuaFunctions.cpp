@@ -3,6 +3,16 @@
 #include "LuaManager.h"
 #include <raylib-cpp.hpp>
 
+// Helper for stack trace
+int traceback(lua_State* L) {
+    const char* msg = lua_tostring(L, 1);
+    if (msg)
+        luaL_traceback(L, L, msg, 1);
+    else
+        lua_pushliteral(L, "(no error message)");
+    return 1;
+}
+
 // Example native functions
 int Lua_Say(lua_State* L)
 {
@@ -38,6 +48,8 @@ int Lua_GiveItem(lua_State* L)
 
 void RegisterLuaFunctions() // C++ Foo Register in Lua
 {
+    LuaManager::Get().RegisterFunction("traceback", traceback);
+
     LuaManager::Get().RegisterFunction("Say", Lua_Say);
 
     LuaManager::Get().RegisterFunction("GiveItem", Lua_GiveItem);

@@ -45,8 +45,8 @@ struct ScriptedSequence
     inline bool IsRunning() const { return lua_status(Thread) == LUA_YIELD; }
 
 private:
-    lua_State* Thread = nullptr;
-    bool HasMultipleChoice = false;                             // true = CHOICE, false = SAY
+    lua_State* Thread       = nullptr;
+    bool HasMultipleChoice  = false;                            // true = CHOICE, false = SAY
 
     StepResult ResumeCore(int nargs)
     {
@@ -119,7 +119,7 @@ public:
 
     void Render();
 
-    lua_State* GetState() { return L; }
+    lua_State* GetState() { return LuaContext; }
 
     inline bool IsSequenceRunning() const { return sequence && sequence->IsRunning(); }
 
@@ -135,13 +135,17 @@ public:
 
     void ResumeChoice(int choiceIndex);
 
+    std::string AddDebugRootPath(const std::string& input);
+
     std::unique_ptr<ScriptedSequence> sequence;
 
     friend class Singleton<LuaManager>;
 
 protected:
     LuaManager() = default;
-    lua_State* L = nullptr;
+    lua_State* LuaContext = nullptr;
+
+    bool UseRootPathScripts = true;
 };
 
 #endif // _LUA_H
