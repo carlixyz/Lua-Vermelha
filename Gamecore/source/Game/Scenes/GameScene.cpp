@@ -36,3 +36,21 @@ void GameScene::OnExit()
 		entity->OnExit();
 	}
 }
+
+void GameScene::OnUpdate()
+{
+	for (Entity* entity : Entities)
+	{
+		if (entity->GetIsActive())
+			entity->OnUpdate();
+	}
+}
+
+void GameScene::OnRender()
+{
+	for (Entity* entity : Entities)
+	{
+		if (entity->GetIsVisible())
+			entity->OnRender();
+	}
+}

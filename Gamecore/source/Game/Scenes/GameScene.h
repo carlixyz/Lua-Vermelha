@@ -3,6 +3,8 @@
 #include "InstanceBase.h"
 #include <vector>
 
+class Entity;
+
 class GameScene : public InstanceBase
 {
 	bool initialized = false;
@@ -21,9 +23,8 @@ protected:
 	virtual void OnEnter() override;
 
 public:
-
-	//virtual void OnUpdate() override	= 0;
-	//virtual void OnRender() override	= 0;
+	virtual void OnUpdate() override;
+	virtual void OnRender() override;
 
 	bool IsInitialized() const { return initialized; }
 

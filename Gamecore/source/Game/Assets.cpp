@@ -7,12 +7,12 @@
 
 bool Assets::Init()
 {
-	LoadTextures();
-	LoadAnimations();
-	LoadImages();
-	LoadFonts();
-	LoadSounds();
-	LoadMusic();
+	PreloadTextures();
+	//PreloadAnimations();
+	PreloadImages();
+	PreloadFonts();
+	PreloadSounds();
+	PreloadMusic();
 
 	return true;
 }
@@ -20,7 +20,7 @@ bool Assets::Init()
 bool Assets::Deinit()
 {
 	UnloadTextures();
-	UnloadAnimations();
+	//UnloadAnimations();
 	UnloadImages();
 	UnloadFonts();
 	UnloadSounds();
@@ -29,13 +29,36 @@ bool Assets::Deinit()
 	return true;
 }
 
-void Assets::LoadTextures()
+void Assets::LoadTextureID(const std::string& imageID, const std::string& filePath)
 {
-	const auto Load = [&](const std::string Name, const char* FileName)
-		{
-			const Texture2D Sprite = LoadTexture(FileName);
-			Textures[Name] = Sprite;
-		};
+	if (!HasTextureID(imageID))
+	{
+		const Texture2D textureRef = LoadTexture(filePath.c_str());
+		Textures[imageID] = textureRef;
+	}
+}
+
+bool Assets::HasTextureID(const std::string& imageID)
+{
+	return Textures.contains(imageID);
+}
+
+void Assets::UnloadTextureID(const std::string& imageID)
+{
+	auto it = Textures.find(imageID);
+	if (it != Textures.end())
+	{
+		Textures.erase(it);
+	}
+}
+
+void Assets::PreloadTextures()
+{
+	//const auto Load = [&](const std::string Name, const char* FileName)
+	//	{
+	//		const Texture2D Sprite = LoadTexture(FileName);
+	//		Textures[Name] = Sprite;
+	//	};
 
 	//Load("Sprites", "Data/Sprites/VisualSprites.png");
 }
@@ -48,7 +71,7 @@ void Assets::UnloadTextures()
 	}
 }
 
-void Assets::LoadImages()
+void Assets::PreloadImages()
 {
 	const auto Load = [&](const std::string Name, const char* FileName)
 	{
@@ -65,7 +88,7 @@ void Assets::UnloadImages()
 	}
 }
 
-void Assets::LoadAnimations()
+void Assets::PreloadAnimations()
 {
 	//const auto Load = [&](const std::string Name, const char* FileName)
 	//{
@@ -114,7 +137,7 @@ void Assets::UnloadAnimations()
 }
 
 
-void Assets::LoadFonts()
+void Assets::PreloadFonts()
 {
 	const auto Load = [&](const std::string Name, const char* FileName)
 		{
@@ -132,7 +155,7 @@ void Assets::UnloadFonts()
 	}
 }
 
-void Assets::LoadSounds()
+void Assets::PreloadSounds()
 {
 	const auto Load = [&](const std::string Name, const char* FileName)
 		{
@@ -152,7 +175,7 @@ void Assets::UnloadSounds()
 	}
 }
 
-void Assets::LoadMusic()
+void Assets::PreloadMusic()
 {
 	const auto Load = [&](const std::string Name, const char* FileName, bool loop = true)
 		{

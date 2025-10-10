@@ -15,6 +15,7 @@ struct SceneID
 	//static constexpr const char* Boot = "Boot";
 	 
 	SCENE_ID(Boot)
+	SCENE_ID(Global)
 	SCENE_ID(Test)
 	SCENE_ID(Intro)
 	SCENE_ID(Mansion)
@@ -22,20 +23,15 @@ struct SceneID
 	SCENE_ID(Credits)
 };
 
-
+class SceneFactory;
 
 class FSM	/// Finite Scene Manager ftw!
 {
-	std::map<std::string, GameScene*> ScenesMap 
-	{
-		{ SceneID::Boot, new BootState()},
-		{ SceneID::Test, new TestScene()}
-	};
-
+	std::map<std::string, GameScene*> ScenesMap;
 	GameScene* CurrentScene = nullptr; // &bootState;
-
 	GameScene* SharedScene = nullptr;
 
+	friend SceneFactory;
 
 public:
 	bool Init();
@@ -46,11 +42,12 @@ public:
 	void ChangeCurrent(const std::string& sceneId);
 	void ChangeEntityScene(const std::string& EntityId, const std::string& newSceneId);
 
-	inline GameScene& GetCurrent()	{ return *CurrentScene; } 	// return current scene layer
-	inline GameScene& GetShared()	{ return *SharedScene; }	// return shared scene layer
 
+	GETTERSETTER(GameScene&, Current, *CurrentScene);			// return current scene layer
+	GETTERSETTER(GameScene&, Shared, *SharedScene);				// return shared scene layer
 
-	/// All states instances included below here
-	//BootState bootState;
+	//inline GameScene& GetCurrent()	{ return *CurrentScene; } 	// return current scene layer
+	//inline GameScene& GetShared()	{ return *SharedScene; }	
+
 };
 

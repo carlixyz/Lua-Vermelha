@@ -13,7 +13,6 @@
 bool Game::Init()
 {
 
-
 	bool result = Graphics::Get().Init(&appProperties);
 
 	SetExitKey(KEY_Q);
@@ -22,7 +21,7 @@ bool Game::Init()
 
 	result = result && Audio::Get().Init();
 
-	//result = result && Assets::Get().Init();
+	result = result && Assets::Get().Init();
 
 	result = result && LuaManager::Get().Init();				
 
@@ -41,7 +40,7 @@ bool Game::Deinit()
 
 	result = result && LuaManager::Get().Deinit();
 
-	//result = result && Assets::Get().Deinit();
+	result = result && Assets::Get().Deinit();
 
 	result = result && Graphics::Get().Deinit();
 
@@ -58,7 +57,9 @@ void Game::Update()
 
 	Graphics::Get().Update();
 
-	Scenes.GetCurrent().OnUpdate();						/// statesStack.top()->OnUpdate(timeStep);
+	Scenes.GetCurrent().OnUpdate();						/// <--------------------
+
+	Scenes.GetShared().OnUpdate();
 
 	//VisualDialogManager::Get().Update();
 
@@ -77,7 +78,9 @@ void Game::Render()
 
 	Graphics::Get().Render();
 
-	Scenes.GetCurrent().OnRender();						/// statesStack.top()->OnRender();
+	Scenes.GetCurrent().OnRender();						/// <--------------------
+
+	Scenes.GetShared().OnRender();
 
 	LuaManager::Get().Render();
 

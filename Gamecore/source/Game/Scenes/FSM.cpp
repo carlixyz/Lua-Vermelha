@@ -4,15 +4,50 @@
 #include <algorithm>
 #include <iostream>
 #include <string>
+#include "SceneFactory.h"
 #include "Entity.h"
 
 
 bool FSM::Init()
 {
-	CurrentScene = ScenesMap[SceneID::Boot];
-	CurrentScene->Initialize();
+	SceneFactory factory;
+	ScenesMap = factory.LoadAllScenes("data/Scripts/scenes.lua");
 
-	return ScenesMap.size();
+	if (ScenesMap.empty())
+		return false;
+
+	if (GameScene* startScene = ScenesMap[factory.GetStartSceneID()])
+	{
+		if (CurrentScene = startScene)
+			CurrentScene->Initialize();
+		else
+			std::cout << "[FSM] StartScene '" << startScene << "' not found. Falling back.\n";
+	}
+
+	if (GameScene* sharedScene = ScenesMap[factory.GetSharedSceneID()])
+	{
+		if (SharedScene = sharedScene)
+			SharedScene->Initialize();
+		else
+			std::cout << "[FSM] SharedScene '" << sharedScene << "' not found!\n";
+	}
+
+	for (auto sceneIt : ScenesMap)
+	{
+		if (sceneIt.second == CurrentScene)
+			std::cout << "\t > Scene: " << sceneIt.first.c_str() << std::endl;
+		else if(sceneIt.second == SharedScene)
+			std::cout << "\t * Scene: " << sceneIt.first.c_str() << std::endl;
+		else
+			std::cout << "\t   Scene: " << sceneIt.first.c_str() << std::endl;
+
+		for (Entity* entity : sceneIt.second->Entities)
+		{
+			std::cout << "\t\t - Entity: " << entity->GetInfo().NameId << std::endl;
+		}
+	}
+
+	return true;
 }
 
 bool FSM::Deinit()
@@ -22,7 +57,7 @@ bool FSM::Deinit()
 		if (kv.second->IsInitialized())
 		{
 			kv.second->Deinitialize();
-			std::cout << "Scene Layer: " << kv.first << " was not manually deinitialized" << std::endl;
+			std::cout << "Scene Layer: " << kv.first << " was not manually Deinitialized" << std::endl;
 		}
 		delete kv.second;
 	}
@@ -34,6 +69,14 @@ bool FSM::Deinit()
 
 void FSM::ChangeCurrent(const std::string& sceneId)
 {
+
+	if (!ScenesMap.contains(sceneId)) 
+	{
+		std::cerr << "\n [ERROR] Invalid sceneId: " << sceneId << std::endl;
+		throw std::runtime_error("Error: invalid sceneId");
+		return;
+	}
+
 	GameScene* nextScene = ScenesMap[sceneId];
 
 	if (nextScene == nullptr)			
@@ -55,10 +98,10 @@ void FSM::ChangeCurrent(const std::string& sceneId)
 
 void FSM::Initialize(const std::string& sceneId)
 {
-	if (GameScene* nextScene = ScenesMap[sceneId])
+	if (GameScene* initScene = ScenesMap[sceneId])
 	{
-		if (!nextScene->IsInitialized())
-			nextScene->Initialize();
+		if (!initScene->IsInitialized())
+			initScene->Initialize();
 		else
 			std::cout << "Scene Layer: " << sceneId << " was already Initialized" << std::endl;
 	}
@@ -66,12 +109,12 @@ void FSM::Initialize(const std::string& sceneId)
 
 void FSM::Deinitialize(const std::string& sceneId)
 {
-	if (GameScene* nextScene = ScenesMap[sceneId])
+	if (GameScene* deinitScene = ScenesMap[sceneId])
 	{
-		if (nextScene->IsInitialized())
-			nextScene->Deinitialize();
+		if (deinitScene->IsInitialized())
+			deinitScene->Deinitialize();
 		else
-			std::cout << "Scene Layer: " << sceneId << " was Deinitialized" << std::endl;
+			std::cout << "Scene Layer: " << sceneId << " was already Deinitialized" << std::endl;
 	}
 }
 

@@ -48,11 +48,9 @@ void BootState::OnUpdate()
 
 		if (CurrentLogo >= Logos.size())
 		{
-			//Game::Get().Scenes.Deinitialize("Boot");
-			//return;
-			//CurrentLogo = (int)Logos.size() - 1;
+			CurrentLogo = (int)Logos.size() - 1;
 			Game::Get().Scenes.ChangeCurrent(SceneID::Test);
-			//Game::Get().Scenes.ChangeState(Game::Get().Scenes.introState);
+			//Game::Get().Scenes.ChangeCurrent(SceneID::Title);
 		}
 	}
 }

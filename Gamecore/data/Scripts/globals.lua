@@ -92,6 +92,16 @@ function Choice(...)
     end
 end
 
+function Globals.OnConstruct(args)
+    if args then
+        print("Default OnConstruct -> " .. tostring(args))
+        return { NameId = args }
+    else
+        print("Default OnConstruct -> (no args)")
+    end
+end
+
+
 function Globals.OnInit(args)
     if args then
         print("Default OnInit -> " .. tostring(args))

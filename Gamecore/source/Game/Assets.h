@@ -2,7 +2,7 @@
 
 #include "../Utility/Singleton.h"
 #include <iostream>
-#include <raylib.h>
+#include <raylib-cpp.hpp>
 #include <map>
 #include <vector>
 
@@ -21,75 +21,61 @@ class Assets : public Singleton<Assets>
 	std::vector<Texture2D> MansionFrames;
 	std::vector<Texture2D> NightDriveFrames;
 
-
 public:
 	bool Init();
+
 	bool Deinit();
 
-	Texture2D GetTexture(const std::string& Name)
-	{
-		return Textures[Name];
-	}
+	void LoadTextureID(const std::string& imageID, const std::string& filePath);
 
-	Image GetImage(const std::string& Name)
-	{
-		return Images[Name];
-	}
+	bool HasTextureID(const std::string& imageID);
 
-	Font GetFont(const std::string& Name)
-	{
-		return Fonts[Name];
-	}
+	void UnloadTextureID(const std::string& imageID);
 
-	Sound GetSound(const std::string& Name)
-	{
-		return Sounds[Name];
-	}
 
-	Music GetMusic(const std::string& Name)
-	{
-		return Musics[Name];
-	}
+	Texture2D GetTexture(const std::string& NameID) { return Textures[NameID]; }
 
-	std::vector<Texture2D>& MansionIntro()
-	{
-		return MansionFrames;
-	}
+	Image GetImage(const std::string& NameID) { return Images[NameID]; }
 
-	std::vector<Texture2D>& NightDriveIntro()
-	{
-		return NightDriveFrames;
-	}
+	Font GetFont(const std::string& NameID) { return Fonts[NameID]; }
+
+	Sound GetSound(const std::string& NameID) { return Sounds[NameID]; }
+
+	Music GetMusic(const std::string& NameID) { return Musics[NameID]; }
+
+	std::vector<Texture2D>& MansionIntro() { return MansionFrames; }
+
+	std::vector<Texture2D>& NightDriveIntro() { return NightDriveFrames; }
 
 
 private:
-	void LoadTextures();
+	void PreloadTextures();
 	void UnloadTextures();
 
-	void LoadImages();
+	void PreloadImages();
 	void UnloadImages();
 
-	void LoadAnimations();
+	void PreloadAnimations();
 	void UnloadAnimations();
 
-	void LoadFonts();
+	void PreloadFonts();
 	void UnloadFonts();
 
-	void LoadSounds();
+	void PreloadSounds();
 	void UnloadSounds();
 
-	void LoadMusic();
+	void PreloadMusic();
 	void UnloadMusic();
 };
 
 
-#define GetTexture( Name ) Assets::Get().GetTexture( Name )
-#define GetImage( Name ) Assets::Get().GetImage( Name )
-#define GetFramesCount( Name ) Assets::Get().GetAnimFrames( Name )
-#define GetFont( Name ) Assets::Get().GetFont( Name )
-#define GetMusic( Name ) Assets::Get().GetMusic( Name )
-#define GetSound( Name ) Assets::Get().GetSound( Name )
+#define GetTexture( NameID ) Assets::Get().GetTexture( NameID )
+#define GetImage( NameID ) Assets::Get().GetImage( NameID )
+#define GetFramesCount( NameID ) Assets::Get().GetAnimFrames( NameID )
+#define GetFont( NameID ) Assets::Get().GetFont( NameID )
+#define GetMusic( NameID ) Assets::Get().GetMusic( NameID )
+#define GetSound( NameID ) Assets::Get().GetSound( NameID )
 //#define Stringify(name) #name
-//
+
 //#define ASSETS Assets::Get()
-//#define GetAsset(Name) ASSETS.GetSprite(#Name)
+//#define GetAsset(NameID) ASSETS.GetSprite(#NameID)
