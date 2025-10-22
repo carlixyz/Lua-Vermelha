@@ -3,6 +3,7 @@
 #include "../Game.h"
 #include "../../Graphics/Graphics.h"
 #include "./reasings.h"
+#include "../Assets.h"
 
 void BootState::OnInit()
 {
@@ -23,10 +24,10 @@ void BootState::OnDeinit()
 	Logos.clear();
 }
 
-void BootState::OnUpdate()
+void BootState::OnUpdate(float deltaTime)
 {
 	
-	CurrentTime += GetFrameTime();
+	CurrentTime += deltaTime;
 	Alpha = EaseSineInOut(CurrentTime, 0.0f, 1.0f, TotalTime);
 	
 
@@ -38,7 +39,7 @@ void BootState::OnUpdate()
 
 	if (IsKeyDown(KEY_SPACE))
 	{
-		CurrentTime += GetFrameTime() * 4;
+		CurrentTime += deltaTime * 4;
 	}
 
 	if (CurrentTime > (TotalTime * 2))
@@ -48,7 +49,7 @@ void BootState::OnUpdate()
 
 		if (CurrentLogo >= Logos.size())
 		{
-			CurrentLogo = (int)Logos.size() - 1;
+			CurrentLogo = 0;
 			Game::Get().Scenes.ChangeCurrent(SceneID::Test);
 			//Game::Get().Scenes.ChangeCurrent(SceneID::Title);
 		}
@@ -66,6 +67,7 @@ void BootState::OnRender()
 		Logos[CurrentLogo]->Draw( Position, 0.0f, 1.0f, Fade(WHITE, Alpha));
 	}
 	
+	DrawTexture(GetTexture("MA"), GetMouseX(), GetMouseY(), WHITE);
 }
 
 

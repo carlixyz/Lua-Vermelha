@@ -61,6 +61,11 @@ void Assets::PreloadTextures()
 	//	};
 
 	//Load("Sprites", "Data/Sprites/VisualSprites.png");
+
+	LoadTextureID("MA", "data/bibata_A.png");
+	LoadTextureID("MB", "data/bibata_B.png");
+	//LoadTextureID("MansionDay", "data/Scenes/Mansion_Day.png");
+	//LoadTextureID("MansionNight", "data/Scenes/Mansion_Night.png");
 }
 
 void Assets::UnloadTextures()

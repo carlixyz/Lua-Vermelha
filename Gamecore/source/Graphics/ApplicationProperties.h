@@ -6,8 +6,8 @@ struct ApplicationProperties
 {
 	std::string ApplicationName = "Raycaster";
 
-	unsigned Width				= 1280; // = 640;
-	unsigned Height				= 720;  // = 480
+	unsigned Width				= 920; // = 720; // = 920 // 1280
+	unsigned Height				= 516;  // = 480; // = 500 // = 720
 	unsigned Bits				= 32;
 	unsigned FPS				= 60;
 

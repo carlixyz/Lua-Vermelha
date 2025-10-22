@@ -100,7 +100,7 @@ bool LuaManager::LoadScript(const std::string& path)
 std::string LuaManager::AddDebugRootPath(const std::string& input)
 {
     /// I use this function because sometimes the data folder duplication takes time
-    /// So We check the original root scripts to re-load values inmediately ASAP
+    /// So We check the original root scripts to re-load values immediately ASAP
 #ifdef EMSCRIPTEN   // Defined by MSVC when building Debug
     return input;  // Release or other builds
 #elif _DEBUG

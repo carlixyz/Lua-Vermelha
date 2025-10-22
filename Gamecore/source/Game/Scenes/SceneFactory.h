@@ -150,14 +150,52 @@ private:
         while (lua_next(LuaContext, tableIndex) != 0)
         {
             if (lua_istable(LuaContext, -1))
+            {
+                //std::string sceneScript = FindScriptEntry(-1);
+                //if (!sceneScript.empty())
+                //    scene->LoadScript(sceneScript);
+
                 if (Entity* entity = CreateEntityFromLua(-1))
                     scene->Entities.push_back(entity);
+            }
 
             lua_pop(LuaContext, 1); // pop value, keep key
         }
 
         return scene;
     }
+
+    // ================================================================
+    // Search for a scene script on table key (can be optional)
+    // ================================================================
+    /*
+    const std::string FindScriptEntry(int tableIndex)
+    {
+        if (!lua_istable(LuaContext, tableIndex))
+            return {};
+
+        int absIndex = lua_absindex(LuaContext, tableIndex);
+        std::string scriptPath;
+
+        lua_pushnil(LuaContext);
+        while (lua_next(LuaContext, absIndex) != 0)
+        {
+            if (lua_isstring(LuaContext, -2) && lua_isstring(LuaContext, -1))
+            {
+                std::string key = lua_tostring(LuaContext, -2);
+                if (key == "Script" || key == "script")
+                {
+                    scriptPath = lua_tostring(LuaContext, -1);
+                    lua_pop(LuaContext, 1);                     // pop value, keep key
+                    break;                                      // found, no need to continue
+                }
+            }
+            lua_pop(LuaContext, 1);                             // pop value, continue iteration
+        }
+
+        return scriptPath;
+    }
+    */
 
     // ================================================================
     // Create entity based on table key (supports arbitrary keys)
@@ -171,7 +209,7 @@ private:
 
         Entity* entity = nullptr;
 
-        lua_pushnil(LuaContext);               // Iterate all key/value pairs
+        lua_pushnil(LuaContext);                                // Iterate all key/value pairs
 
         while (lua_next(LuaContext, absIndex) != 0)
         {
@@ -180,16 +218,17 @@ private:
                 std::string key = lua_tostring(LuaContext, -2);
                 std::string scriptPath = lua_tostring(LuaContext, -1);
 
-                entity = Director::Get().CreateEntity( key, scriptPath);
+                if (key != "Script" || key != "script")
+                    entity = Director::Get().CreateEntity( key, scriptPath);
 
-                lua_pop(LuaContext, 1); // pop value (keep key)
-                break; // only take first key/value per entity table
+                lua_pop(LuaContext, 1);                         // pop value (keep key)
+                break;                                          // only take first key/value per entity table
             }
 
-            lua_pop(LuaContext, 1); // pop value
+            lua_pop(LuaContext, 1);                             // pop value
         }
 
-        lua_pop(LuaContext, 1); // pop last key
+        lua_pop(LuaContext, 1);                                 // pop last key
         return entity;
     }
 };

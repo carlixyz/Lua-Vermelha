@@ -12,7 +12,7 @@ public:
 	virtual void OnInit() override;
 	virtual void OnDeinit() override;
 
-	virtual void OnUpdate() override;
+	virtual void OnUpdate(float deltaTime) override;
 	virtual void OnRender() override;
 
 };

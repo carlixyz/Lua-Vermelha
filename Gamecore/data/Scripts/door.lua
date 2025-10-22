@@ -1,7 +1,7 @@
 
 -- door.lua
 return {
-    OnInit = function()
+    OnConstruct = function()
         print("Empty door initialized.")
         return {
             NameId = "Door",

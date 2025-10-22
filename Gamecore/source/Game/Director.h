@@ -35,8 +35,13 @@ public:
 
     void SetEntityVisible(const std::string& nameID, bool visible = true);
 
+    void SetEntityClickable(const std::string& nameID, bool visible = true);
+
     void SetEntityPosition(const std::string& nameID, float x, float y);
 
+    void MoveEntity(const std::string& nameID, float x, float y, float lapse = 3.0f);
+
+    void FadeEntity(const std::string& nameID, float startValue, float endValue, float totalTime = 3.0f);
 
     //void SetEntityScene(const std::string& nameID, const std::string& targetSceneID);
 

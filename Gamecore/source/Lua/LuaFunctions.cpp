@@ -1,6 +1,7 @@
 #include "LuaFunctions.h"
 
 #include "LuaManager.h"
+#include "../Graphics/Graphics.h"
 #include "../Game/Assets.h"
 #include "../Game/Director.h"
 #include "../Game/Game.h"
@@ -92,6 +93,20 @@ int Lua_SetVisible(lua_State* L)
     return 0;
 }
 
+int Lua_SetClickable(lua_State* L)
+{
+    int argc = lua_gettop(L);
+    const std::string& nameID = luaL_checkstring(L, 1);
+    bool visible = true; // default
+
+    if (argc >= 2)
+        visible = lua_toboolean(L, 2);
+
+    Director::Get().SetEntityClickable(nameID, visible);
+
+    return 0;
+}
+
 int Lua_SetPosition(lua_State* L)
 {
     // Expecting: (string entityID, number x, number y)
@@ -123,19 +138,61 @@ int Lua_SetEntityScene(lua_State* L)
 
 int Lua_SetCurrentScene(lua_State* L)
 {
-    // Expecting: (string entityID, string sceneID)
+    // Expecting: (string sceneID)
     const std::string& sceneID = luaL_checkstring(L, 1);
+
+	Graphics::Get().GetWiper().Start(WIPE_DOWN);
 
     Game::Get().Scenes.ChangeCurrent(sceneID);
 
     return 0;
 }
 
+int Lua_SwipeScene(lua_State* L)
+{
+    // Expecting: (string sceneID)
+    const std::string& sceneID = luaL_checkstring(L, 1);
+    const std::string& swipeType = luaL_optstring(L, 2, "Down");
+
+    if (swipeType == "Up")
+        Graphics::Get().GetWiper().Start(WIPE_UP);
+    else if (swipeType == "Left")
+        Graphics::Get().GetWiper().Start(WIPE_LEFT);
+    else if (swipeType == "Right")
+        Graphics::Get().GetWiper().Start(WIPE_RIGHT);
+    else
+        Graphics::Get().GetWiper().Start(WIPE_DOWN);
+
+    Game::Get().Scenes.ChangeCurrent(sceneID);
+
+    return 0;
+}
+
+int Lua_BlendScene(lua_State* L)
+{
+    // Expecting: (string sceneID)
+    const std::string& sceneID = luaL_checkstring(L, 1);
+    float duration = luaL_optnumber(L, 2, 2.0f);
+
+    Graphics::Get().GetBlender().Start(duration);
+
+    Game::Get().Scenes.ChangeCurrent(sceneID);
+
+    return 0;
+}
+
+int Lua_InitializeScene(lua_State* L)
+{
+    // Expecting: (string sceneID)
+    const std::string& sceneID = luaL_checkstring(L, 1);
+    Game::Get().Scenes.Initialize(sceneID);
+
+    return 0;
+}
+
 int Lua_DeinitializeScene(lua_State* L)
 {
-    // Expecting: (string entityID, string sceneID)
     const std::string& sceneID = luaL_checkstring(L, 1);
-
     Game::Get().Scenes.Deinitialize(sceneID);
 
     return 0;
@@ -149,6 +206,40 @@ int Lua_LoadTexture(lua_State* L)
 
     // Call your C++ implementation
     Assets::Get().LoadTextureID(textureID, texturePath);
+
+    return 0; // No return values
+}
+
+int Lua_MoveEntity(lua_State* L) 
+{
+    // Expecting 2~4 arguments: (entityName, targetX, targetY, timeLapse)
+    const std::string& nameID = luaL_checkstring(L, 1);
+    
+    float currentY = 0.f;
+    if (Entity* entity = Director::Get().GetEntity(nameID))
+        currentY = (float)entity->GetPositionY();
+
+    float x = (float)luaL_checknumber(L, 2);
+    float y = (float)luaL_optnumber(L, 3, currentY);
+    float lapse = (float)luaL_optnumber(L, 4, 3.0f);
+
+    Director::Get().MoveEntity(nameID, x, y, lapse);
+    return 0;
+}
+
+int Lua_FadeEntity(lua_State* L)
+{
+    // Expecting 2~3 arguments: (entityName, targetValue, timeLapse)
+    const std::string& nameID = luaL_checkstring(L, 1);
+    float targetAlpha = (float)luaL_checknumber(L, 2);
+    float currentAlpha = (targetAlpha == 0.f ? 1.0f : 0.f);
+
+    if (Entity* entity = Director::Get().GetEntity(nameID))
+        currentAlpha = entity->GetAlpha();
+
+    float lapse = (float)luaL_optnumber(L, 3, 3.0f);
+
+    Director::Get().FadeEntity(nameID, currentAlpha, targetAlpha, lapse);
 
     return 0; // No return values
 }
@@ -168,14 +259,26 @@ void RegisterLuaFunctions() // C++ Foo Register in Lua
    
     LuaManager::Get().RegisterFunction("SetVisible", Lua_SetVisible);
 
+    LuaManager::Get().RegisterFunction("SetClickable", Lua_SetClickable);
+
     LuaManager::Get().RegisterFunction("SetPosition", Lua_SetPosition);
 
     LuaManager::Get().RegisterFunction("SetScene", Lua_SetEntityScene);
 
     LuaManager::Get().RegisterFunction("SetCurrentScene", Lua_SetCurrentScene);
 
+    LuaManager::Get().RegisterFunction("SwipeScene", Lua_SwipeScene);
+
+    LuaManager::Get().RegisterFunction("BlendScene", Lua_BlendScene);
+
+    LuaManager::Get().RegisterFunction("Initialize", Lua_InitializeScene);
+
     LuaManager::Get().RegisterFunction("Deinitialize", Lua_DeinitializeScene);
 
     LuaManager::Get().RegisterFunction("LoadTexture", Lua_LoadTexture);
+
+    LuaManager::Get().RegisterFunction("Move", Lua_MoveEntity);
+
+    LuaManager::Get().RegisterFunction("Fade", Lua_FadeEntity);
 }
 

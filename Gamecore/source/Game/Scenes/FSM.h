@@ -6,6 +6,7 @@
 
 #include <stack>
 #include <map>
+#include <vector>
 #include <assert.h>
 #include <string_view>
 
@@ -31,23 +32,29 @@ class FSM	/// Finite Scene Manager ftw!
 	GameScene* CurrentScene = nullptr; // &bootState;
 	GameScene* SharedScene = nullptr;
 
+	bool DebugScenes = false;
+	int SceneIndex = 0;
+	std::string SceneID = "";
+	std::vector<GameScene*> ScenesArray;						// Internal use Only
+	void SwapDebugScenes();
+
 	friend SceneFactory;
 
 public:
 	bool Init();
 	bool Deinit();
 
+	void Update(float deltaTime);
+	void Render();
+
 	void Initialize(const std::string& sceneId);
 	void Deinitialize(const std::string& sceneId);
+
 	void ChangeCurrent(const std::string& sceneId);
 	void ChangeEntityScene(const std::string& EntityId, const std::string& newSceneId);
 
-
-	GETTERSETTER(GameScene&, Current, *CurrentScene);			// return current scene layer
-	GETTERSETTER(GameScene&, Shared, *SharedScene);				// return shared scene layer
-
-	//inline GameScene& GetCurrent()	{ return *CurrentScene; } 	// return current scene layer
-	//inline GameScene& GetShared()	{ return *SharedScene; }	
+	GETTERSETTER(GameScene*, Current, CurrentScene);			// return current scene layer
+	GETTERSETTER(GameScene*, Shared, SharedScene);				// return shared scene layer
 
 };
 

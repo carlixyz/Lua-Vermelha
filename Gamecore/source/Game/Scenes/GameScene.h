@@ -2,12 +2,18 @@
 
 #include "InstanceBase.h"
 #include <vector>
+#include <string>
+#include "raylib.h"
 
 class Entity;
 
-class GameScene : public InstanceBase
+class GameScene : public InstanceBase ///, public LuaInterface
 {
 	bool initialized = false;
+
+	///std::string SceneID;
+
+	///virtual void OnReturn() override;
 
 protected:
 
@@ -23,11 +29,14 @@ protected:
 	virtual void OnEnter() override;
 
 public:
-	virtual void OnUpdate() override;
+	///GameScene(const std::string& scriptPath) : LuaInterface(scriptPath) { Call("OnConstruct"); }
+
+
+	virtual void OnUpdate(float deltaTime) override;
 	virtual void OnRender() override;
 
 	bool IsInitialized() const { return initialized; }
 
-	std::vector<class Entity*> Entities;
+	std::vector<Entity*> Entities;
 };
 

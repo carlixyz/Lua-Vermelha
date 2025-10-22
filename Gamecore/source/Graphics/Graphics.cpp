@@ -3,13 +3,6 @@
 
 //#include <assert.h>
 
-static float Noise2D(float x, float y) {
-	// Simple pseudo-random smooth noise using sin
-	return 0.5f + 0.5f * sinf(x * 12.9898f + y * 78.233f) *
-		sinf(x * 4.123f + y * 37.719f);
-}
-
-
 bool Graphics::Init(ApplicationProperties* appProperties)
 {
 	bool Result = true;
@@ -21,7 +14,6 @@ bool Graphics::Init(ApplicationProperties* appProperties)
 									appProperties->ApplicationName);
 
 
-
 	SetTargetFPS(appProperties->FPS);
 
 	if (appProperties->Fullscreen) SwitchFullScreen();
@@ -30,6 +22,10 @@ bool Graphics::Init(ApplicationProperties* appProperties)
 					GetWindowPosition().y,
 					(float)appProperties->Width,
 					(float)appProperties->Height };
+
+	Wiper.Init(appProperties->Width, appProperties->Height);
+
+	Blender.Init(appProperties->Width, appProperties->Height);
 
 	return Result;
 }
@@ -46,13 +42,22 @@ bool Graphics::Deinit()
 	return true;
 }
 
-void Graphics::Update()
+void Graphics::Update(float deltaTime)
 {
 	// check for alt + enter
 	if (IsKeyPressed(KEY_ENTER) && (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)))
 	{
 		Graphics::Get().SwitchFullScreen();
 	}
+
+	//if (IsKeyPressed(KEY_ONE)) Wiper.Start(WIPE_LEFT);
+	//if (IsKeyPressed(KEY_TWO)) Wiper.Start(WIPE_RIGHT);
+	//if (IsKeyPressed(KEY_THREE)) Wiper.Start(WIPE_UP);
+	//if (IsKeyPressed(KEY_FOUR)) Wiper.Start(WIPE_DOWN);
+
+	Wiper.Update(deltaTime);
+	Blender.Update(deltaTime);
+
 }
 
 void Graphics::SwitchFullScreen()
@@ -81,6 +86,10 @@ void Graphics::Render()
 
 	// --- Draw ---
 	//ClearBackground(BLACK);
+
+	Wiper.Render();
+
+	Blender.Render();
 
 	/// Draw the pixel buffer scaled to window size
 	//DrawTexturePro(

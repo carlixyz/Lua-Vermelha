@@ -16,10 +16,10 @@ class BootState :  public GameScene
 
 public:
 
-	void OnInit();
-	void OnDeinit();
+	virtual void OnInit() override;
+	virtual void OnDeinit() override;
 
-	void OnUpdate();
-	void OnRender();
+	virtual void OnUpdate(float deltaTime) override;
+	virtual void OnRender() override;
 
 };

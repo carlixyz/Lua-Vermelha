@@ -5,13 +5,11 @@
 
 #include <raylib-cpp.hpp>
 
+#include"FX/CurtainWipe.h"
+#include"FX/CurtainBlend.h"
+
 
 struct ApplicationProperties;
-
-
-struct Star {
-	float x, y, z;
-};
 
 
 class Graphics : public Singleton<Graphics>
@@ -23,16 +21,24 @@ class Graphics : public Singleton<Graphics>
 
 	Rectangle WindowArea		{ 0, 0, 640, 480 };
 
+	CurtainWipe Wiper;
+
+	CurtainBlend Blender;
+
 	void SwitchFullScreen();
 
 public:
 	friend class Singleton<Graphics>;
 
+	CurtainWipe& GetWiper() { return Wiper; }
+
+	CurtainBlend& GetBlender() { return Blender; }
+
 	bool Init(ApplicationProperties* appProperties);
 
 	bool Deinit();
 
-	void Update();
+	void Update(float deltaTime);
 
 	void Render();
 

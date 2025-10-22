@@ -9,6 +9,7 @@ class Game : public Singleton<Game>
 {
 	bool finish = false;
 
+	bool mouseCaptured = false;
 
 public:
 	friend class Singleton<Game>;
@@ -16,7 +17,7 @@ public:
 	FSM Scenes;
 
 	bool Init();
-	void Update();
+	void Update(float deltaTime);
 
 	void Render();
 	bool Deinit();
@@ -27,7 +28,6 @@ public:
 
 protected:
 	Game() { ; } // Protected Constructor
-
 };
 
 

@@ -6,7 +6,7 @@
 #include <string>
 #include "SceneFactory.h"
 #include "Entity.h"
-
+#include "../../Graphics/Graphics.h"
 
 bool FSM::Init()
 {
@@ -16,35 +16,35 @@ bool FSM::Init()
 	if (ScenesMap.empty())
 		return false;
 
-	if (GameScene* startScene = ScenesMap[factory.GetStartSceneID()])
+	if (ScenesMap.contains(factory.GetStartSceneID()))
 	{
-		if (CurrentScene = startScene)
-			CurrentScene->Initialize();
-		else
-			std::cout << "[FSM] StartScene '" << startScene << "' not found. Falling back.\n";
+		if (GameScene* startScene = ScenesMap[factory.GetStartSceneID()])
+			if (CurrentScene = startScene)
+				CurrentScene->Initialize();
 	}
+	else std::cout << "[FSM] StartScene '" << factory.GetStartSceneID() << "' not found. Falling back.\n";
 
-	if (GameScene* sharedScene = ScenesMap[factory.GetSharedSceneID()])
+	if (ScenesMap.contains(factory.GetSharedSceneID()))
 	{
-		if (SharedScene = sharedScene)
-			SharedScene->Initialize();
-		else
-			std::cout << "[FSM] SharedScene '" << sharedScene << "' not found!\n";
+		if (GameScene* sharedScene = ScenesMap[factory.GetSharedSceneID()])
+			if (SharedScene = sharedScene)
+				SharedScene->Initialize();
 	}
+	else std::cout << "[FSM] SharedScene '" << factory.GetSharedSceneID() << "' not found!\n";
 
-	for (auto sceneIt : ScenesMap)
+	for (auto& sceneIt : ScenesMap)
 	{
-		if (sceneIt.second == CurrentScene)
+		if (CurrentScene && sceneIt.second == CurrentScene)
 			std::cout << "\t > Scene: " << sceneIt.first.c_str() << std::endl;
-		else if(sceneIt.second == SharedScene)
+		else if(SharedScene && sceneIt.second == SharedScene)
 			std::cout << "\t * Scene: " << sceneIt.first.c_str() << std::endl;
 		else
 			std::cout << "\t   Scene: " << sceneIt.first.c_str() << std::endl;
 
+		ScenesArray.push_back(sceneIt.second);
+
 		for (Entity* entity : sceneIt.second->Entities)
-		{
 			std::cout << "\t\t - Entity: " << entity->GetInfo().NameId << std::endl;
-		}
 	}
 
 	return true;
@@ -64,13 +64,62 @@ bool FSM::Deinit()
 
 	ScenesMap.clear();
 
+	ScenesArray.clear();
+
 	return ScenesMap.empty();
 }
+
+void FSM::Update(float deltaTime)
+{
+	if (CurrentScene)
+		CurrentScene->OnUpdate(deltaTime);
+
+	if (SharedScene)
+		SharedScene->OnUpdate(deltaTime);
+}
+
+void FSM::SwapDebugScenes()
+{
+	if (ScenesArray.empty())
+		return;
+
+	DrawText(TextFormat("Scene: %d - %s", SceneIndex, SceneID.c_str()), 32, 32, 16, YELLOW);
+
+	if (IsKeyPressed(KEY_KP_ADD))
+		SceneIndex = (int)Wrap((float)(SceneIndex + 1),
+			0.0f, (float)ScenesArray.size());
+
+	if (IsKeyPressed(KEY_KP_SUBTRACT))
+		SceneIndex = (int)Wrap((float)(SceneIndex - 1),
+			0.0f, (float)ScenesArray.size());
+
+	if (GameScene* newScene = ScenesArray[SceneIndex])
+		if (newScene != GetCurrent())
+			for (auto& kv : ScenesMap)
+				if (newScene == kv.second)
+					ChangeCurrent(kv.first);
+}
+
+void FSM::Render()
+{
+	if (CurrentScene)
+		CurrentScene->OnRender();
+
+	if (SharedScene)
+		SharedScene->OnRender();
+
+	if (IsKeyPressed(KEY_KP_MULTIPLY))
+		DebugScenes = !DebugScenes;
+
+	if (DebugScenes)
+		SwapDebugScenes();
+}
+
 
 void FSM::ChangeCurrent(const std::string& sceneId)
 {
 
-	if (!ScenesMap.contains(sceneId)) 
+	if (!ScenesMap.contains(sceneId))
 	{
 		std::cerr << "\n [ERROR] Invalid sceneId: " << sceneId << std::endl;
 		throw std::runtime_error("Error: invalid sceneId");
@@ -79,7 +128,7 @@ void FSM::ChangeCurrent(const std::string& sceneId)
 
 	GameScene* nextScene = ScenesMap[sceneId];
 
-	if (nextScene == nullptr)			
+	if (nextScene == nullptr)
 		return;
 
 	if (nextScene == CurrentScene)
@@ -93,6 +142,11 @@ void FSM::ChangeCurrent(const std::string& sceneId)
 	if (CurrentScene)
 		CurrentScene->OnExit();
 	
+	for (int i = 0; i < ScenesArray.size(); i++)
+		if (ScenesArray[i] == nextScene) { SceneIndex = i; break; }
+
+	SceneID = sceneId;
+
 	CurrentScene = nextScene;
 }
 
@@ -120,6 +174,13 @@ void FSM::Deinitialize(const std::string& sceneId)
 
 void FSM::ChangeEntityScene(const std::string& EntityId, const std::string& newSceneId)
 {
+	if (newSceneId.empty() || !ScenesMap.contains(newSceneId))
+	{
+		std::cerr << "\n [ERROR] Invalid sceneId: " << newSceneId << std::endl;
+		throw std::runtime_error("Error: invalid sceneId");
+		return;
+	}
+
 	auto match = [&](Entity* e) { return e->Info.NameId == EntityId; }; // Find Id match
 
 	for (auto& [key, prevScene] : ScenesMap)
@@ -131,7 +192,14 @@ void FSM::ChangeEntityScene(const std::string& EntityId, const std::string& newS
 		{
 			if (GameScene* nextScene = ScenesMap[newSceneId])
 			{
-				entities.push_back(*it);						// if valid push into new Scene
+				if (prevScene == nextScene)
+				{
+					std::cout << "\n [ERROR] Entity :" << EntityId << " is already in sceneId : " << newSceneId << std::endl;
+					return;
+				}
+
+				nextScene->Entities.push_back(*it);						// if valid push into new Scene
+				//entities.push_back(*it);						// if valid push into new Scene
 				entities.erase(it);								// erase from old one using iterator
 			}
 

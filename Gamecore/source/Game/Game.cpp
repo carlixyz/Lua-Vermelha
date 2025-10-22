@@ -5,15 +5,15 @@
 #include "../Audio/Audio.h"
 #include "../Lua/LuaManager.h"
 
-//#include "../Utility/Utils.h"
-//#include "ConversationManager.h"
-//#include "VisualDialogManager.h"
-
-
 bool Game::Init()
 {
 
 	bool result = Graphics::Get().Init(&appProperties);
+	
+
+#ifndef EMSCRIPTEN
+	HideCursor();
+#endif
 
 	SetExitKey(KEY_Q);
 
@@ -34,10 +34,6 @@ bool Game::Deinit()
 {
 	bool result = Scenes.Deinit();								// cleanup the all states
 
-	//ConversationManager::Get().Deinit();
-
-	//VisualDialogManager::Get().Deinit();
-
 	result = result && LuaManager::Get().Deinit();
 
 	result = result && Assets::Get().Deinit();
@@ -50,24 +46,38 @@ bool Game::Deinit()
 }
 
 
-void Game::Update()
+void Game::Update(float deltaTime)
 {
 	finish = (finish || Graphics::Get().GetCloseApplication());
 	if (finish) return;
 
-	Graphics::Get().Update();
+#ifdef EMSCRIPTEN
 
-	Scenes.GetCurrent().OnUpdate();						/// <--------------------
+	// --- Lock/unlock logic ---
+	if (!mouseCaptured && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+	{
+        DisableCursor();
+		mouseCaptured = true;
+		HideCursor();
+		EnableCursor();
+	}
 
-	Scenes.GetShared().OnUpdate();
+	// ESC typically unlocks on the browser; this keeps state consistent cross-platform
+    if (IsKeyPressed(KEY_ESCAPE)) 
+	{
+		mouseCaptured = false;
+        EnableCursor();
+	}
+#endif
 
-	//VisualDialogManager::Get().Update();
+	Graphics::Get().Update(deltaTime);
 
-	//ConversationManager::Get().Update();
+	Scenes.Update(deltaTime);  										/// <--------------------
 
 	Audio::Get().Update();
 
 	LuaManager::Get().Update();
+
 }
 
 void Game::Render()
@@ -76,19 +86,13 @@ void Game::Render()
 
 	ClearBackground(BLACK);
 
-	Graphics::Get().Render();
-
-	Scenes.GetCurrent().OnRender();						/// <--------------------
-
-	Scenes.GetShared().OnRender();
+	Scenes.Render();										/// <--------------------
+	
+	//DrawTexture(GetTexture("MA"), GetMouseX(), GetMouseY(), WHITE);
 
 	LuaManager::Get().Render();
 
-	//MapInstance.Render();
-
-	//VisualDialogManager::Get().Render();
-
-	//ConversationManager::Get().Render();
+	Graphics::Get().Render();
 
 	EndDrawing();
 }

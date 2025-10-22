@@ -55,7 +55,13 @@ void Director::RegisterEntity(Entity* entity)
 Entity* Director::GetEntity(const std::string& id)
 {
     auto it = Entities.find(id);
-    return it != Entities.end() ? it->second : nullptr;
+
+    if (it != Entities.end())
+        return it->second;
+    else
+        std::cout << "[Director] Entity not found: " << id << "\n";
+
+    return nullptr;
 }
 
 void Director::RequestAction(const std::string& id, const std::function<void(Entity*)>& action)
@@ -63,7 +69,7 @@ void Director::RequestAction(const std::string& id, const std::function<void(Ent
     if (Entity* e = GetEntity(id))
         action(e);
     else
-        std::cerr << "[Director] Entity not found: " << id << "\n";
+        std::cout << "[Director] Entity not found: " << id << "\n";
 }
 
 void Director::SetEntityTexture(const std::string& nameID, const std::string& textureID)
@@ -86,7 +92,15 @@ void Director::SetEntityVisible(const std::string& nameID, bool visible)
 {
     if (Entity* entity = Director::Get().GetEntity(nameID))
     {
-        entity->SetIsActive(visible);
+        entity->SetIsVisible(visible);
+    }
+}
+
+void Director::SetEntityClickable(const std::string& nameID, bool visible)
+{
+    if (Entity* entity = Director::Get().GetEntity(nameID))
+    {
+        entity->SetIsClickable(visible);
     }
 }
 
@@ -94,8 +108,25 @@ void Director::SetEntityPosition(const std::string& nameID, float x, float y)
 {
     if (Entity* entity = Director::Get().GetEntity(nameID))
     {
-        entity->SetPositionX(x);
-        entity->SetPositionX(y);
+        entity->SetPositionX((int)x);
+        entity->SetPositionX((int)y);
+    }
+}
+
+void Director::MoveEntity(const std::string& nameID, float x, float y, float lapse)
+{
+    if (Entity* entity = Director::Get().GetEntity(nameID))
+    {
+        Vector2 initialPos { (float)entity->GetPositionX(), (float)entity->GetPositionY()};
+        entity->GetTween().ActionMove(initialPos, { x, y }, lapse);
+    }
+}
+
+void Director::FadeEntity(const std::string& nameID, float startValue, float endValue, float totalTime)
+{
+    if (Entity* entity = Director::Get().GetEntity(nameID))
+    {
+        entity->GetTween().ActionFade(startValue, endValue, totalTime);;
     }
 }
 

@@ -1,15 +1,15 @@
 
 
 
-local function OnInit()
+local function OnConstruct()
     
-    print("called John.OnInit")
+    print("called John.OnConstruct")
 
     return {
         NameId = "John",
         Visible = true,
         Position = { x = 20, y = 200 },
-        Alpha = 1.0,
+        Alpha = 0.5,
         Textures = {
             { J_Neutral = "data/Images/John/John_neutral.png" },
             { J_Happy = "data/Images/John/John_smile.png" },
@@ -26,22 +26,40 @@ end
 
 local function OnTalk()
     print("called John.OnTalk")
-    SetPosition("John", 300, 200)
+
+    SwipeScene("Test", "Down")
+    --BlendScene("Test")
+
+    -- SetState("John", "J_Neutral")
+    -- SetPosition("John", 300, 200)
 end
 
 local function OnInteract()
     print("called John.OnInteract")
+    Fade('John', 1.0)
+    -- SetScene( 'John', 'Test' )
+    --Fade("John", 1.0, 3)
+    --Move("John", 20)
+    -- SetVisible("John", false)
+    --SetActive("John", false)
+    --SetClickable("John", false)
+    
     OnTalk()
 end
 
 local function OnLook()
     print("called John.OnLook")
-    SetState("John", "J_Wow")
+    -- SetState("John", "J_Wow")
+    Fade("John", 0.0, 6)
+    --Move("John", 60, 100, 6)
+    -- SetVisible("John", true)
+    --SetActive("John", true)
+    --SetClickable("John", true)
 end
 
 
 return {
-    OnInit = OnInit,
+    OnConstruct = OnConstruct,
     OnDeinit = OnDeinit,
     OnLook = OnLook,
     OnInteract = OnInteract

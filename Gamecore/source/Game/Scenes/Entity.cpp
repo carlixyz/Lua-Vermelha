@@ -1,6 +1,7 @@
 #include "Entity.h"
 #include "../Assets.h"
 #include "../Director.h"
+#include "../Game.h"
 
 void Entity::OnReturn()
 {
@@ -121,12 +122,14 @@ void Entity::OnDeinit()
     Mask.Opaque.clear();
 }
 
-void Entity::OnUpdate()
+void Entity::OnUpdate(float deltaTime)
 {
+    tween.Update(deltaTime);
+
     //if (GetIsActive())
     //    Call("OnUpdate");
 
-    if (!GetIsClickable()) 
+    if (!GetIsClickable())
         return;
 
     if (Hovered = IsMouseOver())
@@ -145,16 +148,21 @@ void Entity::OnUpdate()
 
 void Entity::OnRender()
 {
-    DrawTexture(CurrentSprite, Info.PositionX, Info.PositionY, WHITE);
+    DrawTexture(CurrentSprite, Info.PositionX, Info.PositionY, ColorAlpha(WHITE, Info.Alpha)); //Fade(WHITE, Info.Alpha));
+
+    Vector2 MouseCursor = GetMousePosition();
+
+    DrawTexture(GetTexture("MA"), (int)MouseCursor.x, (int)MouseCursor.y, WHITE);
 
     if (debug)
+        //DrawRectangleLines(Info.PositionX, Info.PositionY, CurrentSprite.width, CurrentSprite.height, WHITE);
         DrawRectangle(Info.PositionX, Info.PositionY, CurrentSprite.width, CurrentSprite.height, ColorAlpha(RED, 0.05f));
 
     // --- Hover feedback ---
-    if (!GetIsHovered()) 
+    if (!GetIsClickable() || !GetIsHovered()) 
         return;
 
-    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) || IsMouseButtonReleased(MOUSE_RIGHT_BUTTON) )
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) || IsMouseButtonPressed(MOUSE_RIGHT_BUTTON) )
         highlightLapse = 0.1f;
 
     if (highlightLapse > 0.f)
@@ -165,9 +173,9 @@ void Entity::OnRender()
         EndBlendMode();
     }
 
-	//DrawRectangleLines(Info.PositionX, Info.PositionY, CurrentSprite.width, CurrentSprite.height, WHITE);
-    DrawText(Info.NameId.c_str(), Info.PositionX + 4, Info.PositionY - 16, 10, WHITE);
-    //DrawRectangle(Info.PositionX, Info.PositionY, CurrentSprite.width, CurrentSprite.height, ColorAlpha(WHITE, 0.05f));
+    DrawTexture( GetTexture("MB"), (int)MouseCursor.x, (int)MouseCursor.y, WHITE);
+
+    DrawText(Info.NameId.c_str(), (int)MouseCursor.x + 12, (int)MouseCursor.y + 24, 12, WHITE);
 }
 
 void Entity::OnInteract()
@@ -185,7 +193,7 @@ void Entity::OnCombine(const std::string& itemId)
 	Call("OnCombine");
 }
 
-bool Entity::IsMouseOver() const
+bool Entity::IsMouseOver()
 {
     //Vector2 mouse = GetMousePosition();
     //Rectangle SpriteRect = {
@@ -198,5 +206,11 @@ bool Entity::IsMouseOver() const
     int localX = GetMouseX() - Info.PositionX;
     int localY = GetMouseY() - Info.PositionY;
 
-    return Mask.IsOpaque(localX, localY);
+    return Mask.IsOpaque( (int)localX, (int)localY);
+
+    //MouseCursor = GetMousePosition();
+
+    //return Mask.IsOpaque(
+    //    (int)MouseCursor.x - Info.PositionX,
+    //    (int)MouseCursor.y - Info.PositionY);
 }

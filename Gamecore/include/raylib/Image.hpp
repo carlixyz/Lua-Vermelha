@@ -731,7 +731,7 @@ class Image : public ::Image {
      * @return True or false depending on whether the Image has been loaded.
      */
     inline bool IsReady() const {
-        return ::IsImageReady(*this);
+        return ::IsImageValid(*this);
     }
 
  protected:

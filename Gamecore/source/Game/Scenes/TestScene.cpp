@@ -20,9 +20,9 @@ void TestScene::OnDeinit()
 	GameScene::OnDeinit();
 }
 
-void TestScene::OnUpdate()
+void TestScene::OnUpdate(float dt)
 {
-	GameScene::OnUpdate();
+	GameScene::OnUpdate(dt);
 
 }
 

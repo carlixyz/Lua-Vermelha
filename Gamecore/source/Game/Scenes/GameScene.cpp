@@ -1,5 +1,7 @@
 #include "GameScene.h"
 #include "Entity.h"
+#include "../Game.h"
+#include "../Assets.h"
 
 
 void GameScene::OnInit()
@@ -37,12 +39,12 @@ void GameScene::OnExit()
 	}
 }
 
-void GameScene::OnUpdate()
+void GameScene::OnUpdate(float deltaTime)
 {
 	for (Entity* entity : Entities)
 	{
 		if (entity->GetIsActive())
-			entity->OnUpdate();
+			entity->OnUpdate(deltaTime);
 	}
 }
 
