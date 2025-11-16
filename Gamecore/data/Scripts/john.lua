@@ -1,6 +1,3 @@
-
-
-
 local function OnConstruct()
     
     print("called John.OnConstruct")
@@ -8,8 +5,9 @@ local function OnConstruct()
     return {
         NameId = "John",
         Visible = true,
-        Position = { x = 20, y = 200 },
-        Alpha = 0.5,
+--        Clickable = false,
+        Position = { x = 40, y = 200 },
+        Alpha = 1.0,
         Textures = {
             { J_Neutral = "data/Images/John/John_neutral.png" },
             { J_Happy = "data/Images/John/John_smile.png" },
@@ -43,8 +41,10 @@ local function OnInteract()
     -- SetVisible("John", false)
     --SetActive("John", false)
     --SetClickable("John", false)
+
+    Elder.enabled = true
     
-    OnTalk()
+    --OnTalk()
 end
 
 local function OnLook()

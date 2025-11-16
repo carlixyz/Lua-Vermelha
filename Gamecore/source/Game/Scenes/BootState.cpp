@@ -37,7 +37,7 @@ void BootState::OnUpdate(float deltaTime)
 		return;
 	}
 
-	if (IsKeyDown(KEY_SPACE))
+	if (IsKeyDown(KEY_SPACE) || IsMouseButtonDown(MOUSE_LEFT_BUTTON) || IsMouseButtonDown(MOUSE_RIGHT_BUTTON))
 	{
 		CurrentTime += deltaTime * 4;
 	}
@@ -50,7 +50,8 @@ void BootState::OnUpdate(float deltaTime)
 		if (CurrentLogo >= Logos.size())
 		{
 			CurrentLogo = 0;
-			Game::Get().Scenes.ChangeCurrent(SceneID::Test);
+			Game::Get().Scenes.ChangeCurrent(SceneID::Road);
+			//Game::Get().Scenes.ChangeCurrent(SceneID::Test);
 			//Game::Get().Scenes.ChangeCurrent(SceneID::Title);
 		}
 	}

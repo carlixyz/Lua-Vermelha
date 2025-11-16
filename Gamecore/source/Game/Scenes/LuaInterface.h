@@ -14,12 +14,32 @@ protected:
 
 public:
 
+    int GetRef() { return Ref; }
+
+    LuaInterface(int tableIndex) : LuaContext(LuaManager::Get().GetState())
+    {
+        if (lua_istable(LuaContext, tableIndex))
+        {
+            // Make sure we’re referencing the absolute index
+            int absIndex = lua_absindex(LuaContext, tableIndex);
+            lua_pushvalue(LuaContext, absIndex);
+            Ref = luaL_ref(LuaContext, LUA_REGISTRYINDEX);
+
+            std::cout << "[LuaInterface] Embedded table stored (ref " << Ref << ")" << std::endl;
+        }
+        else
+        {
+            Ref = LUA_NOREF;
+            std::cout << "[LuaInterface] Invalid embedded script table." << std::endl;
+        }
+    }
+
     LuaInterface(const std::string& scriptPath) : LuaContext(LuaManager::Get().GetState())
     {
         //std::cout << "Loading script: " << LuaManager::Get().AddDebugRootPath(scriptPath) << std::endl;
         if (luaL_dofile(LuaContext, LuaManager::Get().AddDebugRootPath(scriptPath).c_str()) != LUA_OK)
         {
-            std::cout << "Lua error loading " << LuaManager::Get().AddDebugRootPath(scriptPath) << ": "
+            std::cout << "Lua error loading script path " << LuaManager::Get().AddDebugRootPath(scriptPath) << ": "
                 << lua_tostring(LuaContext, -1) << std::endl;
             lua_pop(LuaContext, 1);
             Ref = LUA_NOREF;
@@ -28,8 +48,8 @@ public:
         {
             if (!lua_isnoneornil(LuaContext, -1) && lua_istable(LuaContext, -1))
             {
-                Ref = luaL_ref(LuaContext, LUA_REGISTRYINDEX);
                 std::cout << "Script " << scriptPath << " loaded successfully with entity table." << std::endl;
+                Ref = luaL_ref(LuaContext, LUA_REGISTRYINDEX);
             }
             else
             {

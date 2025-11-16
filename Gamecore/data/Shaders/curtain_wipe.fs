@@ -18,20 +18,20 @@ void main()
     float e = edgeWidth;
 
     // calculate fade zone alpha
-    if (direction == 0) { // left>right
-        float d = fragTexCoord.x - t;
-        alpha = smoothstep(0.0, e, d);
-    }
-    else if (direction == 1) { // right>left
+    if (direction == 0) { // right>left
         float d = (1.0 - fragTexCoord.x) - t;
         alpha = smoothstep(0.0, e, d);
     }
-    else if (direction == 2) { // up>down
-        float d = fragTexCoord.y - t;
+    else if (direction == 1) { // left>right
+        float d = fragTexCoord.x - t;
         alpha = smoothstep(0.0, e, d);
     }
-    else if (direction == 3) { // down>up
+    else if (direction == 2) { // down>up
         float d = (1.0 - fragTexCoord.y) - t;
+        alpha = smoothstep(0.0, e, d);
+    }
+    else if (direction == 3) { // up>down
+        float d = fragTexCoord.y - t;
         alpha = smoothstep(0.0, e, d);
     }
 

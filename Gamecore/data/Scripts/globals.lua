@@ -19,9 +19,62 @@ function Set(varName, value)
     _G[varName] = value
 end
 
-function Say(line)          
-    coroutine.yield({ type = "SAY", text = line })
+--function Say(line)          
+--    coroutine.yield({ type = "SAY", text = line })
+--end
+
+function Say(a, b, c)
+    local speaker = nil
+    local text = nil
+    local duration = nil
+
+    -- no args = silent/blank say
+    if a == nil then
+        coroutine.yield({
+            type = "SAY",
+            text = "",
+        })
+        return
+    end
+
+    -- 1 argument: Say("text")
+    if b == nil then
+        text = a
+
+    -- 2 arguments
+    elseif c == nil then
+        if type(b) == "number" then
+            -- Say("text", duration)
+            text = a
+            duration = b
+        else
+            -- Say("speaker","text")
+            speaker = a
+            text = b
+        end
+
+    -- 3 arguments: Say("speaker","text", duration)
+    else
+        speaker = a
+        text = b
+        if type(c) == "number" then duration = c end
+    end
+
+    local t = {
+        type = "SAY",
+        text = text,
+        speaker = speaker
+    }
+
+    if duration then t.duration = duration end
+
+    coroutine.yield(t)
 end
+
+
+print("Say from Lua is: ", Say)
+
+print("Say=", Say)
 
 --[[
 function Say(line)
@@ -39,8 +92,12 @@ local function run_action(a)
         a()
 
     elseif type(a) == "string" then
-        -- Sugar: treat plain string as dialog line
-        Say(a)
+        if not tonumber(a) then
+            Say(a)
+        end
+
+       -- elseif type(a) == "string" then -- Sugar: treat plain string as dialog line Say(a)
+        --Say(a)
 
     elseif type(a) == "table" then
         if a[1] and type(a[1]) == "function" then
@@ -143,7 +200,7 @@ end
 
 
 function Globals.OnTalk()
-    print("Nothing to talk")
+    print("I've nothing to talk")
 end
 
 

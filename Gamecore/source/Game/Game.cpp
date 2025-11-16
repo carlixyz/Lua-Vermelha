@@ -1,6 +1,7 @@
 #include "Game.h"
 
 #include "Assets.h"
+#include "Director.h"
 #include "../Graphics/Graphics.h"
 #include "../Audio/Audio.h"
 #include "../Lua/LuaManager.h"
@@ -9,7 +10,6 @@ bool Game::Init()
 {
 
 	bool result = Graphics::Get().Init(&appProperties);
-	
 
 #ifndef EMSCRIPTEN
 	HideCursor();
@@ -22,6 +22,8 @@ bool Game::Init()
 	result = result && Audio::Get().Init();
 
 	result = result && Assets::Get().Init();
+
+	result = result && Director::Get().Init();		
 
 	result = result && LuaManager::Get().Init();				
 
@@ -38,6 +40,8 @@ bool Game::Deinit()
 
 	result = result && Assets::Get().Deinit();
 
+	result = result && Director::Get().Deinit();
+
 	result = result && Graphics::Get().Deinit();
 
 	result = result && Audio::Get().Deinit();
@@ -50,6 +54,10 @@ void Game::Update(float deltaTime)
 {
 	finish = (finish || Graphics::Get().GetCloseApplication());
 	if (finish) return;
+
+
+	if (IsKeyPressed(KEY_KP_DIVIDE))
+		debug = !debug;
 
 #ifdef EMSCRIPTEN
 
@@ -72,11 +80,14 @@ void Game::Update(float deltaTime)
 
 	Graphics::Get().Update(deltaTime);
 
+	LuaManager::Get().Update(deltaTime);
+
+	Director::Get().Update(deltaTime);
+	
 	Scenes.Update(deltaTime);  										/// <--------------------
 
 	Audio::Get().Update();
 
-	LuaManager::Get().Update();
 
 }
 

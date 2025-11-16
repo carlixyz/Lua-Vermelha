@@ -17,19 +17,21 @@ struct SceneID
 	 
 	SCENE_ID(Boot)
 	SCENE_ID(Global)
-	SCENE_ID(Test)
+	SCENE_ID(Road)
 	SCENE_ID(Intro)
-	SCENE_ID(Mansion)
 	SCENE_ID(Title)
+	SCENE_ID(Test)
+	SCENE_ID(Mansion)
 	SCENE_ID(Credits)
 };
+ 
 
 class SceneFactory;
 
 class FSM	/// Finite Scene Manager ftw!
 {
 	std::map<std::string, GameScene*> ScenesMap;
-	GameScene* CurrentScene = nullptr; // &bootState;
+	GameScene* CurrentScene = nullptr;							// &bootState;
 	GameScene* SharedScene = nullptr;
 
 	bool DebugScenes = false;
@@ -53,8 +55,10 @@ public:
 	void ChangeCurrent(const std::string& sceneId);
 	void ChangeEntityScene(const std::string& EntityId, const std::string& newSceneId);
 
+	void ChangeEntityToFront(const std::string& EntityId, int offset = 0);
+	void ChangeEntityToBack(const std::string& EntityId, int offset = 0);
+
 	GETTERSETTER(GameScene*, Current, CurrentScene);			// return current scene layer
 	GETTERSETTER(GameScene*, Shared, SharedScene);				// return shared scene layer
-
 };
 

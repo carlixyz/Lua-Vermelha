@@ -8,7 +8,9 @@
 bool Assets::Init()
 {
 	PreloadTextures();
-	//PreloadAnimations();
+//#ifdef EMSCRIPTEN
+	PreloadAnimations();
+//#endif
 	PreloadImages();
 	PreloadFonts();
 	PreloadSounds();
@@ -20,7 +22,7 @@ bool Assets::Init()
 bool Assets::Deinit()
 {
 	UnloadTextures();
-	//UnloadAnimations();
+	UnloadAnimations();
 	UnloadImages();
 	UnloadFonts();
 	UnloadSounds();
@@ -33,6 +35,16 @@ void Assets::LoadTextureID(const std::string& imageID, const std::string& filePa
 {
 	if (!HasTextureID(imageID))
 	{
+		//Image img = LoadImage(filePath.c_str());
+		//if (img.data == NULL) 
+		//	std::cout << "Failed to load!" << std::endl;
+		//else 
+		//{
+		//	ImageFormat(&img, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
+		//	Texture2D textureRef = LoadTextureFromImage(img);
+		//	Textures[imageID] = textureRef;
+		//}
+
 		const Texture2D textureRef = LoadTexture(filePath.c_str());
 		Textures[imageID] = textureRef;
 	}
@@ -103,18 +115,25 @@ void Assets::PreloadAnimations()
 	//	AnimFrames[Name] = totalFrameCount;
 	//};
 
-	//Load( "NightDrive", "data/NightDriveIntro_3.gif");
-	//Load( "NightMansion", "data/Mansion_4.gif");
+	PreloadRoadIntroAnimation();
 
+	PreloadMansionIntroAnimation();
+}
+
+void Assets::PreloadRoadIntroAnimation()
+{
 	for (int i = 0; i <= 133; i++)
 	{
 		// Build filename: frame_0001.jpg
 		std::ostringstream ss;
-		ss <<"data/Intro/NightDrive/NightDrive" << std::setw(4) << std::setfill('0') << i << ".jpg";
+		ss << "data/Intro/NightDrive/NightDrive" << std::setw(4) << std::setfill('0') << i << ".jpg";
 		std::string filename = ss.str();
 		NightDriveFrames.push_back(LoadTexture(filename.c_str()));
 	}
+}
 
+void Assets::PreloadMansionIntroAnimation()
+{
 	for (int i = 0; i <= 117; i++)
 	{
 		std::ostringstream ss;
@@ -122,7 +141,6 @@ void Assets::PreloadAnimations()
 		std::string filename = ss.str();
 		MansionFrames.push_back(LoadTexture(filename.c_str()));
 	}
-
 }
 
 void Assets::UnloadAnimations()
@@ -148,8 +166,14 @@ void Assets::PreloadFonts()
 		{
 			const Font Font = LoadFont(FileName);
 			Fonts[Name] = Font;
+			SetTextureFilter(Font.texture, TEXTURE_FILTER_BILINEAR);
 		};
-	//Load("PC98", "Data/pc-9800.ttf");
+
+	Load("Gothic", "Data/Franklin Gothic Heavy Italic.ttf");
+	Load("Noto", "Data/NotoSansUI-Regular.ttf");
+	//Load("NotoBold", "Data/NotoSans-Bold.ttf");
+	//Load("NotoBoldItalic", "Data/NotoSans-BoldItalic.ttf");
+	//Load("NotoItalic", "Data/NotoSans-Italic.ttf");
 }
 
 void Assets::UnloadFonts()

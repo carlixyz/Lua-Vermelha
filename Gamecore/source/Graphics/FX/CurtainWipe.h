@@ -3,7 +3,7 @@
 
  
 
-enum WipeDirection { WIPE_LEFT, WIPE_RIGHT, WIPE_UP, WIPE_DOWN };
+enum WipeDirection { WIPE_LEFT = 0, WIPE_RIGHT, WIPE_UP, WIPE_DOWN };
 
 class CurtainWipe
 {
@@ -19,7 +19,7 @@ public:
 
     int Width = 0;
     int Height = 0;
-    WipeDirection Dir = WIPE_LEFT;
+    WipeDirection Dir = WIPE_DOWN;
 
     // Shader uniform locations
     int locProgress = -1;

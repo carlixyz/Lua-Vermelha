@@ -33,7 +33,6 @@ public:
 
 	void UnloadTextureID(const std::string& imageID);
 
-
 	Texture2D& GetTexture(const std::string& NameID) { return Textures[NameID]; }
 
 	Image GetImage(const std::string& NameID) { return Images[NameID]; }
@@ -48,6 +47,10 @@ public:
 
 	std::vector<Texture2D>& NightDriveIntro() { return NightDriveFrames; }
 
+
+	void PreloadMansionIntroAnimation();
+
+	void PreloadRoadIntroAnimation();
 
 private:
 	void PreloadTextures();

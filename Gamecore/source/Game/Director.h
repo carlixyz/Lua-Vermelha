@@ -4,10 +4,24 @@
 #include "Scenes/Entity.h"
 #include "Scenes/FSM.h"
 #include "Assets.h"
-#include "../Lua/LuaManager.h"
 #include <iostream>
 #include <functional>
 #include <unordered_map>
+
+struct ScheduledTask
+{
+    std::string Id;
+    float RemainingTime;
+    std::function<void()> Callback;
+    bool Repeat;
+    float Interval;
+    bool Cancelled = false;
+
+    ScheduledTask(const std::string& id, float delay, const std::function<void()>& cb, bool repeat = false)
+        : Id(id), RemainingTime(delay), Callback(cb), Repeat(repeat), Interval(delay) {
+    }
+};
+
 
 class Director : public Singleton<Director> 
 {
@@ -15,15 +29,38 @@ class Director : public Singleton<Director>
 
     std::unordered_map<std::string, Entity*> Entities; // Global registry
 
+    std::vector<ScheduledTask> PendingTasks;
+    bool IsIterating = false;
+
+    std::vector<ScheduledTask> ScheduledTasks;
+
+    std::unordered_map<std::string, std::function<void(std::vector<std::string>)>> FunctionMap;
+
 public:
     
-    void Init();
+    bool Init();
 
-    void Deinit();
+    bool Deinit();
+
+    void Update(float dt);
+
+    void InitFunctionMap();
+
+    void CallFunction(const std::string& name, const std::vector<std::string>& args);
+
+    std::string Schedule(float delay, const std::function<void()>& func, bool repeat = false, const std::string& id = "");
+
+    void CancelScheduledTask(const std::string& id);
+
+
+    Entity* CreateEntity(const SpriteInfo& data);
 
     Entity* CreateEntity(const std::string& type, const std::string& scriptPath);
 
+    Entity* CreateEntityInline(const std::string& type, int tableIndex);
+
     Entity* GetEntity(const std::string& id);
+
 
     void RegisterEntity(Entity* entity);
 
@@ -32,6 +69,10 @@ public:
     void SetEntityTexture(const std::string& nameID, const std::string& textureID);
 
     void SetEntityActive(const std::string& nameID, bool active = true);
+
+    void SetEntityAlpha(const std::string& nameID, float alpha = 1.0f);
+
+    float GetEntityAlpha(const std::string& nameID);
 
     void SetEntityVisible(const std::string& nameID, bool visible = true);
 
@@ -43,19 +84,9 @@ public:
 
     void FadeEntity(const std::string& nameID, float startValue, float endValue, float totalTime = 3.0f);
 
-    //void SetEntityScene(const std::string& nameID, const std::string& targetSceneID);
+    void StartSequence(const std::string& sequenceID );
 
 
-    //void CueScene(const std::string& scene) 
-    //{
-    //    FSM::Get().ChangeScene(scene);
-    //}
-
-    //void ShowDialog(const std::string& text) 
-    //{
-    //    std::cout << "[Dialog] " << text << "\n";
-    //    // Could connect with Lua coroutine or DialogueManager
-    //}
 
     //void PlaySound(const std::string& soundId) 
     //{

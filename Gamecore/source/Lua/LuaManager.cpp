@@ -1,12 +1,11 @@
 #include "LuaManager.h"
 #include <raylib-cpp.hpp>
-#include <cassert>
 #include "../Game/Game.h"
+#include "../Game/Assets.h"
 
 bool LuaManager::Init()
 {
     LuaContext = luaL_newstate();
-
     luaL_openlibs(LuaContext);
 
     std::cout << "Lua version: " << LUA_VERSION << std::endl;
@@ -15,14 +14,8 @@ bool LuaManager::Init()
 #endif
 
     RegisterLuaFunctions();
-
     if (!LoadScript("data/Scripts/globals.lua"))
-        std::cout << "Failed to load script!" << " globals.lua" << std::endl;
-
-    //if (!LoadScript("data/Scripts/test1.lua")) 
-    //    std::cout << "Failed to load script!" << " test1.lua" << std::endl;
-
-    //StartSequence("OurTalkTest");
+        std::cout << "Failed to load globals.lua\n";
 
     return true;
 }
@@ -30,85 +23,182 @@ bool LuaManager::Init()
 bool LuaManager::Deinit()
 {
     lua_close(LuaContext);
-
     return true;
 }
 
-void LuaManager::Update()
+void LuaManager::Update(float deltaTime)
 {
     if (!sequence || !sequence->IsRunning()) return;
 
+    // === CHOICE MODE ===
     if (sequence->IsMultiChoice())
     {
-        if (IsKeyPressed(KEY_DOWN))
-            sequence->SelectedIndex = (int)Wrap((float)(sequence->SelectedIndex +1), 
-                0.0f, (float)sequence->CurrentOptions.size());
-        else if (IsKeyPressed(KEY_UP))
-            sequence->SelectedIndex = (int)Wrap((float)(sequence->SelectedIndex -1), 
-                0.0f, (float)sequence->CurrentOptions.size());
+        hoveredAny = false;
+
+        for (int i = 0; i < (int)sequence->CurrentOptions.size(); i++)
+        {
+            int textY = TextY + 30 * i;
+            int textWidth = MeasureText(sequence->CurrentOptions[i].c_str(), FontSize);
+
+            Rectangle rect = { (float)TextX - 8, (float)textY - 4,
+                               (float)textWidth + 16, (float)FontSize + 8 };
+
+            if (CheckCollisionPointRec(GetMousePosition(), rect))
+            {
+                sequence->SelectedIndex = i;
+                hoveredAny = true;
+
+                if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+                {
+                    Advance(sequence->SelectedIndex + 1);
+                    return;
+                }
+            }
+        }
+
+        if (!hoveredAny)
+        {
+            if (IsKeyPressed(KEY_DOWN))
+                sequence->SelectedIndex = (int)Wrap((float)(sequence->SelectedIndex + 1), 0.0f, (float)sequence->CurrentOptions.size());
+            else if (IsKeyPressed(KEY_UP))
+                sequence->SelectedIndex = (int)Wrap((float)(sequence->SelectedIndex - 1), 0.0f, (float)sequence->CurrentOptions.size());
+        }
 
         if (IsKeyPressed(KEY_SPACE))
-            if (StepResult::Error == sequence->ResumeChoice(sequence->SelectedIndex + 1))
-                std::cout << "Error resuming with choice!" << std::endl;
+            Advance(sequence->SelectedIndex + 1);
+
+        return;
     }
-    else
+
+    // === SAY MODE ===
+    if (sequence->CurrentOptions.empty()) return;
+
+    const std::string& full = sequence->CurrentOptions[0];
+    size_t newlinePos = full.find('#');
+    std::string line = (newlinePos != std::string::npos) ? full.substr(newlinePos + 1) : full;
+    int totalLen = (int)line.size();
+
+    if (!messageComplete)
     {
-        if (IsKeyPressed(KEY_SPACE))
-            if (StepResult::Error == sequence->Step())
-                std::cout << "Error stepping sequence!" << std::endl;
+        typeTimer += deltaTime;
+        while (typeTimer >= typeSpeed && visibleChars < totalLen)
+        {
+            typeTimer -= typeSpeed;
+            visibleChars++;
+        }
+        
+        if (visibleChars >= totalLen) 
+            messageComplete = true;
+    }
+
+    if (sequence->Duration > 0.0f)
+        sequence->Duration = Clamp(sequence->Duration - deltaTime, 0.0f, 100.f);
+
+    if ((sequence->Duration == 0.0f && messageComplete) || 
+        IsMouseButtonPressed(MOUSE_LEFT_BUTTON) || IsKeyPressed(KEY_SPACE))
+    {
+        if (!messageComplete)
+        {
+            visibleChars = totalLen;
+            messageComplete = true;
+        }
+        else Advance();
     }
 }
 
 void LuaManager::Render()
 {
-    if (!sequence) return;
+    if (!sequence || sequence->CurrentOptions.empty()) return;
 
-    if (!sequence->CurrentOptions.empty())
+    if (sequence->IsMultiChoice())
     {
-        if (sequence->IsMultiChoice())                          // CHOICE
+        static float hoverPulse = 0.0f;
+        hoverPulse += GetFrameTime() * 3.0f;
+        float pulse = (sinf(hoverPulse) * 0.5f + 0.5f);
+
+        for (int i = 0; i < (int)sequence->CurrentOptions.size(); i++)
         {
-            for (int i = 0; i < (int)sequence->CurrentOptions.size(); i++)
-            {
-                Color color = (i == sequence->SelectedIndex) ? YELLOW : DARKGRAY;
-                DrawText(sequence->CurrentOptions[i].c_str(),
-                    40, 120 + 30 * (int)i, 20, color);
-            }
+            int textY = TextY + 30 * i;
+            const char* text = sequence->CurrentOptions[i].c_str();
+            bool isSelected = (i == sequence->SelectedIndex);
+
+            if (isSelected)
+                DrawRectangle(TextX - 8, textY - 4, MeasureText(text, FontSize) + 16, FontSize + 8,
+                    Fade(RAYWHITE, 0.2f + 0.3f * pulse));
+
+            Color color = isSelected ? BLACK : GRAY;
+            DrawTextEx(GetFont("Noto"), text, { (float)TextX, (float)textY }, (float)FontSize, 1.0f, color);
         }
-        else                                                    // SAY
-        {
-            DrawText(sequence->CurrentOptions[0].c_str(), 20, 60, 20, BLUE);
-        }
+
+        DrawTexture(GetTexture(hoveredAny ? "MB" : "MA"), (int)GetMouseX(), (int)GetMouseY(), WHITE);
+        return;
+    }
+
+    const std::string& full = sequence->CurrentOptions[0];
+    size_t sepPos = full.find('#');
+    std::string speaker, line;
+
+    if (sepPos != std::string::npos) {
+        speaker = full.substr(0, sepPos);
+        line = full.substr(sepPos + 1);
+    }
+    else line = full;
+
+    if (!speaker.empty())
+        DrawTextEx(GetFont("Noto"), speaker.c_str(),
+            { (float)TextX, (float)TextY - 30 },
+            (float)FontSize, 1.0f, Fade(WHITE, 0.9f));
+
+    int charsToShow = std::min(visibleChars, (int)line.size());
+    if (charsToShow > 0)
+    {
+        std::string partial = line.substr(0, charsToShow);
+        DrawTextEx(GetFont("Noto"), partial.c_str(),
+            { (float)TextX, (float)TextY },
+            (float)FontSize, 1.0f, WHITE);
     }
 }
 
-bool LuaManager::LoadScript(const std::string& path) 
+void LuaManager::Advance(int choiceIndex)
+{
+    if (!sequence || !sequence->IsRunning()) 
+        return;
+
+    if (choiceIndex >= 0)
+        sequence->ResumeChoice(choiceIndex);
+    else
+        sequence->Step();
+
+    ResetTypewriter();
+}
+
+void LuaManager::ResetTypewriter()
+{
+    visibleChars = 0;
+    typeTimer = 0.0f;
+    messageComplete = false;
+}
+
+void LuaManager::StopSequence()
+{
+    if (sequence)
+    {
+        std::cout << "[LuaManager] Sequence manually ended.\n";
+        sequence.reset();
+    }
+}
+
+bool LuaManager::LoadScript(const std::string& path)
 {
     std::cout << "Loading script: " << AddDebugRootPath(path) << std::endl;
-
     if (luaL_dofile(LuaContext, AddDebugRootPath(path).c_str()) != LUA_OK)
     {
-        const char* err = lua_tostring(LuaContext, -1);
-        std::cout << "Lua error: " << (err ? err : "unknown") << std::endl;
+        std::cout << "Lua error: " << lua_tostring(LuaContext, -1) << std::endl;
         lua_pop(LuaContext, 1);
         return false;
     }
-
-    std::cout << "Script loaded successfully." << std::endl;
+    std::cout << "Script loaded successfully.\n";
     return true;
-}
-
-std::string LuaManager::AddDebugRootPath(const std::string& input)
-{
-    /// I use this function because sometimes the data folder duplication takes time
-    /// So We check the original root scripts to re-load values immediately ASAP
-#ifdef EMSCRIPTEN   // Defined by MSVC when building Debug
-    return input;  // Release or other builds
-#elif _DEBUG
-    if (UseRootPathScripts)
-        return "../../../" + input;
-    else
-        return input;  // Release or other builds
-#endif
 }
 
 void LuaManager::RegisterFunction(const std::string& funcName, lua_CFunction func)
@@ -116,30 +206,45 @@ void LuaManager::RegisterFunction(const std::string& funcName, lua_CFunction fun
     lua_register(LuaContext, funcName.c_str(), func);
 }
 
-inline void LuaManager::StartSequence(const std::string& funcName)  // Start a scripted sequence
+std::string LuaManager::AddDebugRootPath(const std::string& input)
 {
-    lua_getglobal(LuaContext, funcName.c_str());     // Push the function onto the stack
+#ifdef EMSCRIPTEN
+    return input;
+#elif _DEBUG
+    return UseRootPathScripts ? "../../../" + input : input;
+#else
+    return input;
+#endif
+}
 
+void LuaManager::StartSequence(const std::string& funcName)
+{
+    lua_getglobal(LuaContext, funcName.c_str());
     if (!lua_isfunction(LuaContext, -1))
     {
-        std::cout << "[LuaManager] StartSequence: function '"
-            << funcName << "' not found in Lua\n";
-        lua_pop(LuaContext, 1); // remove non-function from stack
+        std::cout << "[LuaManager] StartSequence: function '" << funcName << "' not found\n";
+        lua_pop(LuaContext, 1);
         return;
     }
 
     sequence = std::make_unique<ScriptedSequence>(LuaContext, funcName);
-    sequence->Step();                                               // run first line immediately
+    sequence->Step();
+    ResetTypewriter();
 }
 
-void LuaManager::StepSequence()                                     // Step explicitly (for SAY)
+void LuaManager::StartSequence(lua_State* L)
 {
-    if (sequence && sequence->IsRunning())
-        sequence->Step();
-}
+    if (!lua_isfunction(L, 1))
+    {
+        std::cout << "[Lua] StartSequence expects a function argument\n";
+        return;
+    }
 
-void LuaManager::ResumeChoice(int choiceIndex)
-{
-    if (sequence && sequence->IsRunning())
-        sequence->ResumeChoice(choiceIndex);
+    lua_State* threadL = lua_newthread(L);
+    lua_pushvalue(L, 1);
+    lua_xmove(L, threadL, 1);
+
+    sequence = std::make_unique<ScriptedSequence>(threadL);
+    sequence->Step();
+    ResetTypewriter();
 }

@@ -8,6 +8,8 @@
 #include "Entity.h"
 #include "../../Graphics/Graphics.h"
 
+
+
 bool FSM::Init()
 {
 	SceneFactory factory;
@@ -94,10 +96,24 @@ void FSM::SwapDebugScenes()
 			0.0f, (float)ScenesArray.size());
 
 	if (GameScene* newScene = ScenesArray[SceneIndex])
+	{
 		if (newScene != GetCurrent())
 			for (auto& kv : ScenesMap)
 				if (newScene == kv.second)
 					ChangeCurrent(kv.first);
+
+		for (int i = 0, t = (int)newScene->Entities.size(); i < t; i++)
+		{
+			if (Entity* entity = newScene->Entities[i])
+				DrawText(TextFormat("\t\t -> %s - %02.01f - %s", 
+					entity->GetInfo().NameId.c_str(), 
+					entity->GetInfo().Alpha, 
+					entity->GetInfo().Visible ? "on" : "off"),
+					32, 64 + (32 * i), 16, YELLOW);
+		}
+	}
+
+	DrawText(TextFormat("[%i, %i]", GetMouseX(), GetMouseY()), GetMouseX()-64, GetMouseY() -16, 16, YELLOW);
 }
 
 void FSM::Render()
@@ -118,11 +134,14 @@ void FSM::Render()
 
 void FSM::ChangeCurrent(const std::string& sceneId)
 {
-
 	if (!ScenesMap.contains(sceneId))
 	{
-		std::cerr << "\n [ERROR] Invalid sceneId: " << sceneId << std::endl;
-		throw std::runtime_error("Error: invalid sceneId");
+#ifdef _DEBUG
+		std::string msg = "[ERROR] Invalid sceneId : " + sceneId + " not created!\n \n ";
+		Graphics::Get().ShowPopup(msg, 5.0f);
+#endif
+		std::cout << "\n [ERROR] Invalid sceneId: " << sceneId << std::endl << std::endl;
+		//throw std::runtime_error("Error: invalid sceneId");
 		return;
 	}
 
@@ -176,7 +195,7 @@ void FSM::ChangeEntityScene(const std::string& EntityId, const std::string& newS
 {
 	if (newSceneId.empty() || !ScenesMap.contains(newSceneId))
 	{
-		std::cerr << "\n [ERROR] Invalid sceneId: " << newSceneId << std::endl;
+		std::cout << "\n [ERROR] Invalid sceneId: " << newSceneId << std::endl;
 		throw std::runtime_error("Error: invalid sceneId");
 		return;
 	}
@@ -198,8 +217,7 @@ void FSM::ChangeEntityScene(const std::string& EntityId, const std::string& newS
 					return;
 				}
 
-				nextScene->Entities.push_back(*it);						// if valid push into new Scene
-				//entities.push_back(*it);						// if valid push into new Scene
+				nextScene->Entities.push_back(*it);				// if valid push into new Scene
 				entities.erase(it);								// erase from old one using iterator
 			}
 
@@ -207,3 +225,24 @@ void FSM::ChangeEntityScene(const std::string& EntityId, const std::string& newS
 		}
 	}
 }
+
+void FSM::ChangeEntityToFront(const std::string& EntityId, int offset)
+{
+	for (auto& [key, Scene] : ScenesMap)
+		if (Scene->FindEntityIndex(EntityId) >= 0)
+		{
+			Scene->RequestMoveFront(EntityId, offset);
+			return;
+		}
+}
+
+void FSM::ChangeEntityToBack(const std::string& EntityId, int offset)
+{
+	for (auto& [key, Scene] : ScenesMap)
+		if (Scene->FindEntityIndex(EntityId) >= 0)
+		{
+			Scene->RequestMoveBack(EntityId, offset);
+			return;
+		}
+}
+

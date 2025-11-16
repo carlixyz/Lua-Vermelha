@@ -9,6 +9,8 @@ class Game : public Singleton<Game>
 {
 	bool finish = false;
 
+	bool debug = false;
+
 	bool mouseCaptured = false;
 
 public:
@@ -23,7 +25,7 @@ public:
 	bool Deinit();
 
 	inline bool HasFinished() const	{ return finish; }
-	//inline bool IsDebugMode() const { return appProperties.DebugMode; }
+	inline bool IsDebugMode() const { return debug; }
 	//inline bool SkipIntro()	  const { return appProperties.SkipIntro; }
 
 protected:

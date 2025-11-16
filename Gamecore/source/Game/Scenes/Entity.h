@@ -8,34 +8,33 @@
 #include <string>
 #include <raylib-cpp.hpp>
 
-//struct SpriteInfo
-//{
-//	std::string	NameId;
-//	bool Visible = false;
-//	bool Active = true;
-//	bool Clickable = true;
-//
-//	int PositionX = 0;
-//	int PositionY = 0;
-//	float Alpha = 1.f;
-//
-//	Rectangle Size = { 0.0f, 0.0f, 1.0f, 1.0f };
-//	std::vector<std::string> TexturesIDs;
-//};
+/*
+struct SpriteInfo
+{
+	std::string	NameId;
+	bool Visible = false;
+	bool Active = true;
+	bool Clickable = true;
+
+	int PositionX = 0;
+	int PositionY = 0;
+	float Alpha = 1.f;
+
+	Rectangle Size = { 0.0f, 0.0f, 1.0f, 1.0f };
+	std::vector<std::string> TexturesIDs;
+};
+*/
 
 
-class Entity : public InstanceBase, public LuaInterface
+class Entity : public InstanceBase
 {
 protected:
+
 	SpriteInfo Info;
-
 	Tween tween { this->Info };
-
 	Texture2D CurrentSprite;
-
 	AlphaMask Mask;
 
-	bool debug = false;
 	bool Hovered = false;
 
 	float highlightLapse = 0.f;
@@ -43,18 +42,18 @@ protected:
 	friend class FSM;
 	friend class Assets;
 
-	// Subclasses override this to handle optional return values
-	virtual void OnReturn() override;
+	virtual void Debug();
 
 public:
 
-	inline const std::string& GetID() { return Info.NameId; }
-	inline SpriteInfo& GetInfo() { return Info; }
-	inline Texture2D& GetSprite() { return CurrentSprite; }
-	inline Tween& GetTween() { return tween; }
+	inline const std::string& GetID()	{ return Info.NameId; }
+	inline SpriteInfo& GetInfo()		{ return Info; }
+	inline Texture2D& GetSprite()		{ return CurrentSprite; }
+	inline Tween& GetTween()			{ return tween; }
 
 	void SetSprite(const std::string& textureID);
 
+	virtual bool IsMouseOver();
 
 	GETTERSETTER(bool, IsVisible, Info.Visible)
 	GETTERSETTER(bool, IsActive, Info.Active)
@@ -65,18 +64,71 @@ public:
 	GETTERSETTER(float, Alpha, Info.Alpha)
  
  
-	Entity(const std::string& scriptPath) : LuaInterface(scriptPath) { Call("OnConstruct"); }
-
 	virtual void OnInit()	override;
 	virtual void OnDeinit()	override;
-
-	virtual void OnUpdate(float deltaTime)	override;
+	virtual void OnUpdate(float deltaTime) override;
 	virtual void OnRender()	override;
 
-	virtual void OnInteract();
-	virtual void OnLook();
-	virtual void OnCombine(const std::string& itemId);
+	virtual void OnScreenInput()						{ ; }
+	virtual void OnInteract()							{ ; }
+	virtual void OnLook()								{ ; }
+	virtual void OnCombine(const std::string& itemId)	{ ; }
+};
 
-	virtual bool IsMouseOver();
+
+class EntityLua : public Entity, public LuaInterface
+{
+protected:
+	virtual void OnReturn() override;
+
+public:
+	EntityLua(const std::string& scriptPath) : LuaInterface(scriptPath) { Call("OnConstruct"); }
+
+	EntityLua(int tableIndex) : LuaInterface(tableIndex) { Call("OnConstruct"); }
+
+	virtual void OnInit() override
+	{
+		Entity::OnInit();
+		Call("OnInit");
+		std::cout << "Created base Entity: " << Info.NameId << std::endl;
+	}
+
+	virtual void OnDeinit() override
+	{
+		Call("OnDeinit");
+		Entity::OnDeinit();
+	}
+
+	virtual void OnEnter() override								{ Call("OnEnter"); }
+	virtual void OnExit()	override							{ Call("OnExit"); }
+
+	virtual void OnScreenInput() override						{ Call("OnScreenInput"); }
+	virtual void OnInteract() override							{ Call("OnInteract"); }
+
+	virtual void OnLook() override								{ Call("OnLook"); }
+	virtual void OnCombine(const std::string& itemId) override	{ Call("OnCombine"); }
+};
+
+
+class Quad : public EntityLua // Gates are just like Doors but with a simplified collision box
+{
+	Rectangle HitBox;// = { 0, 0, 30, GetScreenHeight() };
+
+	virtual void OnReturn() override;
+
+public:
+	Quad(const std::string& scriptPath) :
+		EntityLua(scriptPath), 
+		HitBox(0, 0, (float)50, (float)GetScreenHeight())
+	{ Call("OnConstruct"); }
+
+	Quad(int tableIndex) :
+		EntityLua(tableIndex),
+		HitBox(0, 0, (float)50, (float)GetScreenHeight())
+	{ Call("OnConstruct"); }
+
+	virtual bool IsMouseOver() override;
+
+	virtual void Debug()	override;
 };
 

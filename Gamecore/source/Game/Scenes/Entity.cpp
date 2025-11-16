@@ -2,8 +2,9 @@
 #include "../Assets.h"
 #include "../Director.h"
 #include "../Game.h"
+#include <raylib-cpp.hpp>
 
-void Entity::OnReturn()
+void EntityLua::OnReturn()
 {
     // Subclasses override this to handle optional return values
     if (!lua_istable(LuaContext, -1))
@@ -15,10 +16,7 @@ void Entity::OnReturn()
     // --------- Optional fields ---------
     lua_getfield(LuaContext, -1, "NameId");
     if (lua_isstring(LuaContext, -1))
-    {
         Info.NameId = lua_tostring(LuaContext, -1);
-        Director::Get().RegisterEntity(this);
-    }
     lua_pop(LuaContext, 1);
 
     //lua_getfield(LuaContext, -1, "NextScene");
@@ -42,34 +40,53 @@ void Entity::OnReturn()
 
     // Get Textures table
     lua_getfield(LuaContext, -1, "Textures");
-    if (lua_istable(LuaContext, -1)) 
+    if (lua_istable(LuaContext, -1))
     {
-        for (lua_pushnil(LuaContext); lua_next(LuaContext, -2); lua_pop(LuaContext, 1))
+        // Lambda to load all string string pairs in the current table
+        auto loadFlatTable = [&](int tableIndex)
         {
-            if (!lua_istable(LuaContext, -1)) continue;
+            for (lua_pushnil(LuaContext); lua_next(LuaContext, tableIndex); lua_pop(LuaContext, 1))
+                if (lua_isstring(LuaContext, -2) && lua_isstring(LuaContext, -1))
+                {
+                    std::string name = lua_tostring(LuaContext, -2);
+                    std::string path = lua_tostring(LuaContext, -1);
+                    Assets::Get().LoadTextureID(name, path);
+                    Info.TexturesIDs.push_back(name);
+                }
+        };
+
+        // Peek to decide which format we're in
+        lua_pushnil(LuaContext);
+
+        // --- Single flat table ---
+        if (lua_next(LuaContext, -2) != 0 && lua_isstring(LuaContext, -2) && lua_isstring(LuaContext, -1))
+        {
+            lua_pop(LuaContext, 2); // pop key + value
+
+            loadFlatTable(lua_gettop(LuaContext)); // process directly
+        }
+        else // --- Multiple nested tables (default) ---
+        {
+            lua_pop(LuaContext, 2); // pop key + value
 
             for (lua_pushnil(LuaContext); lua_next(LuaContext, -2); lua_pop(LuaContext, 1))
-            {
-                if (lua_isstring(LuaContext, -2) && lua_isstring(LuaContext, -1)) {
-                    std::string nameID = lua_tostring(LuaContext, -2);
-                    std::string texturePath = lua_tostring(LuaContext, -1);
-                    Assets::Get().LoadTextureID(nameID, texturePath);
-                    Info.TexturesIDs.push_back(nameID); // optional list
-                }
-            }
+                if (lua_istable(LuaContext, -1))
+                    loadFlatTable(lua_gettop(LuaContext)); // process each inner table
         }
     }
-    lua_pop(LuaContext, 1);
+    lua_pop(LuaContext, 1); // pop Textures
 
-    // Get CurrentImage (by key reference)
+
+    // Get CurrentImage (by first key reference)
+    std::string CurrentID = !Info.TexturesIDs.empty() ? Info.TexturesIDs[0] : "";
+
     lua_getfield(LuaContext, -1, "CurrentImage");
     if (lua_isstring(LuaContext, -1))
-    {
-        const std::string textureID = lua_tostring(LuaContext, -1);
-        if (!textureID.empty())
-            SetSprite(textureID);
-    }
+        CurrentID = lua_tostring(LuaContext, -1);
     lua_pop(LuaContext, 1);
+
+    if (!CurrentID.empty())
+        SetSprite(CurrentID);
 
     lua_getfield(LuaContext, -1, "Position");
     if (lua_istable(LuaContext, -1)) {
@@ -91,6 +108,12 @@ void Entity::OnReturn()
     //lua_pop(LuaContext, 1);
 }
 
+void Entity::Debug()
+{
+    if (Game::Get().IsDebugMode())
+        DrawRectangleLines(Info.PositionX, Info.PositionY, CurrentSprite.width, CurrentSprite.height, RED);
+}
+
 void Entity::SetSprite(const std::string& textureID)
 {
     if (Assets::Get().HasTextureID(textureID))
@@ -104,18 +127,12 @@ void Entity::SetSprite(const std::string& textureID)
 
 void Entity::OnInit()
 {
-	Call("OnInit");
-    std::cout << "Created base Entity: " << Info.NameId << std::endl;
 }
 
 void Entity::OnDeinit()
 {
-	Call("OnDeinit");
-
     for (const std::string& textID : Info.TexturesIDs)
-    {
         Assets::Get().UnloadTextureID(textID);
-    }
 
     Info.TexturesIDs.clear();
 
@@ -126,37 +143,39 @@ void Entity::OnUpdate(float deltaTime)
 {
     tween.Update(deltaTime);
 
+    bool ButtonClick = IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
+
     //if (GetIsActive())
     //    Call("OnUpdate");
+
+    if (ButtonClick) // || GetKeyPressed() > 0)
+        OnScreenInput();
 
     if (!GetIsClickable())
         return;
 
     if (Hovered = IsMouseOver())
     {
-        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-        {
+        if (ButtonClick)
             OnInteract();
-        }
 
         if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON))
-        {
             OnLook();
-        }
     }
 }
 
 void Entity::OnRender()
 {
-    DrawTexture(CurrentSprite, Info.PositionX, Info.PositionY, ColorAlpha(WHITE, Info.Alpha)); //Fade(WHITE, Info.Alpha));
+    if (IsTextureValid(CurrentSprite))
+        DrawTexture(CurrentSprite, Info.PositionX, Info.PositionY, ColorAlpha(WHITE, Info.Alpha)); //Fade(WHITE, Info.Alpha));
 
     Vector2 MouseCursor = GetMousePosition();
 
     DrawTexture(GetTexture("MA"), (int)MouseCursor.x, (int)MouseCursor.y, WHITE);
 
-    if (debug)
-        //DrawRectangleLines(Info.PositionX, Info.PositionY, CurrentSprite.width, CurrentSprite.height, WHITE);
-        DrawRectangle(Info.PositionX, Info.PositionY, CurrentSprite.width, CurrentSprite.height, ColorAlpha(RED, 0.05f));
+    if (Game::Get().IsDebugMode())
+        Debug();
+        //DrawRectangle(Info.PositionX, Info.PositionY, CurrentSprite.width, CurrentSprite.height, ColorAlpha(RED, 0.1f));
 
     // --- Hover feedback ---
     if (!GetIsClickable() || !GetIsHovered()) 
@@ -175,34 +194,13 @@ void Entity::OnRender()
 
     DrawTexture( GetTexture("MB"), (int)MouseCursor.x, (int)MouseCursor.y, WHITE);
 
-    DrawText(Info.NameId.c_str(), (int)MouseCursor.x + 12, (int)MouseCursor.y + 24, 12, WHITE);
-}
+    //DrawText(Info.NameId.c_str(), (int)MouseCursor.x + 12, (int)MouseCursor.y + 24, 12, WHITE);
+    DrawTextEx(GetFont("Noto"), Info.NameId.c_str(), { MouseCursor.x + 12, MouseCursor.y + 24 }, 16, 1.0f, WHITE);
 
-void Entity::OnInteract()
-{
-	Call("OnInteract");
-}
-
-void Entity::OnLook()
-{
-	Call("OnLook");
-}
-
-void Entity::OnCombine(const std::string& itemId)
-{
-	Call("OnCombine");
 }
 
 bool Entity::IsMouseOver()
 {
-    //Vector2 mouse = GetMousePosition();
-    //Rectangle SpriteRect = {
-    //(float)Info.PositionX,
-    //(float)Info.PositionY,
-    //CurrentSprite.width,
-    //CurrentSprite.height };
-    //return CheckCollisionPointRec(mouse, SpriteRect);
-
     int localX = GetMouseX() - Info.PositionX;
     int localY = GetMouseY() - Info.PositionY;
 
@@ -213,4 +211,41 @@ bool Entity::IsMouseOver()
     //return Mask.IsOpaque(
     //    (int)MouseCursor.x - Info.PositionX,
     //    (int)MouseCursor.y - Info.PositionY);
+}
+
+void Quad::OnReturn()
+{
+    EntityLua::OnReturn();
+
+    lua_getfield(LuaContext, -1, "Size");
+    if (lua_istable(LuaContext, -1)) {
+        lua_getfield(LuaContext, -1, "Width");
+        if (lua_isnumber(LuaContext, -1)) HitBox.width = (float)lua_tonumber(LuaContext, -1);
+        lua_pop(LuaContext, 1);
+
+        lua_getfield(LuaContext, -1, "Height");
+        if (lua_isnumber(LuaContext, -1)) HitBox.height = (float)lua_tonumber(LuaContext, -1);
+        lua_pop(LuaContext, 1);
+    }
+    lua_pop(LuaContext, 1);
+}
+
+bool Quad::IsMouseOver()
+{
+    Vector2 mouse = GetMousePosition();
+
+
+    Rectangle HitRect = {
+    (float)Info.PositionX,
+    (float)Info.PositionY,
+    HitBox.width,
+    HitBox.height };
+
+    return CheckCollisionPointRec(mouse, HitRect);
+}
+
+void Quad::Debug()
+{
+    DrawRectangleLines(Info.PositionX, Info.PositionY, (int)HitBox.width, (int)HitBox.height, RED);
+        //DrawRectangle( (float)Info.PositionX, Info.PositionY, HitBox.width, HitBox.height, RED);
 }

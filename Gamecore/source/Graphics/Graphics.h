@@ -5,8 +5,13 @@
 
 #include <raylib-cpp.hpp>
 
-#include"FX/CurtainWipe.h"
-#include"FX/CurtainBlend.h"
+#include "FX/CurtainWipe.h"
+#include "FX/CurtainBlend.h"
+#include "FX/Toaster.h"
+#include "FX/SplashTitle.h"
+#include "FX/ThunderFlash.h"
+#include "FX/Noise.h"
+#include "FX/SoftPopup.h"
 
 
 struct ApplicationProperties;
@@ -23,7 +28,17 @@ class Graphics : public Singleton<Graphics>
 
 	CurtainWipe Wiper;
 
+	ThunderFlash Thunder;
+
 	CurtainBlend Blender;
+
+	Toaster Toasty;
+
+	SplashTitle Splash;
+
+	NoiseFX LeNoise;
+
+	SoftPopup Popup;
 
 	void SwitchFullScreen();
 
@@ -33,6 +48,20 @@ public:
 	CurtainWipe& GetWiper() { return Wiper; }
 
 	CurtainBlend& GetBlender() { return Blender; }
+
+	ThunderFlash& GetThunder() { return Thunder; }
+
+	NoiseFX& GetNoiser() { return LeNoise; }
+
+	Toaster& GetToaster() { return Toasty; }
+
+	void ToastMessage(const std::string& text, Vector2 pos, float duration = 3.0f, float size = 24.f, Color color = RAYWHITE)
+	{ Toasty.AddMessage(text, pos, duration, size, color); }
+
+	void SplashTitle(const std::string& text, float duration = 3.0f, float size = 24.f, Vector2 pos = { 0,0 }, Color color = RAYWHITE)
+	{ Splash.Start(text, duration, size, pos, color); }
+
+	void ShowPopup(const std::string& text, float duration = 3.0f) { Popup.ShowPopup(text, duration); }
 
 	bool Init(ApplicationProperties* appProperties);
 

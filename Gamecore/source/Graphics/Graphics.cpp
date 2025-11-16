@@ -23,9 +23,13 @@ bool Graphics::Init(ApplicationProperties* appProperties)
 					(float)appProperties->Width,
 					(float)appProperties->Height };
 
+	Thunder.Enable();
+
 	Wiper.Init(appProperties->Width, appProperties->Height);
 
 	Blender.Init(appProperties->Width, appProperties->Height);
+
+	LeNoise.Init(appProperties->Width, appProperties->Height);
 
 	return Result;
 }
@@ -55,9 +59,16 @@ void Graphics::Update(float deltaTime)
 	//if (IsKeyPressed(KEY_THREE)) Wiper.Start(WIPE_UP);
 	//if (IsKeyPressed(KEY_FOUR)) Wiper.Start(WIPE_DOWN);
 
+	LeNoise.Update();
+	Thunder.Update(deltaTime);
 	Wiper.Update(deltaTime);
 	Blender.Update(deltaTime);
+	Toasty.Update(deltaTime);
+	Splash.Update(deltaTime);
 
+#ifdef _DEBUG
+	Popup.Update(deltaTime);
+#endif // DEBUG
 }
 
 void Graphics::SwitchFullScreen()
@@ -83,13 +94,15 @@ void Graphics::SwitchFullScreen()
 
 void Graphics::Render()
 {
-
 	// --- Draw ---
 	//ClearBackground(BLACK);
 
 	Wiper.Render();
-
 	Blender.Render();
+	Thunder.Render();
+	Toasty.Render();
+	Splash.Render();
+	LeNoise.Render();
 
 	/// Draw the pixel buffer scaled to window size
 	//DrawTexturePro(

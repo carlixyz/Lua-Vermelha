@@ -36,7 +36,7 @@ struct AlphaMask
 		Color* pixels = LoadImageColors(img);
 
 		for (int i = 0; i < img.width* img.height; ++i)
-			Opaque[i] = (pixels[i].a > 128 ? 1 : 0);
+			Opaque[i] = (pixels[i].a > 0 ? 1 : 0);
 
 		UnloadImageColors(pixels);
 		UnloadImage(img); // clean CPU copy
@@ -46,7 +46,7 @@ struct AlphaMask
 struct SpriteInfo
 {
 	std::string	NameId;
-	bool Visible = false;
+	bool Visible = true;
 	bool Active = true;
 	bool Clickable = true;
 
