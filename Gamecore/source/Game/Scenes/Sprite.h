@@ -95,6 +95,45 @@ public:
 		return *this;
 	}
 
+	inline Tween& ActionShake(float amount, float totalTime)
+	{
+		Tweens.emplace_back(Action{
+			[this, amount, totalTime,
+			 currentTime = 0.0f,
+			 startX = Sprite.PositionX,
+			 startY = Sprite.PositionY](float dt) mutable
+			{
+				currentTime += dt;
+
+				// normalized time (0..1)
+				float t = currentTime / totalTime;
+				if (t > 1.0f) t = 1.0f;
+
+				// fade intensity using cubic ease-out (so shake calms down)
+				float intensity = EaseCubicOut(currentTime, 1.0f, -1.0f, totalTime);
+				float range = amount * intensity;
+
+				// random offset each frame
+				float offsetX = ((float)GetRandomValue(-1000, 1000) / 1000.0f) * range;
+				float offsetY = ((float)GetRandomValue(-1000, 1000) / 1000.0f) * range;
+
+				Sprite.PositionX = (int)(startX + offsetX);
+				Sprite.PositionY = (int)(startY + offsetY);
+
+				// finished?
+				if (currentTime >= totalTime)
+				{
+					Sprite.PositionX = (int)startX;
+					Sprite.PositionY = (int)startY;
+					return false;
+				}
+				return true;
+			}
+			});
+
+		return *this;
+	}
+
 	inline void Update(float dt)
 	{
 		// update tweens (auto-destroy when finished)

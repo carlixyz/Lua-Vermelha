@@ -263,6 +263,11 @@ Entity* Director::CreateEntityInline(const std::string& type, int tableIndex)
     return entity;
 }
 
+void Director::StartSequence(const std::string& sequenceID)
+{
+    LuaManager::Get().StartSequence(sequenceID);
+}
+
 void Director::RegisterEntity(Entity* entity)
 {
     if (!entity)
@@ -390,12 +395,6 @@ void Director::MoveEntity(const std::string& nameID, float x, float y, float lap
     }
 }
 
-void Director::StartSequence(const std::string& sequenceID)
-{
-    LuaManager::Get().StartSequence(sequenceID);
-}
-
-
 void Director::FadeEntity(const std::string& nameID, float startValue, float endValue, float totalTime)
 {
     if (Entity* entity = Director::Get().GetEntity(nameID))
@@ -403,6 +402,15 @@ void Director::FadeEntity(const std::string& nameID, float startValue, float end
         entity->GetTween().ActionFade(startValue, endValue, totalTime);;
     }
 }
+
+void Director::ShakeEntity(const std::string& nameID, float amount, float totalTime)
+{
+    if (Entity* entity = Director::Get().GetEntity(nameID))
+    {
+        entity->GetTween().ActionShake(amount, totalTime);
+    }
+}
+
 
 
 //void Director::SetEntityScene(const std::string& entityID, const std::string& targetSceneID)

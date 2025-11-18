@@ -94,8 +94,8 @@ void LuaManager::Update(float deltaTime)
     if (sequence->Duration > 0.0f)
         sequence->Duration = Clamp(sequence->Duration - deltaTime, 0.0f, 100.f);
 
-    if ((sequence->Duration == 0.0f && messageComplete) || 
-        IsMouseButtonPressed(MOUSE_LEFT_BUTTON) || IsKeyPressed(KEY_SPACE))
+    if ((sequence->Duration == 0.0f && messageComplete) || IsKeyPressed(KEY_SPACE) ||
+        IsMouseButtonPressed(MOUSE_LEFT_BUTTON) || IsMouseButtonPressed(MOUSE_RIGHT_BUTTON) )
     {
         if (!messageComplete)
         {

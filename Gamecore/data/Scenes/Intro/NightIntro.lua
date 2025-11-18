@@ -51,7 +51,7 @@ function OnIntroInteraction()
     SetAlpha("Panel", 0.0)
     SetVisible("Panel")
 
-    Say("Whoa, what was that? I think I'm seeing things...", 4.0)
+    Say("Whoa, I'm very tired, I'm starting to see things...", 4.0)
     Fade("Panel", 0.6, 5)
     Say("those thunderbolts are freaking scary!")
     TriggerThunder( 2)
@@ -62,9 +62,9 @@ function OnIntroInteraction()
 
     Say("What should I do?")
 
-    SetActive("Rear mirror")
-    SetActive("Door entry")
-    SetActive("Fachade")
+    Schedule( 1.0, "SetActive", "Rear mirror")
+    Schedule( 1.0, "SetActive", "Door entry")
+    Schedule( 1.0, "SetActive", "Fachade")
 
 end
 

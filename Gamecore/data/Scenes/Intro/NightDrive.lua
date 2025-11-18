@@ -20,7 +20,7 @@ local function OnEnter()
     Schedule( 2, "Title", "Charlie Lopez presents", 4.0, 48.0)    
     
     --Title("LUA VERMELHA", 5, 72.0, 0, 0, 255, 255, 255, 64)
-    Schedule( 7, "Title", "LUA VERMELHA", 8, 72.0, 0, 0, 255, 255, 255, 64)      
+    Schedule( 7, "Title", "SEVENTH FRACTAL", 8, 72.0, 0, 0, 255, 255, 255, 64)      
 
     Schedule( 9, "Fade", "Dark", 0.0, 5)       --ScheduleDirector(5.0, "FadeEntity", "Dark", "0.0", "5.0")
     Schedule( 11, "OnNightDriveReady")
@@ -98,16 +98,16 @@ function OnNightDriveTalk()
     SetState("RearMirror", "M2")
 
     Say("Now what... a wheel is failing!", 3.0)
-    Say("Bingo, everything that can go wrong... is screwing me over.", 5.0)
+    Say("Come on, everything that can go wrong... got screwed at the same time", 5.0)
     Say(" ", 5.0)
 
     Fade("Sign", 1.0, 8) Move("Sign", 1200, 80, 60)
     TriggerThunder( 3, 120, 200)
     Say("'Fazenda Schwarz'... what's that supposed to be?", 3.0)
-    Say("Maybe it's a Ranch, maybe a Manor, maybe my next shelter", 4.0)
+    Say("Maybe it's a Ranch, maybe a Manor, maybe there's a shelter", 4.0)
 
     SetState("RearMirror", "M3")
-    Say("So, there's nothing to lose by knocking there...", 3.0)
+    Say("So, I've nothing to lose by knocking up there...", 3.0)
     Say("Yeah, Let's check it, I'm done for tonight...", 3.0)
     TriggerThunder( 1)
 

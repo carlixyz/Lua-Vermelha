@@ -143,25 +143,27 @@ void Entity::OnUpdate(float deltaTime)
 {
     tween.Update(deltaTime);
 
-    bool ButtonClick = IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
+    bool LeftButtonClick = IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
+    bool RightButtonClick = IsMouseButtonPressed(MOUSE_RIGHT_BUTTON);
 
     //if (GetIsActive())
     //    Call("OnUpdate");
 
-    if (ButtonClick) // || GetKeyPressed() > 0)
+    if (LeftButtonClick || RightButtonClick) // || GetKeyPressed() > 0)
         OnScreenInput();
 
     if (!GetIsClickable())
         return;
 
     if (Hovered = IsMouseOver())
-    {
-        if (ButtonClick)
-            OnInteract();
+        if (!LuaManager::Get().IsSequenceRunning())
+        {
+            if (LeftButtonClick)
+                OnInteract();
 
-        if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON))
-            OnLook();
-    }
+            if (RightButtonClick)
+                OnLook();
+        }
 }
 
 void Entity::OnRender()

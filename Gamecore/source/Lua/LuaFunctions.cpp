@@ -545,6 +545,18 @@ int Lua_FadeEntity(lua_State* L)
     return 0; // No return values
 }
 
+int Lua_ShakeEntity(lua_State* L)
+{
+    // Expecting 2~3 arguments: (entityName, targetValue, timeLapse)
+    const std::string& nameID = luaL_checkstring(L, 1);
+    float amount = (float)luaL_checknumber(L, 2);
+    float totalTime = (float)luaL_optnumber(L, 3, 3.0f);
+
+    Director::Get().ShakeEntity(nameID, amount, totalTime);
+
+    return 0; // No return values
+}
+
 // Lua: Schedule(delay, luaFuncName, [repeatFlag], [id])
 // Schedule(5, "Fade", "Dark", 0.0, 5.0)
 int Lua_Schedule(lua_State* L)
@@ -813,6 +825,8 @@ void RegisterLuaFunctions() // C++ Foo Register in Lua
     LuaManager::Get().RegisterFunction("Fade", Lua_FadeEntity);
 
     LuaManager::Get().RegisterFunction("Move", Lua_MoveEntity);
+
+    LuaManager::Get().RegisterFunction("Shake", Lua_ShakeEntity);
 
     LuaManager::Get().RegisterFunction("SetEntityScene", Lua_SetEntityScene);
 

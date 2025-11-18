@@ -62,6 +62,8 @@ public:
     Entity* GetEntity(const std::string& id);
 
 
+    void StartSequence(const std::string& sequenceID);
+
     void RegisterEntity(Entity* entity);
 
     void RequestAction(const std::string& id, const std::function<void(Entity*)>& action);
@@ -84,7 +86,8 @@ public:
 
     void FadeEntity(const std::string& nameID, float startValue, float endValue, float totalTime = 3.0f);
 
-    void StartSequence(const std::string& sequenceID );
+    void ShakeEntity(const std::string& nameID, float amount, float totalTime);
+
 
 
 
