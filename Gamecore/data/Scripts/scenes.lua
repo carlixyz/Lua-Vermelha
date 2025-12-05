@@ -39,9 +39,9 @@ Scenes = {
                 function self.OnCommentEnter() Say("rain just stopped, I guess now is the right time\n to leave the car and walk there", 5.0) Say() end
                 function self.OnInteract()
                     if self.ClickedOnce then 
-                        SetVisible("IntroWolf") Shake("IntroWolf", 64.0, 2.0); Schedule(1.0, "Fade", "Black", 1.0, 1.0) SetVisible("Seventh")
-                        SetActive("Rear mirror", false) SetActive("Fachade", false) SetActive("Door entry", false) Schedule(1.0, "Fade", "Panel", 0.0, 100.0)
-                        Schedule(3.0, "Fade", "Seventh", 1.0, 60.0) Schedule(2.5, "Move", "Seventh", 0, -220, 220.0) 
+                        SetVisible("IntroWolf") Shake("IntroWolf", 64.0, 2.0); Schedule(1.0, "Fade", "Black", 1.0, 1.0) SetActive("Door entry", false)
+                        SetActive("Rear mirror", false) SetActive("Fachade", false)  Schedule(1.0, "Fade", "Panel", 0.0, 80.0)
+                        SetVisible("Seventh") Schedule(3.0, "Fade", "Seventh", 1.0, 60.0) Schedule(2.5, "Move", "Seventh", 0, -220, 220.0) 
                     else
                         self.ClickedOnce = true
                         StartSequence(self.OnCommentEnter) 
@@ -55,7 +55,7 @@ Scenes = {
             Quad = (function() 
                 local self = {}
                 function self.OnConstruct() 
-                    return { NameId = "Fachade", Position = { x = 300, y = 100 }, Size = { Width = 300, Height = 280 }, Active = false }
+                    return { NameId = "Fachade", Position = { x = 300, y = 100 }, Size = { Width = 250, Height = 280 }, Active = false }
                 end
                 function self.OnCommentEntry() Say("That door looks to be closed \n I should go to the open one instead", 5.0) Say() end
                 function self.OnCommentLook() Say("Wow, This people seems to have money, \n maybe there's someone inside", 5.0) Say() end
@@ -68,6 +68,12 @@ Scenes = {
         { Entity = "Black", Textures = { Black = "data/Images/Dark.png"} },
         { Entity = "JumpScare", Textures = "data/Scenes/Intro/JumpScare.jpg", Visible = false  },
         { Entity = "Seventh", Position = { x = -100, y = -220 }, Textures = "data/Scenes/Intro/SeventhFractal.png", Visible = false, Alpha = 0.0  },
+    },
+
+    Inventory = {
+        { Entity = "Med", Position = { x = 32, y = 32 }, Textures = "data/Scenes/Inventory/Lupus.png", Clickable = true},
+        { Entity = "Key", Position = { x = 128, y = 32 }, Textures = "data/Scenes/Inventory/Key.png", Clickable = true},
+        { Entity = "Knife", Position = { x = 256, y = 32 }, Textures = "data/Scenes/Inventory/Knife.png", Clickable = true},
     },
 
     Global = {
@@ -136,8 +142,8 @@ Scenes = {
 
 
 -- Set here the first scene to Initialize
-Scenes.StartScene = "Boot"
---Scenes.StartScene = "Road"
+--Scenes.StartScene = "Boot"
+Scenes.StartScene = "Test"
 
 -- Set here a top access scene to have shared access
 Scenes.SharedScene = "Global"

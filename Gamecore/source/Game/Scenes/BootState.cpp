@@ -11,6 +11,7 @@ void BootState::OnInit()
 	Logos.push_back(new raylib::TextureUnmanaged("data/raylib_logo.png"));
 	Logos.push_back(new raylib::TextureUnmanaged("data/InderFort.png"));
 	Logos.push_back(new raylib::TextureUnmanaged("data/Sun.png"));
+	Logos.push_back(new raylib::TextureUnmanaged("data/Rating.jpg"));
 }
 
 void BootState::OnDeinit()

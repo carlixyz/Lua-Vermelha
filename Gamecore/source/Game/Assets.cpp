@@ -8,9 +8,9 @@
 bool Assets::Init()
 {
 	PreloadTextures();
-//#ifdef EMSCRIPTEN
+#ifdef EMSCRIPTEN
 	PreloadAnimations();
-//#endif
+#endif
 	PreloadImages();
 	PreloadFonts();
 	PreloadSounds();
@@ -169,8 +169,8 @@ void Assets::PreloadFonts()
 			SetTextureFilter(Font.texture, TEXTURE_FILTER_BILINEAR);
 		};
 
-	Load("Gothic", "Data/Franklin Gothic Heavy Italic.ttf");
-	Load("Noto", "Data/NotoSansUI-Regular.ttf");
+	Load("Gothic", "data/Franklin-Gothic-Heavy-Italic.ttf");
+	Load("Noto", "data/NotoSansUI-Regular.ttf");
 	//Load("NotoBold", "Data/NotoSans-Bold.ttf");
 	//Load("NotoBoldItalic", "Data/NotoSans-BoldItalic.ttf");
 	//Load("NotoItalic", "Data/NotoSans-Italic.ttf");

@@ -19,6 +19,7 @@ struct SceneID
 	SCENE_ID(Global)
 	SCENE_ID(Road)
 	SCENE_ID(Intro)
+	SCENE_ID(Inventory)
 	SCENE_ID(Title)
 	SCENE_ID(Test)
 	SCENE_ID(Mansion)
@@ -33,6 +34,7 @@ class FSM	/// Finite Scene Manager ftw!
 	std::map<std::string, GameScene*> ScenesMap;
 	GameScene* CurrentScene = nullptr;							// &bootState;
 	GameScene* SharedScene = nullptr;
+	GameScene* Inventory = nullptr;
 
 	bool DebugScenes = false;
 	int SceneIndex = 0;

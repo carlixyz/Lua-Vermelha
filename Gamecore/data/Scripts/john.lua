@@ -57,10 +57,20 @@ local function OnLook()
     --SetClickable("John", true)
 end
 
+local function OnCombine(itemId)
+    print("called John.OnCombine")
+    
+    if (itemId == "mail") then
+        print("Right Object detect!")
+        Say("This is a message for me? thank you!")
+    end
+end
+
 
 return {
     OnConstruct = OnConstruct,
     OnDeinit = OnDeinit,
     OnLook = OnLook,
+    OnCombine = OnCombine,
     OnInteract = OnInteract
 }

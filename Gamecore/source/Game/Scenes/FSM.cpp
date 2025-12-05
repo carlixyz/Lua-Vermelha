@@ -34,6 +34,14 @@ bool FSM::Init()
 	}
 	else std::cout << "[FSM] SharedScene '" << factory.GetSharedSceneID() << "' not found!\n";
 
+	if (ScenesMap.contains(SceneID::Inventory))
+	{
+		Inventory = ScenesMap[SceneID::Inventory];
+		if (Inventory) 
+			Inventory->Initialize();
+	}
+	else std::cout << "[FSM] Inventory '" << Inventory << "' not found!\n";
+
 	for (auto& sceneIt : ScenesMap)
 	{
 		if (CurrentScene && sceneIt.second == CurrentScene)
@@ -78,6 +86,9 @@ void FSM::Update(float deltaTime)
 
 	if (SharedScene)
 		SharedScene->OnUpdate(deltaTime);
+
+	if (Inventory)
+		Inventory->OnUpdate(deltaTime);
 }
 
 void FSM::SwapDebugScenes()
@@ -123,6 +134,9 @@ void FSM::Render()
 
 	if (SharedScene)
 		SharedScene->OnRender();
+
+	if (Inventory)
+		Inventory->OnRender();
 
 	if (IsKeyPressed(KEY_KP_MULTIPLY))
 		DebugScenes = !DebugScenes;

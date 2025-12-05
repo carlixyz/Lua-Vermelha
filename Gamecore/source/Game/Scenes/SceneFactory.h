@@ -9,6 +9,7 @@
 #include "BootState.h"
 #include "TestScene.h"
 #include "AnimeScene.h"
+#include "Inventory.h"
 
 #include <map>
 #include <string>
@@ -143,6 +144,8 @@ private:
             scene = new AnimeScene(&Assets::Get().NightDriveIntro(), []() { Assets::Get().PreloadRoadIntroAnimation(); });
         else if (name == "Intro")
             scene = new AnimeScene(&Assets::Get().MansionIntro(), []() { Assets::Get().PreloadMansionIntroAnimation(); });
+        else if (name == "Inventory")
+            scene = new Inventory();
 
         /// --- Otherwise fallback ---
         if (!scene)
