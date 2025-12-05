@@ -9,36 +9,23 @@
 
 class Inventory : public GameScene
 {
-    bool Enabled = true;
-
 public:
-    GETTERSETTER(bool, Enabled, Enabled);
-
-    void OnInit()    override;
-    void OnDeinit()  override;
+    void OnInit()           override;
+    void OnDeinit()         override;
     void OnUpdate(float dt) override;
-    void OnRender()  override;
+    void OnRender()         override;
 
-    void OnExit() override {}
-    void OnEnter() override {}
+    void OnExit()           override {}
+    void OnEnter()          override {}
 
-    // Later we can inject a callback to find world entity under mouse to call OnCombine(itemId) on it.
+    // World hit-test callback: should return topmost world Entity under mouse,
+    // or nullptr if none. Inventory will call OnCombine(itemId) on it.
     using WorldHitTestFn = std::function<Entity* ()>;
     void SetWorldHitTest(WorldHitTestFn fn) { WorldHitTest = std::move(fn); }
 
-private:
-    struct SlotInfo
-    {
-        Rectangle Area          = { 0,0,0,0 };  // where the icon is drawn in the bar
-        bool     Dragging       = false;
-        Vector2  DragPos        { 0,0 };        // center while dragging
-        Vector2  DragOffset     { 0,0 };        // mouse - icon center at drag start
-
-        bool     Returning      = false;        // simple tween back to slot
-        float    ReturnTime     = 0.20f;
-        float    ReturnElapsed  = 0.0f;
-        Vector2  ReturnStart    { 0,0 };
-    };
+    // External enable/disable (for cinematics, etc.)
+    void SetEnabled(bool enabled)   { Enabled = enabled; }
+    bool IsEnabled() const          { return Enabled; }
 
     void SyncSlotsWithEntities();
     void LayoutSlots();
@@ -47,23 +34,39 @@ private:
     void StartReturn(int index);
 
 private:
+    struct SlotInfo
+    {
+        Rectangle Area              { 0,0,0,0 };
+        bool      Dragging          = false;
+        Vector2   DragPos           { 0,0 };
+        Vector2   DragOffset        { 0,0 };
+
+        bool      Returning         = false;
+        float     ReturnTime        = 0.18f;
+        float     ReturnElapsed     = 0.0f;
+        Vector2   ReturnStart       { 0,0 };
+    };
+
+    int   PanelHeight               = 112;
+    int   ItemSize                  = 64;
+    int   ItemGap                   = 4;
+    int   PaddingX                  = 12;
+    int   HoverThreshold            = 80;   // was 32 – now "taller" and more sensible
 
 
-    // visual config
-    int   BarHeight             = 64;
-    int   ItemSize              = 64;
-    int   ItemGap               = 4;
-    int   PaddingX              = 12;
-    int   HoverThreshold        = 32;
+    // Alpha-based visibility instead of sliding
+    float PanelAlpha                = 0.0f;  // background gradient alpha
+    float ItemsAlpha                = 0.0f;  // icons alpha
+    float PanelFadeIn               = 10.0f; // panel fades faster
+    float PanelFadeOut              = 8.0f;
+    float ItemsFadeIn               = 6.0f;
+    float ItemsFadeOut              = 5.0f;
 
-    float SlideY                = -64.0f;
-    float TargetY               = -64.0f;
-    float SlideLerp             = 10.0f;
-
-    // UI state
     std::vector<SlotInfo> Slots;
-    int   HoverIndex            = -1;
-    int   DragIndex             = -1;
+    int   HoverIndex                = -1;
+    int   DragIndex                 = -1;
 
-    WorldHitTestFn WorldHitTest;  // provided by FSM/Game later
+    bool  Enabled                   = true;
+
+    WorldHitTestFn WorldHitTest;
 };

@@ -7,19 +7,19 @@
 void Inventory::OnInit()
 {
     GameScene::OnInit();
-    SlideY = -(float)BarHeight;
-    TargetY = SlideY;
+    PanelAlpha = 0.0f;
+    ItemsAlpha = 0.0f;
+    HoverIndex = -1;
+    DragIndex = -1;
 }
 
 //--------------------------------
 void Inventory::OnDeinit()
 {
-    // Entities are owned by GameScene; FSM will handle deleting scenes
     GameScene::OnDeinit();
 }
 
 //--------------------------------
-// Make sure Slots array matches Entities size
 void Inventory::SyncSlotsWithEntities()
 {
     if (Slots.size() != Entities.size())
@@ -32,22 +32,32 @@ void Inventory::LayoutSlots()
     SyncSlotsWithEntities();
 
     int x = PaddingX;
-    int y = (int)SlideY + (BarHeight - ItemSize) / 2;
+    int y = 8;  // <-- icons start 8px from the very top of the screen
 
-    for (size_t i = 0; i < Entities.size(); ++i)
+    const size_t count = Entities.size();
+    for (size_t i = 0; i < count; ++i)
     {
-        Slots[i].Area = Rectangle{ (float)x, (float)y, (float)ItemSize, (float)ItemSize };
+        SlotInfo& slot = Slots[i];
 
-        // If not dragging and not returning, keep drag position at center of slot
-        if (!Slots[i].Dragging && !Slots[i].Returning) {
-            float cx = Slots[i].Area.x + Slots[i].Area.width * 0.5f;
-            float cy = Slots[i].Area.y + Slots[i].Area.height * 0.5f;
-            Slots[i].DragPos = { cx, cy };
+        // This rectangle is the clickable area AND the visual “slot” area
+        slot.Area = Rectangle{
+            (float)x,
+            (float)y,
+            (float)ItemSize,   // e.g. 64
+            (float)ItemSize
+        };
+
+        // If not dragging or returning, keep DragPos at the center of Area
+        if (!slot.Dragging && !slot.Returning)
+        {
+            slot.DragPos.x = slot.Area.x + slot.Area.width * 0.5f;
+            slot.DragPos.y = slot.Area.y + slot.Area.height * 0.5f;
         }
 
         x += ItemSize + ItemGap;
     }
 }
+
 
 //--------------------------------
 void Inventory::BeginDrag(int index)
@@ -58,8 +68,11 @@ void Inventory::BeginDrag(int index)
     slot.Returning = false;
     slot.ReturnElapsed = 0.0f;
 
-    Vector2 mouse = GetMousePosition();
-    slot.DragOffset = { mouse.x - slot.DragPos.x, mouse.y - slot.DragPos.y };
+    const Vector2 mouse = GetMousePosition();
+    slot.DragOffset = {
+        mouse.x - slot.DragPos.x,
+        mouse.y - slot.DragPos.y
+    };
 }
 
 //--------------------------------
@@ -69,7 +82,7 @@ void Inventory::StartReturn(int index)
     slot.Dragging = false;
     slot.Returning = true;
     slot.ReturnElapsed = 0.0f;
-    slot.ReturnStart = slot.DragPos; // start from current dragged pos
+    slot.ReturnStart = slot.DragPos;
 }
 
 //--------------------------------
@@ -82,15 +95,11 @@ void Inventory::EndDrag(int index)
 
     if (worldTarget && Entities[index])
     {
-        // Use the Entity NameId as logical item id
         const std::string& itemId = Entities[index]->GetInfo().NameId;
         worldTarget->OnCombine(itemId);
 
-        // For now, still keep item in inventory and snap it back
+        // For now, keep item and snap it back visibly
         StartReturn(index);
-
-        // OPTIONAL: if the item should be consumed, you might do:
-        // FSM::Get().ChangeEntityScene(itemId, /*some scene or remove logic*/);
     }
     else
     {
@@ -104,27 +113,34 @@ void Inventory::EndDrag(int index)
 //--------------------------------
 void Inventory::OnUpdate(float dt)
 {
-    if (!GetEnabled())
+    // If disabled (e.g. cinematic), fade everything out and ignore input
+    if (!Enabled)
+    {
+        PanelAlpha = 0.0f;
+        ItemsAlpha = 0.0f;
+        HoverIndex = -1;
+        DragIndex = -1;
         return;
+    }
 
-    // Cache mouse once
     const Vector2 mouse = GetMousePosition();
+    const float   mouseY = mouse.y;
 
-    // Slide open/close by mouse at top
-    const bool hoverTop = (mouse.y < (float)HoverThreshold);
-    TargetY = hoverTop ? 0.0f : -(float)BarHeight;
-    SlideY = Lerp(SlideY, TargetY, dt * SlideLerp);
+    const bool hoverTop = (mouseY < (float)HoverThreshold);
 
-    // Layout item slots according to current slide
+    const float panelDelta = (hoverTop ? PanelFadeIn : -PanelFadeOut) * dt;
+    const float itemsDelta = (hoverTop ? ItemsFadeIn : -ItemsFadeOut) * dt;
+
+    PanelAlpha = Clamp(PanelAlpha + panelDelta, 0.0f, 1.0f);
+    ItemsAlpha = Clamp(ItemsAlpha + itemsDelta, 0.0f, 1.0f);
+
     LayoutSlots();
 
-    // Hover detection (if visible enough)
     HoverIndex = -1;
     const int entityCount = (int)Entities.size();
 
-    if (SlideY > -BarHeight * 0.6f)
+    if (ItemsAlpha > 0.05f)
     {
-        // from topmost to bottom (reverse order, same as before)
         for (int i = entityCount - 1; i >= 0; --i)
         {
             if (CheckCollisionPointRec(mouse, Slots[i].Area))
@@ -135,65 +151,55 @@ void Inventory::OnUpdate(float dt)
         }
     }
 
-    // Drag begin
-    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) &&
+    if (ItemsAlpha > 0.1f &&
+        IsMouseButtonPressed(MOUSE_LEFT_BUTTON) &&
         HoverIndex != -1 &&
         DragIndex == -1)
     {
         BeginDrag(HoverIndex);
     }
 
-    // Drag update
     if (DragIndex != -1)
     {
         SlotInfo& slot = Slots[DragIndex];
         if (slot.Dragging)
         {
-            // reuse cached mouse
-            slot.DragPos = {
-                mouse.x - slot.DragOffset.x,
-                mouse.y - slot.DragOffset.y
-            };
+            slot.DragPos.x = mouse.x - slot.DragOffset.x;
+            slot.DragPos.y = mouse.y - slot.DragOffset.y;
 
             if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON))
                 EndDrag(DragIndex);
         }
     }
 
-    // Return tween
     const size_t slotCount = Slots.size();
     for (size_t i = 0; i < slotCount; ++i)
     {
         SlotInfo& slot = Slots[i];
-        if (slot.Returning)
+        if (!slot.Returning) continue;
+
+        slot.ReturnElapsed += dt;
+        float t = slot.ReturnElapsed / slot.ReturnTime;
+
+        const float cx = slot.Area.x + slot.Area.width * 0.5f;
+        const float cy = slot.Area.y + slot.Area.height * 0.5f;
+
+        if (t >= 1.0f)
         {
-            slot.ReturnElapsed += dt;
-            float t = slot.ReturnElapsed / slot.ReturnTime;
+            slot.DragPos.x = cx;
+            slot.DragPos.y = cy;
+            slot.Returning = false;
+        }
+        else
+        {
+            const float oneMinusT = 1.0f - t;
+            const float u = 1.0f - oneMinusT * oneMinusT * oneMinusT;
 
-            if (t >= 1.0f)
-            {
-                // snap to slot center
-                const float cx = slot.Area.x + slot.Area.width * 0.5f;
-                const float cy = slot.Area.y + slot.Area.height * 0.5f;
-                slot.DragPos = { cx, cy };
-                slot.Returning = false;
-            }
-            else
-            {
-                // simple cubic ease-out
-                const float oneMinusT = 1.0f - t;
-                const float u = 1.0f - oneMinusT * oneMinusT * oneMinusT;
-
-                const float cx = slot.Area.x + slot.Area.width * 0.5f;
-                const float cy = slot.Area.y + slot.Area.height * 0.5f;
-
-                slot.DragPos.x = slot.ReturnStart.x + (cx - slot.ReturnStart.x) * u;
-                slot.DragPos.y = slot.ReturnStart.y + (cy - slot.ReturnStart.y) * u;
-            }
+            slot.DragPos.x = slot.ReturnStart.x + (cx - slot.ReturnStart.x) * u;
+            slot.DragPos.y = slot.ReturnStart.y + (cy - slot.ReturnStart.y) * u;
         }
     }
 
-    // Let GameScene tick entities (tweens, alpha, etc.)
     GameScene::OnUpdate(dt);
 }
 
@@ -201,21 +207,39 @@ void Inventory::OnUpdate(float dt)
 //--------------------------------
 void Inventory::OnRender()
 {
-    if (!GetEnabled())
+    if (!Enabled)
         return;
 
-    // Cache common values once
-    const Vector2 mouse  = GetMousePosition();
+    const Vector2 mouse = GetMousePosition();
+    const float   mouseY = mouse.y;
     const int     screenW = GetScreenWidth();
     const int     entityCount = (int)Entities.size();
 
-    // Background bar
-    DrawRectangle(0, (int)SlideY, screenW, BarHeight, ColorAlpha(BLACK, 0.75f));
-    DrawLine(0, (int)(SlideY + BarHeight - 1),
-             screenW, (int)(SlideY + BarHeight - 1),
-             Fade(RAYWHITE, 0.25f));
+    // If nothing is visible AND nothing is being dragged/returned, skip
+    bool anyReturning = false;
+    for (const SlotInfo& s : Slots)
+        if (s.Returning) { anyReturning = true; break; }
 
-    // Draw each entity as a 64x64 icon in its slot
+    const bool panelVisible = (PanelAlpha > 0.01f);
+    const bool itemsVisible = (ItemsAlpha > 0.01f);
+
+    if (!panelVisible && !itemsVisible && DragIndex == -1 && !anyReturning)
+        return;
+
+    // -------------------------------
+    // Background gradient: top->bottom
+    // -------------------------------
+    Color topColor = ColorAlpha(BLACK, PanelAlpha);
+    Color bottomColor = ColorAlpha(BLACK, 0.0f);
+
+    DrawRectangleGradientV(
+        0, 0, screenW, PanelHeight,
+        topColor, bottomColor
+    );
+
+    // -------------------------------
+    // Icons
+    // -------------------------------
     for (int i = 0; i < entityCount; ++i)
     {
         Entity* e = Entities[i];
@@ -225,16 +249,10 @@ void Inventory::OnRender()
         Texture2D& tex = e->GetSprite();
         if (!IsTextureValid(tex)) continue;
 
-        // slot frame
-        const Color frame =
-            (HoverIndex == i) ? Fade(YELLOW, 0.9f) : Fade(RAYWHITE, 0.25f);
-        DrawRectangleLinesEx(slot.Area, 1.0f, frame);
-
-        // choose center (DragPos handles normal + returning + dragging)
         const Vector2 center = slot.DragPos;
 
         Rectangle dst = {
-            center.x - slot.Area.width  * 0.5f,
+            center.x - slot.Area.width * 0.5f,
             center.y - slot.Area.height * 0.5f,
             slot.Area.width,
             slot.Area.height
@@ -246,44 +264,53 @@ void Inventory::OnRender()
             (float)tex.height
         };
 
-        DrawTexturePro(tex, src, dst, {0,0}, 0.0f,
-                       ColorAlpha(WHITE, e->GetInfo().Alpha));
+        // Dragged or returning icons ignore ItemsAlpha and stay fully visible.
+        float iconAlphaFactor = 1.0f;
+        if (i != DragIndex && !slot.Returning)
+        {
+            iconAlphaFactor = ItemsAlpha;
+        }
+
+        if (iconAlphaFactor <= 0.01f)
+            continue; // completely invisible, skip
+
+        DrawTexturePro(
+            tex, src, dst, { 0,0 }, 0.0f,
+            ColorAlpha(WHITE, e->GetInfo().Alpha * iconAlphaFactor)
+        );
     }
 
-    // ---------------------------------------------
-    //  Cursor & label rendering for inventory area
-    // ---------------------------------------------
-    const float barTop    = SlideY;
-    const float barBottom = SlideY + BarHeight;
+    // -------------------------------
+    // Cursor & label for inventory zone only
+    // -------------------------------
+    const float panelTop = 0.0f;
+    const float panelBottom = (float)PanelHeight;
 
-    // Determine which item name to show (drag has priority)
     int labelIndex = -1;
     if (DragIndex != -1)       labelIndex = DragIndex;
     else if (HoverIndex != -1) labelIndex = HoverIndex;
 
-    const bool barVisible = (SlideY > -BarHeight + 1.0f);
-    const bool mouseInBar = (mouse.y >= barTop && mouse.y <= barBottom);
+    const bool mouseInPanel = (mouseY >= panelTop && mouseY <= panelBottom);
+    const bool uiVisible = (PanelAlpha > 0.05f || ItemsAlpha > 0.05f || DragIndex != -1 || anyReturning);
 
-    if (barVisible && mouseInBar)
+    if (uiVisible && mouseInPanel)
     {
         if (labelIndex >= 0 && labelIndex < entityCount && Entities[labelIndex])
         {
-            // Hovering/dragging an inventory item
             DrawTexture(GetTexture("MB"), (int)mouse.x, (int)mouse.y, WHITE);
 
-            DrawTextEx(GetFont("Noto"),
-                       Entities[labelIndex]->GetInfo().NameId.c_str(),
-                       { mouse.x + 12.0f, mouse.y + 24.0f },
-                       16.0f, 1.0f, WHITE);
+            DrawTextEx(
+                GetFont("Noto"),
+                Entities[labelIndex]->GetInfo().NameId.c_str(),
+                { mouse.x + 12.0f, mouse.y + 24.0f },
+                16.0f, 1.0f, WHITE
+            );
         }
         else
         {
-            // Over the bar but not on an item -> basic cursor
             DrawTexture(GetTexture("MA"), (int)mouse.x, (int)mouse.y, WHITE);
         }
     }
-
-    // Outside the bar, Inventory draws no cursor;
-    // world scenes' Entity::OnRender() keep full control.
+    // Outside panel, Inventory draws nothing; world cursor logic stays in charge.
 }
 
