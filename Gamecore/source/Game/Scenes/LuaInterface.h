@@ -128,4 +128,51 @@ public:
         return ok;
     }
 
+    bool Call(const std::string& funcName, const std::string& arg)
+    {
+        auto tryTable = [&](int idx) -> bool
+            {
+                if (!lua_istable(LuaContext, idx))
+                    return false;
+
+                lua_getfield(LuaContext, idx, funcName.c_str());   // stack: ... table func
+                if (!lua_isfunction(LuaContext, -1))
+                {
+                    lua_pop(LuaContext, 1);                        // pop non-function
+                    return false;
+                }
+
+                lua_pushstring(LuaContext, arg.c_str());           // stack: ... table func arg
+
+                // 1 argument, 0 return values (we don't care about a result for OnCombine)
+                if (lua_pcall(LuaContext, 1, 0, 0) != LUA_OK)
+                {
+                    std::cout << "Lua error in " << funcName << ": "
+                        << lua_tostring(LuaContext, -1) << std::endl;
+                    lua_pop(LuaContext, 1);                        // pop error
+                    return false;
+                }
+
+                // no result to pop, only the table remains on stack at idx
+                return true;
+            };
+
+        // 1) Try the entity's table first (Ref)
+        if (Ref != LUA_NOREF)
+        {
+            lua_rawgeti(LuaContext, LUA_REGISTRYINDEX, Ref);   // push entity table
+            bool ok = tryTable(-1);
+            lua_pop(LuaContext, 1);                            // pop entity table
+            if (ok) return true;
+        }
+
+        // 2) Fallback to Globals[funcName]
+        lua_getglobal(LuaContext, "Globals");                  // push Globals (table or nil)
+        bool ok = tryTable(-1);
+        lua_pop(LuaContext, 1);                                // pop Globals
+
+        return ok;
+    }
+
+
 };

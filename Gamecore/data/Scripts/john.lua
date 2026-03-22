@@ -42,7 +42,7 @@ local function OnInteract()
     --SetActive("John", false)
     --SetClickable("John", false)
 
-    Elder.enabled = true
+    --Elder.enabled = true
     
     --OnTalk()
 end
@@ -58,11 +58,11 @@ local function OnLook()
 end
 
 local function OnCombine(itemId)
-    print("called John.OnCombine")
+    print("called John.OnCombine with itemId:", itemId)
     
-    if (itemId == "mail") then
-        print("Right Object detect!")
-        Say("This is a message for me? thank you!")
+    if (itemId == "Med") then
+        print("MED Object detect!")
+        Say("This is a medication for me? thank you!")
     end
 end
 

@@ -216,7 +216,7 @@ end
 
 function Globals.OnCombine(args)
     if args and type(args) == "string" then
-        print("Can't mix up those " .. tostring(args))
+        print("Can't mix up that with " .. tostring(args))
     else
         print("Can't mix up those.. (invalid)")
     end

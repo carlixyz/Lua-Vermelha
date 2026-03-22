@@ -3,6 +3,7 @@
 #include "GameScene.h"
 #include "BootState.h"
 #include "TestScene.h"
+#include "Inventory.h"
 
 #include <stack>
 #include <map>
@@ -34,7 +35,7 @@ class FSM	/// Finite Scene Manager ftw!
 	std::map<std::string, GameScene*> ScenesMap;
 	GameScene* CurrentScene = nullptr;							// &bootState;
 	GameScene* SharedScene = nullptr;
-	GameScene* Inventory = nullptr;
+	GameScene* InventoryScene = nullptr;
 
 	bool DebugScenes = false;
 	int SceneIndex = 0;
@@ -55,7 +56,10 @@ public:
 	void Deinitialize(const std::string& sceneId);
 
 	void ChangeCurrent(const std::string& sceneId);
-	void ChangeEntityScene(const std::string& EntityId, const std::string& newSceneId);
+	void ChangeEntityScene(const std::string& entityId, const std::string& newSceneId);
+	bool IsEntityInScene(const std::string& entityId, const std::string& SceneId);
+	void DisableEntity(const std::string& entityId);
+	void RemoveEntity(const std::string& entityId);
 
 	void ChangeEntityToFront(const std::string& EntityId, int offset = 0);
 	void ChangeEntityToBack(const std::string& EntityId, int offset = 0);

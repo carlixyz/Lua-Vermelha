@@ -18,6 +18,10 @@ public:
     void OnExit()           override {}
     void OnEnter()          override {}
 
+
+    // Bind the pointer FSM will keep updating
+    void BindWorldScene(GameScene** currentScenePtr);
+
     // World hit-test callback: should return topmost world Entity under mouse,
     // or nullptr if none. Inventory will call OnCombine(itemId) on it.
     using WorldHitTestFn = std::function<Entity* ()>;
@@ -29,8 +33,8 @@ public:
 
     void SyncSlotsWithEntities();
     void LayoutSlots();
-    void BeginDrag(int index);
-    void EndDrag(int index);
+    void OnDrag(int index);
+    void OnDrop(int index);
     void StartReturn(int index);
 
 private:

@@ -60,7 +60,7 @@ void Inventory::LayoutSlots()
 
 
 //--------------------------------
-void Inventory::BeginDrag(int index)
+void Inventory::OnDrag(int index)
 {
     DragIndex = index;
     SlotInfo& slot = Slots[index];
@@ -86,29 +86,29 @@ void Inventory::StartReturn(int index)
 }
 
 //--------------------------------
-void Inventory::EndDrag(int index)
+void Inventory::OnDrop(int index)
 {
     SlotInfo& slot = Slots[index];
 
-    Entity* worldTarget = nullptr;
-    if (WorldHitTest) worldTarget = WorldHitTest();
+    if (WorldHitTest)
+        if (Entity* worldTarget = WorldHitTest())
+        {
+            /*
+            const std::string& itemId = Entities[index]->GetInfo().NameId;
+            std::cout << "[Inventory] OnDrop item '" << itemId << "' over: "
+                << (worldTarget ? worldTarget->GetInfo().NameId : "<none>")
+                << std::endl;
+            */
 
-    if (worldTarget && Entities[index])
-    {
-        const std::string& itemId = Entities[index]->GetInfo().NameId;
-        worldTarget->OnCombine(itemId);
+            // This will hit EntityLua::OnCombine for every entity etc.
+            worldTarget->OnCombine( Entities[index]->GetID() );
+        }
 
-        // For now, keep item and snap it back visibly
-        StartReturn(index);
-    }
-    else
-    {
-        // Dropped on empty space -> snap back
-        StartReturn(index);
-    }
-
+    // In all cases, animate back to slot
+    StartReturn(index);
     DragIndex = -1;
 }
+
 
 //--------------------------------
 void Inventory::OnUpdate(float dt)
@@ -140,7 +140,6 @@ void Inventory::OnUpdate(float dt)
     const int entityCount = (int)Entities.size();
 
     if (ItemsAlpha > 0.05f)
-    {
         for (int i = entityCount - 1; i >= 0; --i)
         {
             if (CheckCollisionPointRec(mouse, Slots[i].Area))
@@ -149,14 +148,11 @@ void Inventory::OnUpdate(float dt)
                 break;
             }
         }
-    }
 
-    if (ItemsAlpha > 0.1f &&
-        IsMouseButtonPressed(MOUSE_LEFT_BUTTON) &&
-        HoverIndex != -1 &&
-        DragIndex == -1)
+    if (ItemsAlpha > 0.1f && HoverIndex != -1 && DragIndex == -1
+        && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) )
     {
-        BeginDrag(HoverIndex);
+        OnDrag(HoverIndex);
     }
 
     if (DragIndex != -1)
@@ -168,12 +164,11 @@ void Inventory::OnUpdate(float dt)
             slot.DragPos.y = mouse.y - slot.DragOffset.y;
 
             if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON))
-                EndDrag(DragIndex);
+                OnDrop(DragIndex);
         }
     }
 
-    const size_t slotCount = Slots.size();
-    for (size_t i = 0; i < slotCount; ++i)
+    for (size_t i = 0, slotCount = Slots.size(); i < slotCount; ++i)
     {
         SlotInfo& slot = Slots[i];
         if (!slot.Returning) continue;
@@ -232,10 +227,7 @@ void Inventory::OnRender()
     Color topColor = ColorAlpha(BLACK, PanelAlpha);
     Color bottomColor = ColorAlpha(BLACK, 0.0f);
 
-    DrawRectangleGradientV(
-        0, 0, screenW, PanelHeight,
-        topColor, bottomColor
-    );
+    DrawRectangleGradientV( 0, 0, screenW, PanelHeight, topColor, bottomColor );
 
     // -------------------------------
     // Icons
@@ -258,26 +250,19 @@ void Inventory::OnRender()
             slot.Area.height
         };
 
-        const Rectangle src = {
-            0.0f, 0.0f,
-            (float)tex.width,
-            (float)tex.height
-        };
+        const Rectangle src = { 0.0f, 0.0f, (float)tex.width, (float)tex.height };
 
         // Dragged or returning icons ignore ItemsAlpha and stay fully visible.
         float iconAlphaFactor = 1.0f;
+
         if (i != DragIndex && !slot.Returning)
-        {
             iconAlphaFactor = ItemsAlpha;
-        }
 
         if (iconAlphaFactor <= 0.01f)
             continue; // completely invisible, skip
 
-        DrawTexturePro(
-            tex, src, dst, { 0,0 }, 0.0f,
-            ColorAlpha(WHITE, e->GetInfo().Alpha * iconAlphaFactor)
-        );
+        DrawTexturePro( tex, src, dst, { 0,0 }, 0.0f,
+            ColorAlpha(WHITE, e->GetInfo().Alpha * iconAlphaFactor) );
     }
 
     // -------------------------------
@@ -294,23 +279,50 @@ void Inventory::OnRender()
     const bool uiVisible = (PanelAlpha > 0.05f || ItemsAlpha > 0.05f || DragIndex != -1 || anyReturning);
 
     if (uiVisible && mouseInPanel)
-    {
         if (labelIndex >= 0 && labelIndex < entityCount && Entities[labelIndex])
         {
             DrawTexture(GetTexture("MB"), (int)mouse.x, (int)mouse.y, WHITE);
 
-            DrawTextEx(
-                GetFont("Noto"),
-                Entities[labelIndex]->GetInfo().NameId.c_str(),
-                { mouse.x + 12.0f, mouse.y + 24.0f },
-                16.0f, 1.0f, WHITE
-            );
+            DrawTextEx( GetFont("Noto"), Entities[labelIndex]->GetInfo().NameId.c_str(),
+                { mouse.x + 12.0f, mouse.y + 24.0f }, 16.0f, 1.0f, WHITE );
         }
         else
-        {
             DrawTexture(GetTexture("MA"), (int)mouse.x, (int)mouse.y, WHITE);
-        }
-    }
+
     // Outside panel, Inventory draws nothing; world cursor logic stays in charge.
+}
+
+void Inventory::BindWorldScene(GameScene** currentScenePtr)
+{
+    // Capture the pointer2pointer so when FSM changes CurrentScene, this still sees the updated one.
+    SetWorldHitTest([currentScenePtr]() -> Entity*
+        {
+            auto findHit = [](GameScene* scene) -> Entity*
+                {
+                    if (!scene) 
+                        return nullptr;
+
+                    // reverse order: last entity is visually on top
+                    for (int i = (int)scene->Entities.size() - 1; i >= 0; --i)
+                    {
+                        Entity* entity = scene->Entities[i];
+                        if (!entity)
+                            continue;
+
+                        if (!entity->GetIsVisible() ||
+                            !entity->GetIsActive() ||
+                            !entity->GetIsClickable())
+                            continue;
+
+                        if (entity->IsMouseOver())
+                            return entity;
+                    }
+
+                    return nullptr;
+                };
+
+            GameScene* current = (currentScenePtr ? *currentScenePtr : nullptr);
+            return findHit(current);
+        });
 }
 

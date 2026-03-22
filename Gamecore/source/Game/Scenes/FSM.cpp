@@ -36,11 +36,17 @@ bool FSM::Init()
 
 	if (ScenesMap.contains(SceneID::Inventory))
 	{
-		Inventory = ScenesMap[SceneID::Inventory];
-		if (Inventory) 
-			Inventory->Initialize();
+		if (InventoryScene = ScenesMap[SceneID::Inventory])
+		{
+			if (Inventory* invScene = (Inventory*)InventoryScene)
+				invScene->BindWorldScene(&CurrentScene);
+			else
+				std::cout << "[FSM] Inventory scene is not of type Inventory.\n";
+
+			InventoryScene->Initialize();
+		}
 	}
-	else std::cout << "[FSM] Inventory '" << Inventory << "' not found!\n";
+	else std::cout << "[FSM] Inventory '" << InventoryScene << "' not found!\n";
 
 	for (auto& sceneIt : ScenesMap)
 	{
@@ -87,8 +93,8 @@ void FSM::Update(float deltaTime)
 	if (SharedScene)
 		SharedScene->OnUpdate(deltaTime);
 
-	if (Inventory)
-		Inventory->OnUpdate(deltaTime);
+	if (InventoryScene)
+		InventoryScene->OnUpdate(deltaTime);
 }
 
 void FSM::SwapDebugScenes()
@@ -135,8 +141,10 @@ void FSM::Render()
 	if (SharedScene)
 		SharedScene->OnRender();
 
-	if (Inventory)
-		Inventory->OnRender();
+	Game::Get().RenderCursor();
+
+	if (InventoryScene)
+		InventoryScene->OnRender();
 
 	if (IsKeyPressed(KEY_KP_MULTIPLY))
 		DebugScenes = !DebugScenes;
@@ -203,6 +211,65 @@ void FSM::Deinitialize(const std::string& sceneId)
 		else
 			std::cout << "Scene Layer: " << sceneId << " was already Deinitialized" << std::endl;
 	}
+}
+
+bool FSM::IsEntityInScene(const std::string& EntityId, const std::string& SceneId)
+{
+	if (SceneId.empty() || !ScenesMap.contains(SceneId))
+	{
+		std::cout << "\n [ERROR] Invalid sceneId: " << SceneId << std::endl;
+		throw std::runtime_error("Error: invalid sceneId");
+		return false;
+	}
+
+	return ScenesMap[SceneId]->FindEntityIndex(EntityId) != -1; // If -1 then it's not present here
+}
+
+void FSM::DisableEntity(const std::string& id)
+{
+	for (auto& [sceneName, scene] : ScenesMap)
+		for(auto& e : scene->Entities)
+			if (e->GetID() == id)
+			{
+				e->SetIsVisible(false);
+				e->SetIsActive(false);
+				e->SetIsClickable(false);
+			}
+}
+
+void FSM::RemoveEntity(const std::string& entityId)
+{
+	auto match = [&](Entity* e)
+		{
+			return e && e->GetInfo().NameId == entityId;
+		};
+
+	for (auto& [sceneName, scene] : ScenesMap)
+	{
+		if (!scene) continue;
+
+		auto& entities = scene->Entities;
+
+		auto it = std::find_if(entities.begin(), entities.end(), match);
+		if (it != entities.end())
+		{
+			Entity* victim = *it;
+
+			std::cout << "[FSM] Removing Entity '" << entityId
+				<< "' from Scene '" << sceneName << "'\n";
+
+			// Proper lifecycle cleanup
+			victim->OnDeinit();
+
+			delete victim;              // Destroy the entity
+			entities.erase(it);         // Remove pointer from scene
+
+			return;                     // Done. Entity is gone from reality.
+		}
+	}
+
+	std::cout << "[FSM] RemoveEntityFromScene: Entity '"
+		<< entityId << "' not found in any scene.\n";
 }
 
 void FSM::ChangeEntityScene(const std::string& EntityId, const std::string& newSceneId)

@@ -57,6 +57,31 @@ void GameScene::SortEntity(const std::string& id, int newIndex)
 	Entities.insert(Entities.begin() + newIndex, e);
 }
 
+void GameScene::ResolveHover()
+{
+	hoveredEntity = nullptr;
+
+	// topmost wins: iterate reverse render order
+	for (int i = (int)Entities.size() - 1; i >= 0; --i)
+	{
+		Entity* e = Entities[i];
+
+		if (!e->GetIsVisible())   continue;
+		if (!e->GetIsActive())    continue;
+		if (!e->GetIsClickable()) continue;
+
+		if (e->IsMouseOver())
+		{
+			hoveredEntity = e;
+			break;
+		}
+	}
+
+	// Only touch flags when they actually change (optional micro-opt)
+	for (Entity* e : Entities)
+		e->SetIsHovered(e == hoveredEntity);
+}
+
 int GameScene::FindEntityIndex(const std::string& id)
 {
 	for (size_t i = 0; i < Entities.size(); ++i)
@@ -69,9 +94,7 @@ int GameScene::FindEntityIndex(const std::string& id)
 void GameScene::OnExit()
 {
 	for (Entity* entity : Entities)
-	{
 		entity->OnExit();
-	}
 }
 
 void GameScene::OnUpdate(float deltaTime)
@@ -81,6 +104,8 @@ void GameScene::OnUpdate(float deltaTime)
 		if (entity->GetIsActive())
 			entity->OnUpdate(deltaTime);
 	}
+
+	ResolveHover();
 
 	if (!pendingSorts.empty())
 	{

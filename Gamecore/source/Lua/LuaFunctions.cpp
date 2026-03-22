@@ -411,6 +411,19 @@ int Lua_SetEntityScene(lua_State* L)
     return 0;
 }
 
+int Lua_IsEntityInScene(lua_State* L)
+{
+    // Expecting:
+    const char* nameID = luaL_checkstring(L, 1);        // 1: entity nameID (string)
+    const char* sceneID = luaL_checkstring(L, 2);       // 2: sceneID (string)
+
+    bool result = Game::Get().Scenes.IsEntityInScene(nameID, sceneID);
+
+    // Push result back to Lua
+    lua_pushboolean(L, result);
+    return 1; // one return value
+}
+
 int Lua_SetEntityFront(lua_State* L)
 {
     int argc = lua_gettop(L);
@@ -435,6 +448,24 @@ int Lua_SetEntityBack(lua_State* L)
     Game::Get().Scenes.ChangeEntityToBack(id, offset);
 
     return 0;
+}
+
+int Lua_RemoveEntity(lua_State* L)
+{
+    const char* entityId = luaL_checkstring(L, 1);
+
+    Game::Get().Scenes.RemoveEntity(entityId);
+
+    return 0; // no return values
+}
+
+int Lua_DisableEntity(lua_State* L)
+{
+    const char* entityId = luaL_checkstring(L, 1);
+
+    Game::Get().Scenes.DisableEntity(entityId);
+
+    return 0; // no return values
 }
 
 int Lua_SetCurrentScene(lua_State* L)
@@ -788,7 +819,7 @@ void RegisterLuaFunctions() // C++ Foo Register in Lua
     
     LuaManager::Get().RegisterFunction("CancelScheduled", Lua_CancelScheduled);
 
-    //LuaManager::Get().RegisterFunction("Say", Lua_Say);
+    ///LuaManager::Get().RegisterFunction("Say", Lua_Say);                          // Not needed, this is already in Lua
 
     LuaManager::Get().RegisterFunction("SetThunder", Lua_SetThunder);               // SetThunder( enabled = true)
 
@@ -830,9 +861,15 @@ void RegisterLuaFunctions() // C++ Foo Register in Lua
 
     LuaManager::Get().RegisterFunction("SetEntityScene", Lua_SetEntityScene);
 
+    LuaManager::Get().RegisterFunction("IsEntityInScene", Lua_IsEntityInScene);
+
     LuaManager::Get().RegisterFunction("SetEntityFront", Lua_SetEntityFront);
 
     LuaManager::Get().RegisterFunction("SetEntityBack", Lua_SetEntityBack);
+
+    LuaManager::Get().RegisterFunction("DisableEntity", Lua_DisableEntity);
+
+    LuaManager::Get().RegisterFunction("RemoveEntity", Lua_RemoveEntity);
 
     LuaManager::Get().RegisterFunction("SetCurrentScene", Lua_SetCurrentScene);
 

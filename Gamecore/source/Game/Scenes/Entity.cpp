@@ -19,6 +19,14 @@ void EntityLua::OnReturn()
         Info.NameId = lua_tostring(LuaContext, -1);
     lua_pop(LuaContext, 1);
 
+    lua_getfield(LuaContext, -1, "NameView");
+    if (lua_isstring(LuaContext, -1))
+        Info.NameView = lua_tostring(LuaContext, -1);
+    lua_pop(LuaContext, 1);
+
+    if (Info.NameView.empty())
+        Info.NameView = Info.NameId; // If NameView is missing just use NameId as fallback
+
     //lua_getfield(LuaContext, -1, "NextScene");
     //if (lua_isstring(LuaContext, -1)) SceneTarget = lua_tostring(LuaContext, -1);
     //lua_pop(LuaContext, 1);
@@ -89,6 +97,18 @@ void EntityLua::OnReturn()
         SetSprite(CurrentID);
 
     lua_getfield(LuaContext, -1, "Position");
+    if (lua_istable(LuaContext, -1)) {
+        lua_getfield(LuaContext, -1, "x");
+        if (lua_isnumber(LuaContext, -1)) Info.PositionX = (int)lua_tonumber(LuaContext, -1);
+        lua_pop(LuaContext, 1);
+
+        lua_getfield(LuaContext, -1, "y");
+        if (lua_isnumber(LuaContext, -1)) Info.PositionY = (int)lua_tonumber(LuaContext, -1);
+        lua_pop(LuaContext, 1);
+    }
+    lua_pop(LuaContext, 1);
+
+    lua_getfield(LuaContext, -1, "Pos");
     if (lua_istable(LuaContext, -1)) {
         lua_getfield(LuaContext, -1, "x");
         if (lua_isnumber(LuaContext, -1)) Info.PositionX = (int)lua_tonumber(LuaContext, -1);
@@ -171,13 +191,11 @@ void Entity::OnRender()
     if (IsTextureValid(CurrentSprite))
         DrawTexture(CurrentSprite, Info.PositionX, Info.PositionY, ColorAlpha(WHITE, Info.Alpha)); //Fade(WHITE, Info.Alpha));
 
-    Vector2 MouseCursor = GetMousePosition();
-
-    DrawTexture(GetTexture("MA"), (int)MouseCursor.x, (int)MouseCursor.y, WHITE);
+    //DrawTexture(GetTexture("MA"), (int)MouseCursor.x, (int)MouseCursor.y, WHITE);
 
     if (Game::Get().IsDebugMode())
-        Debug();
-        //DrawRectangle(Info.PositionX, Info.PositionY, CurrentSprite.width, CurrentSprite.height, ColorAlpha(RED, 0.1f));
+        Debug(); //DrawRectangle(Info.PositionX, Info.PositionY, CurrentSprite.width, CurrentSprite.height, ColorAlpha(RED, 0.1f));
+
 
     // --- Hover feedback ---
     if (!GetIsClickable() || !GetIsHovered()) 
@@ -194,25 +212,23 @@ void Entity::OnRender()
         EndBlendMode();
     }
 
-    DrawTexture( GetTexture("MB"), (int)MouseCursor.x, (int)MouseCursor.y, WHITE);
+    //DrawTexture( GetTexture("MB"), (int)MouseCursor.x, (int)MouseCursor.y, WHITE);
+    Vector2 MouseCursor = GetMousePosition();
 
-    //DrawText(Info.NameId.c_str(), (int)MouseCursor.x + 12, (int)MouseCursor.y + 24, 12, WHITE);
-    DrawTextEx(GetFont("Noto"), Info.NameId.c_str(), { MouseCursor.x + 12, MouseCursor.y + 24 }, 16, 1.0f, WHITE);
-
+    DrawTextEx(GetFont("Noto"), Info.NameView.c_str(), { MouseCursor.x + 12, MouseCursor.y + 24 }, 16, 1.0f, WHITE);
 }
 
 bool Entity::IsMouseOver()
 {
-    int localX = GetMouseX() - Info.PositionX;
-    int localY = GetMouseY() - Info.PositionY;
+    //int localX = GetMouseX() - Info.PositionX;
+    //int localY = GetMouseY() - Info.PositionY;
 
-    return Mask.IsOpaque( (int)localX, (int)localY);
-
+    //return Mask.IsOpaque( (int)localX, (int)localY);
     //MouseCursor = GetMousePosition();
 
-    //return Mask.IsOpaque(
-    //    (int)MouseCursor.x - Info.PositionX,
-    //    (int)MouseCursor.y - Info.PositionY);
+    return Mask.IsOpaque(
+        (int)GetMouseX() - Info.PositionX,
+        (int)GetMouseY() - Info.PositionY);
 }
 
 void Quad::OnReturn()
@@ -235,7 +251,6 @@ void Quad::OnReturn()
 bool Quad::IsMouseOver()
 {
     Vector2 mouse = GetMousePosition();
-
 
     Rectangle HitRect = {
     (float)Info.PositionX,

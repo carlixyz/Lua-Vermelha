@@ -46,6 +46,7 @@ struct AlphaMask
 struct SpriteInfo
 {
 	std::string	NameId;
+	std::string	NameView;
 	bool Visible = true;
 	bool Active = true;
 	bool Clickable = true;

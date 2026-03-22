@@ -43,7 +43,7 @@ public:
 		GameScene::OnInit();
 
 #ifndef EMSCRIPTEN
-		//if (Frames && Loader && Frames->empty()) Loader();
+		if (Frames && Loader && Frames->empty()) Loader();
 #endif
 
 		if (HasFrames())
@@ -52,8 +52,6 @@ public:
 			animTotalFrames = (int)Frames->size();
 		}
 	}
-
-
 
 	inline void OnDeinit()
 	{
@@ -97,7 +95,5 @@ public:
 			DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), DARKBLUE);
 
 		GameScene::OnRender();
-
-		DrawTexture(GetTexture("MA"), GetMouseX(), GetMouseY(), WHITE);
 	}
 };

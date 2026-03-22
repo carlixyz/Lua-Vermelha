@@ -24,6 +24,8 @@ public:
 	void Render();
 	bool Deinit();
 
+	void RenderCursor();
+
 	inline bool HasFinished() const	{ return finish; }
 	inline bool IsDebugMode() const { return debug; }
 	//inline bool SkipIntro()	  const { return appProperties.SkipIntro; }

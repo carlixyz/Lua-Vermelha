@@ -50,6 +50,8 @@ bool Game::Deinit()
 }
 
 
+
+
 void Game::Update(float deltaTime)
 {
 	finish = (finish || Graphics::Get().GetCloseApplication());
@@ -98,12 +100,29 @@ void Game::Render()
 	ClearBackground(BLACK);
 
 	Scenes.Render();										/// <--------------------
-	
-	//DrawTexture(GetTexture("MA"), GetMouseX(), GetMouseY(), WHITE);
+
+	//RenderCursor();	// Already Done inside Scenes.Render() to avoid Inventory overlap
 
 	LuaManager::Get().Render();
 
 	Graphics::Get().Render();
 
 	EndDrawing();
+}
+
+
+void Game::RenderCursor()
+{
+	Vector2 m = GetMousePosition();
+
+	bool anyHovered = false;
+	// You can store hovered pointer in the scene instead of scanning
+	for (Entity* e : Scenes.GetCurrent()->Entities)
+		if (e->GetIsHovered())
+		{
+			anyHovered = true;
+			break;
+		}
+
+	DrawTexture(GetTexture(anyHovered ? "MB" : "MA"), (int)m.x, (int)m.y, WHITE);
 }

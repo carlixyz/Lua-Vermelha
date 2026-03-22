@@ -25,6 +25,9 @@ class GameScene : public InstanceBase ///, public LuaInterface
 	std::vector<MoveRequest> pendingSorts;
 	void SortEntity(const std::string& id, int newIndex);
 
+	Entity* hoveredEntity = nullptr;
+	void ResolveHover(); // compute hover once per frame
+
 protected:
 
 	void Initialize()	{ initialized = true; OnInit(); } 	// Lazy Initialization just once
@@ -48,6 +51,8 @@ public:
 	virtual void OnRender() override;
 
 	bool IsInitialized() const { return initialized; }
+
+	Entity* GetHoveredEntity() const { return hoveredEntity; }
 
 	std::vector<Entity*> Entities;
 };

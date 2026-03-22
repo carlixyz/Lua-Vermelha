@@ -86,27 +86,19 @@ public:
 
 	EntityLua(int tableIndex) : LuaInterface(tableIndex) { Call("OnConstruct"); }
 
-	virtual void OnInit() override
-	{
-		Entity::OnInit();
-		Call("OnInit");
-		std::cout << "Created base Entity: " << Info.NameId << std::endl;
-	}
+	virtual void OnInit() override								{ Entity::OnInit(); Call("OnInit"); }
+	virtual void OnDeinit() override							{ Call("OnDeinit"); Entity::OnDeinit(); }
 
-	virtual void OnDeinit() override
-	{
-		Call("OnDeinit");
-		Entity::OnDeinit();
-	}
+	//virtual void OnRender() override							{ Entity::OnRender(); Call("OnRender"); }
 
-	virtual void OnEnter() override								{ Call("OnEnter"); }
+	virtual void OnEnter() override								{ Entity::OnInit();Call("OnEnter"); }
 	virtual void OnExit()	override							{ Call("OnExit"); }
 
 	virtual void OnScreenInput() override						{ Call("OnScreenInput"); }
 	virtual void OnInteract() override							{ Call("OnInteract"); }
 
 	virtual void OnLook() override								{ Call("OnLook"); }
-	virtual void OnCombine(const std::string& itemId) override	{ Call("OnCombine"); }
+	virtual void OnCombine(const std::string& itemId) override	{ Call("OnCombine", itemId); highlightLapse = 0.1f; }
 };
 
 
