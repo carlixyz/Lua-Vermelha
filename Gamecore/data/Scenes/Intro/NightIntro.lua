@@ -19,7 +19,7 @@ local function OnEnter()
 
     SetAlpha( "Dark", 0.0)
     TriggerThunder( 2)
-
+    ---PlaySound("Rumble")
 
     Schedule( 6, "SetVisible", "Panel", true)
     Schedule( 7, "Fade", "Panel", 0.5, 3)
@@ -27,7 +27,7 @@ local function OnEnter()
 
     Schedule( 2.0, "TriggerThunder", 1)
     Schedule( 4.0, "TriggerThunder", 3)
-
+    ---Schedule( 5.0, "PlaySound", "Thunderbolt")
 
     Schedule( 5, "SetVisible", "JumpScare")
     Schedule( 5.2, "SetVisible", "JumpScare", false)
@@ -49,10 +49,11 @@ function OnIntroInteraction()
 
     SetAlpha("Panel", 0.0)
     SetVisible("Panel")
+    ---PlaySound("Storm")
 
     Say("Oof I'm so tired, can't see anthing at this point...", 4.0)
     Fade("Panel", 0.6, 5)
-    Say("those thunderbolts are damn scary!")
+    Say("those thunderbolts are roaring!")
 
     TriggerThunder( 2)
 
@@ -66,24 +67,6 @@ function OnIntroInteraction()
 
     Say("\n\n\n Left click: Interactions | Right click: Look")
 
-    --[[
-
-    Say("Whoa, I'm very tired, I'm starting to see things...", 4.0)
-    Fade("Panel", 0.6, 5)
-    Say("those thunderbolts are damn scary!")
-    TriggerThunder( 2)
-    
-    --Say("Now, What the heck is happening here?", 4.0)
-    Say("Ohh Someone left a door open...", 3.0)
-    TriggerThunder( 1)
-
-    Say("What should I do?")
-    
-    --Schedule( 1.0, "SetActive", "Rear mirror")
-    --Schedule( 1.0, "SetActive", "Door entry")
-    --Schedule( 1.0, "SetActive", "Fachade")
-    --Schedule( 1.0, "Say", "<< Left click Interact, Right click Look stuff >>")
-    ]]
 end
 
 local function OnExit()

@@ -38,6 +38,9 @@ bool Graphics::Init(ApplicationProperties* appProperties)
 
 bool Graphics::Deinit()
 {
+	Wiper.Unload();
+	//Blender.Unload();
+
 	if (Window)
 		CloseWindow();
 

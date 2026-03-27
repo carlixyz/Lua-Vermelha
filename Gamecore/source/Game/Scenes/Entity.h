@@ -32,11 +32,10 @@ protected:
 
 	SpriteInfo Info;
 	Tween tween { this->Info };
-	Texture2D CurrentSprite;
-	AlphaMask Mask;
+	Texture2D CurrentSprite{};
+	AlphaMask Mask{};
 
 	bool Hovered = false;
-
 	float highlightLapse = 0.f;
 
 	friend class FSM;
@@ -102,7 +101,7 @@ public:
 };
 
 
-class Quad : public EntityLua // Gates are just like Doors but with a simplified collision box
+class Quad : public EntityLua // Quads are just like interactive entities but with a simplified collision box
 {
 	Rectangle HitBox;// = { 0, 0, 30, GetScreenHeight() };
 
@@ -120,7 +119,6 @@ public:
 	{ Call("OnConstruct"); }
 
 	virtual bool IsMouseOver() override;
-
 	virtual void Debug()	override;
 };
 

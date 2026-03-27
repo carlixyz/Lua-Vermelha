@@ -17,10 +17,10 @@ local function OnEnter()
     SetNoise(true)
 
     --Title("Charlie Lopez presents", 4.0, 48.0)
-    Schedule( 2, "Title", "Charlie Lopez presents", 4.0, 48.0)    
+    Schedule( 2, "ShowTitle", "Charlie presents", 4.0, 48.0)
     
     --Title("LUA VERMELHA", 5, 72.0, 0, 0, 255, 255, 255, 64)
-    Schedule( 7, "Title", "SEVENTH FRACTAL", 8, 72.0, 0, 0, 255, 255, 255, 64)      
+    Schedule( 7, "ShowTitle", "A FRACTAL SENSATION", 8, 72.0, 0, 0, 255, 255, 255, 64)   
 
     Schedule( 9, "Fade", "Dark", 0.0, 5)       --ScheduleDirector(5.0, "FadeEntity", "Dark", "0.0", "5.0")
     Schedule( 11, "OnNightDriveReady")
@@ -125,9 +125,10 @@ local function OnInit()
 end
 
 local function OnExit()
-    SetEntityScene("Panel", "Global")
+    --SetEntityScene("Panel", "Global")
+    --SetEntityFront("Panel") --SetEntityBack("Panel")
     SetVisible("Panel", false)
-    SetEntityFront("Panel") --SetEntityBack("Panel")
+
     EndSequence()
     --SetThunder(false)
     --SetNoise(false)

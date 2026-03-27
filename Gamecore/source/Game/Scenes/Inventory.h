@@ -26,6 +26,7 @@ public:
     // or nullptr if none. Inventory will call OnCombine(itemId) on it.
     using WorldHitTestFn = std::function<Entity* ()>;
     void SetWorldHitTest(WorldHitTestFn fn) { WorldHitTest = std::move(fn); }
+    int FindItemAtPoint(Vector2 mouse, int ignoreIndex = -1) const;
 
     // External enable/disable (for cinematics, etc.)
     void SetEnabled(bool enabled)   { Enabled = enabled; }
@@ -70,7 +71,7 @@ private:
     int   HoverIndex                = -1;
     int   DragIndex                 = -1;
 
-    bool  Enabled                   = true;
+    bool  Enabled                   = false;
 
     WorldHitTestFn WorldHitTest;
 };

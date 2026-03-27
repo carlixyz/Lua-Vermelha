@@ -46,6 +46,7 @@ void Assets::LoadTextureID(const std::string& imageID, const std::string& filePa
 		//}
 
 		const Texture2D textureRef = LoadTexture(filePath.c_str());
+		SetTextureFilter(textureRef, TEXTURE_FILTER_BILINEAR);
 		Textures[imageID] = textureRef;
 	}
 }
@@ -64,6 +65,16 @@ void Assets::UnloadTextureID(const std::string& imageID)
 	}
 }
 
+bool Assets::HasSoundID(const std::string& soundID)
+{
+	return Sounds.contains(soundID);
+}
+
+bool Assets::HasMusicID(const std::string& musicID)
+{
+	return Musics.contains(musicID);
+}
+
 void Assets::PreloadTextures()
 {
 	//const auto Load = [&](const std::string Name, const char* FileName)
@@ -76,6 +87,7 @@ void Assets::PreloadTextures()
 
 	LoadTextureID("MA", "data/bibata_A.png");
 	LoadTextureID("MB", "data/bibata_B.png");
+	LoadTextureID("Shade", "data/Images/t.png");
 	//LoadTextureID("MansionDay", "data/Scenes/Mansion_Day.png");
 	//LoadTextureID("MansionNight", "data/Scenes/Mansion_Night.png");
 }
@@ -162,15 +174,16 @@ void Assets::UnloadAnimations()
 
 void Assets::PreloadFonts()
 {
-	const auto Load = [&](const std::string Name, const char* FileName)
+	const auto Load = [&](const std::string Name, const char* FileName, const int size = 0)
 		{
-			const Font Font = LoadFont(FileName);
+			const Font Font = (size == 0) ? LoadFont(FileName) : LoadFontEx(FileName, 64, 0, 0);
 			Fonts[Name] = Font;
 			SetTextureFilter(Font.texture, TEXTURE_FILTER_BILINEAR);
 		};
 
-	Load("Gothic", "data/Franklin-Gothic-Heavy-Italic.ttf");
+	Load("Gothic", "data/Franklin-Gothic-Heavy-Italic.ttf", 64);
 	Load("Noto", "data/NotoSansUI-Regular.ttf");
+
 	//Load("NotoBold", "Data/NotoSans-Bold.ttf");
 	//Load("NotoBoldItalic", "Data/NotoSans-BoldItalic.ttf");
 	//Load("NotoItalic", "Data/NotoSans-Italic.ttf");
@@ -193,6 +206,12 @@ void Assets::PreloadSounds()
 		};
 
 	//Load("Fire", "Data/Sound/MiniGun_A.wav");
+
+	Load("Thunderbolt", "Data/Sound/Thunderbolt.mp3");
+	Load("Bang", "Data/Sound/Sonorous_Bang.mp3");
+	Load("Storm", "Data/Sound/Storm_Roar.mp3");
+	Load("Rumble", "Data/Sound/Heavy_Rumble.mp3");
+	Load("Thunder", "Data/Sound/Crumbling_Thunder.mp3");
 }
 
 void Assets::UnloadSounds()

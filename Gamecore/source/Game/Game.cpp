@@ -2,6 +2,8 @@
 
 #include "Assets.h"
 #include "Director.h"
+#include "QuadCapture.h"
+
 #include "../Graphics/Graphics.h"
 #include "../Audio/Audio.h"
 #include "../Lua/LuaManager.h"
@@ -27,7 +29,10 @@ bool Game::Init()
 
 	result = result && LuaManager::Get().Init();				
 
+	result = result && QuadCaptureTool::Get().Init();
+
 	result = result && Scenes.Init();							//	Scenes.Init(Scenes.introState);
+
 
 	return result;
 }
@@ -45,6 +50,8 @@ bool Game::Deinit()
 	result = result && Graphics::Get().Deinit();
 
 	result = result && Audio::Get().Deinit();
+
+	result = result && QuadCaptureTool::Get().Deinit();
 
 	return result;
 }
@@ -80,6 +87,8 @@ void Game::Update(float deltaTime)
 	}
 #endif
 
+	QuadCaptureTool::Get().OnUpdate(deltaTime);
+
 	Graphics::Get().Update(deltaTime);
 
 	LuaManager::Get().Update(deltaTime);
@@ -99,13 +108,15 @@ void Game::Render()
 
 	ClearBackground(BLACK);
 
-	Scenes.Render();										/// <--------------------
+	Scenes.Render();												/// <--------------------
 
-	//RenderCursor();	// Already Done inside Scenes.Render() to avoid Inventory overlap
+	QuadCaptureTool::Get().OnRender();
 
 	LuaManager::Get().Render();
 
 	Graphics::Get().Render();
+
+	RenderCursor();	// Can be Done inside Scenes.Render() to avoid Inventory overlap
 
 	EndDrawing();
 }
@@ -121,6 +132,11 @@ void Game::RenderCursor()
 		if (e->GetIsHovered())
 		{
 			anyHovered = true;
+
+			/// --- Hover feedback ---
+			if (e->GetIsClickable())
+				DrawTextEx(GetFont("Noto"),e->GetInfo().NameView.c_str(), { m.x + 12, m.y + 24 }, 16, 1.0f, WHITE);
+
 			break;
 		}
 

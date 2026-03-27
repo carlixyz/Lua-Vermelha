@@ -2,6 +2,7 @@
 #include "Entity.h"
 #include "../Game.h"
 #include "../Assets.h"
+#include "../../Lua/LuaManager.h"
 
 //--------------------------------
 void Inventory::OnInit()
@@ -88,23 +89,39 @@ void Inventory::StartReturn(int index)
 //--------------------------------
 void Inventory::OnDrop(int index)
 {
-    SlotInfo& slot = Slots[index];
+    const Vector2 mouse = GetMousePosition();
+    Entity* sourceItem = Entities[index];
 
+    if (!sourceItem)
+    {
+        StartReturn(index);
+        DragIndex = -1;
+        return;
+    }
+
+    // 1) First priority: dropped onto another item inside inventory
+    int targetIndex = FindItemAtPoint(mouse, index);
+    if (targetIndex != -1)
+    {
+        if (!LuaManager::Get().IsSequenceRunning())
+            if (Entity* targetItem = Entities[targetIndex])
+                targetItem->OnCombine(sourceItem->GetID());
+
+        StartReturn(index);
+        DragIndex = -1;
+        return;
+    }
+
+    // 2) Otherwise try world target in current scene
     if (WorldHitTest)
+    {
         if (Entity* worldTarget = WorldHitTest())
         {
-            /*
-            const std::string& itemId = Entities[index]->GetInfo().NameId;
-            std::cout << "[Inventory] OnDrop item '" << itemId << "' over: "
-                << (worldTarget ? worldTarget->GetInfo().NameId : "<none>")
-                << std::endl;
-            */
-
-            // This will hit EntityLua::OnCombine for every entity etc.
-            worldTarget->OnCombine( Entities[index]->GetID() );
+            worldTarget->OnCombine(sourceItem->GetID());
         }
+    }
 
-    // In all cases, animate back to slot
+    // 3) In all cases, animate back to slot
     StartReturn(index);
     DragIndex = -1;
 }
@@ -149,10 +166,18 @@ void Inventory::OnUpdate(float dt)
             }
         }
 
-    if (ItemsAlpha > 0.1f && HoverIndex != -1 && DragIndex == -1
-        && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) )
+    if (ItemsAlpha > 0.1f && HoverIndex != -1 && DragIndex == -1)
     {
-        OnDrag(HoverIndex);
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+        {
+            OnDrag(HoverIndex);
+        }
+        else if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON))
+        {
+            if (!LuaManager::Get().IsSequenceRunning())
+                if (Entity* item = Entities[HoverIndex])
+                    item->OnLook();
+        }
     }
 
     if (DragIndex != -1)
@@ -324,5 +349,18 @@ void Inventory::BindWorldScene(GameScene** currentScenePtr)
             GameScene* current = (currentScenePtr ? *currentScenePtr : nullptr);
             return findHit(current);
         });
+}
+
+int Inventory::FindItemAtPoint(Vector2 mouse, int ignoreIndex) const
+{
+    for (int i = (int)Slots.size() - 1; i >= 0; --i)
+    {
+        if (i == ignoreIndex) continue;
+
+        if (CheckCollisionPointRec(mouse, Slots[i].Area))
+            return i;
+    }
+
+    return -1;
 }
 

@@ -141,7 +141,7 @@ void FSM::Render()
 	if (SharedScene)
 		SharedScene->OnRender();
 
-	Game::Get().RenderCursor();
+	/// Game::Get().RenderCursor();
 
 	if (InventoryScene)
 		InventoryScene->OnRender();

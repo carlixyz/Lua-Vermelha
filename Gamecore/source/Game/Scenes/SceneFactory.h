@@ -75,19 +75,56 @@ public:
                 }
                 else    
                 {
-                    /// Case 2A: special string values: StartScene, SharedScene
                     if (valType == LUA_TSTRING)
                     {
                         std::string sceneSetup = lua_tostring(LuaContext, -1);
 
+                        /// Special metadata keys
                         if (sceneName == "StartScene")
+                        {
                             StartSceneID = sceneSetup;
+                            lua_pop(LuaContext, 1);
+                            continue;
+                        }
 
                         if (sceneName == "SharedScene")
+                        {
                             SharedSceneID = sceneSetup;
+                            lua_pop(LuaContext, 1);
+                            continue;
+                        }
 
-                        lua_pop(LuaContext, 1); // pop value
-                        continue;
+                        /// New: external scene file
+                        if (LooksLikeLuaFilePath(sceneSetup))
+                        {
+                            int sceneRef = LoadSceneTableRefFromFile(sceneSetup);
+                            if (sceneRef != LUA_NOREF)
+                            {
+                                lua_rawgeti(LuaContext, LUA_REGISTRYINDEX, sceneRef);
+                                int absSceneIndex = lua_absindex(LuaContext, -1);
+
+                                scene = CreateSceneFromLua(sceneName, absSceneIndex);
+
+                                lua_pop(LuaContext, 1); // pop loaded scene table
+                                luaL_unref(LuaContext, LUA_REGISTRYINDEX, sceneRef);
+                            }
+                            else
+                            {
+                                std::cout << "[SceneFactory] Failed to load external scene '" << sceneName
+                                    << "' from " << sceneSetup << std::endl;
+                            }
+
+                            lua_pop(LuaContext, 1); // pop original value from Scenes table
+                            if (scene && !sceneName.empty())
+                            {
+                                std::cout << "Created Scene: " << sceneName << " succesfully!" << std::endl;
+                                scenes[sceneName] = scene;
+                            }
+                            continue;
+                        }
+
+                        // Legacy fallback: treat as plain empty/default scene name behavior if needed
+                        scene = CreateSceneFromLua(sceneName, LUA_NOREF);
                     }
 
                     /// Case 2B: boolean values: Title = true, Intro = false // ignore if false
@@ -126,6 +163,34 @@ public:
         return scenes;
     }
 
+    int LoadSceneTableRefFromFile(const std::string& path)
+    {
+        const std::string fullPath = LuaManager::Get().AddDebugRootPath(path);
+
+        if (luaL_dofile(LuaContext, fullPath.c_str()) != LUA_OK)
+        {
+            std::cout << "[SceneFactory] Lua error loading scene file " << fullPath
+                << ": " << lua_tostring(LuaContext, -1) << std::endl;
+            lua_pop(LuaContext, 1);
+            return LUA_NOREF;
+        }
+
+        if (!lua_istable(LuaContext, -1))
+        {
+            std::cout << "[SceneFactory] Scene file " << fullPath
+                << " did not return a table.\n";
+            if (!lua_isnoneornil(LuaContext, -1))
+                lua_pop(LuaContext, 1);
+            return LUA_NOREF;
+        }
+
+        return luaL_ref(LuaContext, LUA_REGISTRYINDEX);
+    }
+
+    bool LooksLikeLuaFilePath(const std::string& value) const
+    {
+        return value.size() >= 4 && value.substr(value.size() - 4) == ".lua";
+    }
 
 private:
     // ================================================================
@@ -160,15 +225,11 @@ private:
         {
             if (lua_istable(LuaContext, -1))
             {
-                //std::string sceneScript = FindScriptEntry(-1);
-                //if (!sceneScript.empty())
-                //    scene->LoadScript(sceneScript);
-
                 if (Entity* entity = CreateEntityFromLua(-1))
                     scene->Entities.push_back(entity);
             }
 
-            lua_pop(LuaContext, 1); // pop value, keep key
+            lua_pop(LuaContext, 1);
         }
 
         return scene;

@@ -155,8 +155,8 @@ void Entity::OnDeinit()
         Assets::Get().UnloadTextureID(textID);
 
     Info.TexturesIDs.clear();
-
     Mask.Opaque.clear();
+    CurrentSprite = Texture2D{};
 }
 
 void Entity::OnUpdate(float deltaTime)
@@ -191,11 +191,8 @@ void Entity::OnRender()
     if (IsTextureValid(CurrentSprite))
         DrawTexture(CurrentSprite, Info.PositionX, Info.PositionY, ColorAlpha(WHITE, Info.Alpha)); //Fade(WHITE, Info.Alpha));
 
-    //DrawTexture(GetTexture("MA"), (int)MouseCursor.x, (int)MouseCursor.y, WHITE);
-
     if (Game::Get().IsDebugMode())
         Debug(); //DrawRectangle(Info.PositionX, Info.PositionY, CurrentSprite.width, CurrentSprite.height, ColorAlpha(RED, 0.1f));
-
 
     // --- Hover feedback ---
     if (!GetIsClickable() || !GetIsHovered()) 
@@ -204,28 +201,25 @@ void Entity::OnRender()
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) || IsMouseButtonPressed(MOUSE_RIGHT_BUTTON) )
         highlightLapse = 0.1f;
 
-    if (highlightLapse > 0.f)
+    if (highlightLapse > 0.f /*&& IsTextureValid(CurrentSprite)*/)
     {
         highlightLapse -= GetFrameTime();
         BeginBlendMode(BLEND_ADDITIVE);
         DrawTexture(CurrentSprite, Info.PositionX, Info.PositionY, Fade(WHITE, 0.25f));
         EndBlendMode();
     }
+    //else if (highlightLapse > 0.f) highlightLapse -= GetFrameTime();
 
+    /*
     //DrawTexture( GetTexture("MB"), (int)MouseCursor.x, (int)MouseCursor.y, WHITE);
     Vector2 MouseCursor = GetMousePosition();
 
     DrawTextEx(GetFont("Noto"), Info.NameView.c_str(), { MouseCursor.x + 12, MouseCursor.y + 24 }, 16, 1.0f, WHITE);
+    */
 }
 
 bool Entity::IsMouseOver()
 {
-    //int localX = GetMouseX() - Info.PositionX;
-    //int localY = GetMouseY() - Info.PositionY;
-
-    //return Mask.IsOpaque( (int)localX, (int)localY);
-    //MouseCursor = GetMousePosition();
-
     return Mask.IsOpaque(
         (int)GetMouseX() - Info.PositionX,
         (int)GetMouseY() - Info.PositionY);
@@ -264,5 +258,4 @@ bool Quad::IsMouseOver()
 void Quad::Debug()
 {
     DrawRectangleLines(Info.PositionX, Info.PositionY, (int)HitBox.width, (int)HitBox.height, RED);
-        //DrawRectangle( (float)Info.PositionX, Info.PositionY, HitBox.width, HitBox.height, RED);
 }

@@ -144,13 +144,20 @@ void LuaManager::Render()
     }
     else line = full;
 
-    if (!speaker.empty())
+    int charsToShow = std::min(visibleChars, (int)line.size());
+    const bool textVisible = charsToShow > 0;
+    const bool speakerVisible = !speaker.empty();
+
+    CurrentAlpha += (textVisible || speakerVisible) ? GetFrameTime()*2 : -GetFrameTime();
+    CurrentAlpha = Clamp(CurrentAlpha, 0.f, ShadeAlpha);
+    DrawTexture(GetTexture("Shade"), 0, 316, ColorAlpha(WHITE, CurrentAlpha));
+
+    if (speakerVisible)
         DrawTextEx(GetFont("Noto"), speaker.c_str(),
             { (float)TextX, (float)TextY - 30 },
             (float)FontSize, 1.0f, Fade(WHITE, 0.9f));
 
-    int charsToShow = std::min(visibleChars, (int)line.size());
-    if (charsToShow > 0)
+    if (textVisible)
     {
         std::string partial = line.substr(0, charsToShow);
         DrawTextEx(GetFont("Noto"), partial.c_str(),

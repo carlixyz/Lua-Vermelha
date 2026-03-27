@@ -33,15 +33,20 @@ public:
 
 	void UnloadTextureID(const std::string& imageID);
 
-	Texture2D& GetTexture(const std::string& NameID) { return Textures[NameID]; }
 
-	Image GetImage(const std::string& NameID) { return Images[NameID]; }
+	Texture2D& GetTexture(const std::string& NameID) { return Textures.at(NameID); }
 
-	Font GetFont(const std::string& NameID) { return Fonts[NameID]; }
+	Image GetImage(const std::string& NameID) { return Images.at(NameID); }
 
-	Sound GetSound(const std::string& NameID) { return Sounds[NameID]; }
+	Font GetFont(const std::string& NameID) { return Fonts.at(NameID); }
 
-	Music GetMusic(const std::string& NameID) { return Musics[NameID]; }
+	Sound GetSound(const std::string& NameID) { return Sounds.at(NameID); }
+
+	bool HasSoundID(const std::string& soundID);
+
+	const Music& GetMusic(const std::string& NameID) { return Musics.at(NameID); }
+
+	bool HasMusicID(const std::string& musicID);
 
 	std::vector<Texture2D>& MansionIntro() { return MansionFrames; }
 

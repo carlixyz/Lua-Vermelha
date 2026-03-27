@@ -158,6 +158,8 @@ class LuaManager : public Singleton<LuaManager>
     int visibleChars = 0;
     float typeTimer = 0.0f;
     float typeSpeed = 0.03f; // seconds per character
+    float ShadeAlpha = 0.35f;
+    float CurrentAlpha = 0.0;
 
 public:
     bool Init();
@@ -172,6 +174,7 @@ public:
 
     void Advance(int choiceIndex = -1);
     void ResetTypewriter();
+    GETTERSETTER(float, ShadeAlpha, ShadeAlpha)
 
     lua_State* GetState() { return LuaContext; }
 

@@ -36,8 +36,8 @@ public:
 
 	void PlayMusic(const std::string& musicFile, bool isLooping = true);
 
-	void PlayMusic(Music soundTrack, bool isLooping = true);
-	//void PlayMusic(Music& SoundTrack, bool isLooping = true);
+	void PlayMusic(const Music& soundTrack, bool isLooping = true);
+
 	void StopMusic();
 	void FadeMusicIn();
 	void FadeMusicOut();

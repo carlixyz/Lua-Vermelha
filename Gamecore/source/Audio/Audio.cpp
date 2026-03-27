@@ -62,7 +62,7 @@ void Audio::PlayMusic(const std::string& musicFile, bool isLooping)
     }
 }
 
-void Audio::PlayMusic( Music soundTrack, bool isLooping)
+void Audio::PlayMusic(const Music& soundTrack, bool isLooping)
 {
     SoundTrack = soundTrack;
     SoundTrack.looping = isLooping;

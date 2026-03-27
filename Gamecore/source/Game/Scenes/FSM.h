@@ -66,5 +66,6 @@ public:
 
 	GETTERSETTER(GameScene*, Current, CurrentScene);			// return current scene layer
 	GETTERSETTER(GameScene*, Shared, SharedScene);				// return shared scene layer
+	GETTERSETTER(GameScene*, Inventory, InventoryScene);				// return shared scene layer
 };
 

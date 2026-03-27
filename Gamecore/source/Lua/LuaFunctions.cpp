@@ -3,6 +3,7 @@
 #include "LuaManager.h"
 #include "../Graphics/Graphics.h"
 #include "../Game/Assets.h"
+//#include "../Audio/Audio.h"
 #include "../Game/Director.h"
 #include "../Game/Game.h"
 #include "../Game/Scenes/Entity.h"
@@ -180,6 +181,16 @@ int Lua_SetNoise(lua_State* L)
     return 0;
 }
 
+int Lua_SetInventory(lua_State* L)
+{
+    bool enabled = lua_toboolean(L, 1);
+
+    Inventory* inventory = ((Inventory*)Game::Get().Scenes.GetInventory());
+
+    inventory->SetEnabled(enabled);
+
+    return 0;
+}
 
 
 
@@ -400,6 +411,17 @@ int Lua_SetPosition(lua_State* L)
     return 0;
 }
 
+int Lua_SetShadeAlpha(lua_State* L)
+{
+    int argc = lua_gettop(L);
+    float alpha = (float)luaL_checknumber(L, 1);
+
+    LuaManager::Get().SetShadeAlpha(alpha);
+
+    return 0;
+}
+
+
 int Lua_SetEntityScene(lua_State* L) 
 {
     // Expecting: (string entityID, string sceneID)
@@ -486,6 +508,8 @@ int Lua_SwipeScene(lua_State* L)
     const std::string& sceneID = luaL_checkstring(L, 1);
     const std::string& swipeType = luaL_optstring(L, 2, "Up");
 
+    Game::Get().Scenes.Render();										/// <--------------------
+
     if (swipeType == "Up")
         Graphics::Get().GetWiper().Start(WIPE_UP);
     else if (swipeType == "Left")
@@ -505,6 +529,8 @@ int Lua_BlendScene(lua_State* L)
     // Expecting: (string sceneID)
     const std::string& sceneID = luaL_checkstring(L, 1);
     float duration = (float)luaL_optnumber(L, 2, 2.0f);
+
+    Game::Get().Scenes.Render();										/// <--------------------
 
     Graphics::Get().GetBlender().Start(duration);
 
@@ -587,6 +613,91 @@ int Lua_ShakeEntity(lua_State* L)
 
     return 0; // No return values
 }
+
+// AUDIO BINDINGS
+/*
+int Lua_PlaySound(lua_State* L)
+{
+    const char* soundArg = luaL_checkstring(L, 1);
+    std::string soundIDOrPath = soundArg;
+
+    if (Assets::Get().HasSoundID(soundIDOrPath))
+    {
+        Sound sound = Assets::Get().GetSound(soundIDOrPath);
+        if (IsSoundValid(sound))
+            PlaySound(sound);
+    }
+    else
+    {
+        Audio::Get().PlaySound(soundIDOrPath);
+    }
+
+    return 0;
+}
+
+int Lua_PreloadSound(lua_State* L)
+{
+    const char* soundArg = luaL_checkstring(L, 1);
+    std::string soundIDOrPath = soundArg;
+
+    if (!Assets::Get().HasSoundID(soundIDOrPath))
+        Audio::Get().PreloadSound(soundIDOrPath);
+
+    return 0;
+}
+
+int Lua_PlayMusic(lua_State* L)
+{
+    const char* musicArg = luaL_checkstring(L, 1);
+    std::string musicIDOrPath = musicArg;
+
+    bool isLooping = lua_isnoneornil(L, 2) ? true : (lua_toboolean(L, 2) != 0);
+
+    if (Assets::Get().HasMusicID(musicIDOrPath))
+    {
+        const Music& music = Assets::Get().GetMusic(musicIDOrPath);
+        Audio::Get().PlayMusic(music, isLooping);
+    }
+    else
+    {
+        Audio::Get().PlayMusic(musicIDOrPath, isLooping);
+    }
+
+    return 0;
+}
+
+int Lua_StopMusic(lua_State* L)
+{
+    Audio::Get().StopMusic();
+    return 0;
+}
+
+int Lua_FadeMusic(lua_State* L)
+{
+    bool fadeIn = lua_isnoneornil(L, 1) ? true : (lua_toboolean(L, 1) != 0);
+
+    if (fadeIn)
+        Audio::Get().FadeMusicIn();
+    else
+        Audio::Get().FadeMusicOut();
+
+    return 0;
+}
+
+int Lua_ToggleMusic(lua_State* L)
+{
+    Audio::Get().ToggleMusic();
+    return 0;
+}
+
+int Lua_IsPlayingMusic(lua_State* L)
+{
+    lua_pushboolean(L, Audio::Get().IsPlayingMusic());
+    return 1;
+}
+*/
+
+
 
 // Lua: Schedule(delay, luaFuncName, [repeatFlag], [id])
 // Schedule(5, "Fade", "Dark", 0.0, 5.0)
@@ -819,7 +930,7 @@ void RegisterLuaFunctions() // C++ Foo Register in Lua
     
     LuaManager::Get().RegisterFunction("CancelScheduled", Lua_CancelScheduled);
 
-    ///LuaManager::Get().RegisterFunction("Say", Lua_Say);                          // Not needed, this is already in Lua
+    LuaManager::Get().RegisterFunction("SetInventory", Lua_SetInventory);           // SetInventory( enabled = true)
 
     LuaManager::Get().RegisterFunction("SetThunder", Lua_SetThunder);               // SetThunder( enabled = true)
 
@@ -829,7 +940,7 @@ void RegisterLuaFunctions() // C++ Foo Register in Lua
 
     LuaManager::Get().RegisterFunction("Toast", Lua_ToastMessage);
 
-    LuaManager::Get().RegisterFunction("Title", Lua_SplashTitle);
+    LuaManager::Get().RegisterFunction("ShowTitle", Lua_SplashTitle);
 
     LuaManager::Get().RegisterFunction("GiveItem", Lua_GiveItem);
 
@@ -852,6 +963,8 @@ void RegisterLuaFunctions() // C++ Foo Register in Lua
     LuaManager::Get().RegisterFunction("GetClickable", Lua_GetClickable);
 
     LuaManager::Get().RegisterFunction("SetPosition", Lua_SetPosition);
+
+    LuaManager::Get().RegisterFunction("SetShadeAlpha", Lua_SetShadeAlpha);
 
     LuaManager::Get().RegisterFunction("Fade", Lua_FadeEntity);
 
@@ -882,6 +995,16 @@ void RegisterLuaFunctions() // C++ Foo Register in Lua
     LuaManager::Get().RegisterFunction("Deinitialize", Lua_DeinitializeScene);
 
     LuaManager::Get().RegisterFunction("LoadTexture", Lua_LoadTexture);
+
+    // AUDIO BINDINGS
+
+    //LuaManager::Get().RegisterFunction("PreloadSound", Lua_PreloadSound);
+    //LuaManager::Get().RegisterFunction("PlaySound", Lua_PlaySound);
+    //LuaManager::Get().RegisterFunction("PlayMusic", Lua_PlayMusic);
+    //LuaManager::Get().RegisterFunction("StopMusic", Lua_StopMusic);
+    //LuaManager::Get().RegisterFunction("FadeMusic", Lua_FadeMusic);
+    //LuaManager::Get().RegisterFunction("ToggleMusic", Lua_ToggleMusic);
+    //LuaManager::Get().RegisterFunction("IsPlayingMusic", Lua_IsPlayingMusic);
 
 }
 
