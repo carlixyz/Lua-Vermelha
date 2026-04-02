@@ -3,6 +3,51 @@
 #include "../Game/Game.h"
 #include "../Game/Assets.h"
 
+bool LuaManager::IsDummyChoice(int index) const
+{
+    if (!sequence) return true;
+    if (index < 0 || index >= (int)sequence->CurrentOptions.size()) return true;
+
+    const std::string& text = sequence->CurrentOptions[index];
+    return text.find_first_not_of(" \t\n\r") == std::string::npos;
+}
+
+void LuaManager::ClampSelectionToValidChoice(int direction)
+{
+    if (!sequence || sequence->CurrentOptions.empty())
+        return;
+
+    const int count = (int)sequence->CurrentOptions.size();
+
+    // If there are no valid visible choices, keep 0
+    bool foundAny = false;
+    for (int i = 0; i < count; ++i)
+    {
+        if (!IsDummyChoice(i))
+        {
+            foundAny = true;
+            break;
+        }
+    }
+
+    if (!foundAny)
+    {
+        sequence->SelectedIndex = 0;
+        return;
+    }
+
+    int idx = sequence->SelectedIndex;
+    for (int step = 0; step < count; ++step)
+    {
+        idx = (idx + direction + count) % count;
+        if (!IsDummyChoice(idx))
+        {
+            sequence->SelectedIndex = idx;
+            return;
+        }
+    }
+}
+
 bool LuaManager::Init()
 {
     LuaContext = luaL_newstate();
@@ -37,6 +82,9 @@ void LuaManager::Update(float deltaTime)
 
         for (int i = 0; i < (int)sequence->CurrentOptions.size(); i++)
         {
+            if (IsDummyChoice(i))
+                continue;
+
             int textY = TextY + 30 * i;
             int textWidth = MeasureText(sequence->CurrentOptions[i].c_str(), FontSize);
 
@@ -59,12 +107,12 @@ void LuaManager::Update(float deltaTime)
         if (!hoveredAny)
         {
             if (IsKeyPressed(KEY_DOWN))
-                sequence->SelectedIndex = (int)Wrap((float)(sequence->SelectedIndex + 1), 0.0f, (float)sequence->CurrentOptions.size());
+                ClampSelectionToValidChoice(1);
             else if (IsKeyPressed(KEY_UP))
-                sequence->SelectedIndex = (int)Wrap((float)(sequence->SelectedIndex - 1), 0.0f, (float)sequence->CurrentOptions.size());
+                ClampSelectionToValidChoice(-1);
         }
 
-        if (IsKeyPressed(KEY_SPACE))
+        if (IsKeyPressed(KEY_SPACE) && !IsDummyChoice(sequence->SelectedIndex))
             Advance(sequence->SelectedIndex + 1);
 
         return;
@@ -116,8 +164,15 @@ void LuaManager::Render()
         hoverPulse += GetFrameTime() * 3.0f;
         float pulse = (sinf(hoverPulse) * 0.5f + 0.5f);
 
+        CurrentAlpha += GetFrameTime() * 2;
+        CurrentAlpha = Clamp(CurrentAlpha, 0.f, ShadeAlpha);
+        DrawTexture(GetTexture("Shade"), 0, 316, ColorAlpha(WHITE, CurrentAlpha));
+
         for (int i = 0; i < (int)sequence->CurrentOptions.size(); i++)
         {
+            if (IsDummyChoice(i))
+                continue;
+
             int textY = TextY + 30 * i;
             const char* text = sequence->CurrentOptions[i].c_str();
             bool isSelected = (i == sequence->SelectedIndex);
@@ -168,13 +223,19 @@ void LuaManager::Render()
 
 void LuaManager::Advance(int choiceIndex)
 {
-    if (!sequence || !sequence->IsRunning()) 
+    if (!sequence || !sequence->IsRunning())
         return;
 
     if (choiceIndex >= 0)
         sequence->ResumeChoice(choiceIndex);
     else
         sequence->Step();
+
+    if (sequence && sequence->IsMultiChoice())
+    {
+        sequence->SelectedIndex = -1;
+        ClampSelectionToValidChoice(1);
+    }
 
     ResetTypewriter();
 }
@@ -236,6 +297,12 @@ void LuaManager::StartSequence(const std::string& funcName)
 
     sequence = std::make_unique<ScriptedSequence>(LuaContext, funcName);
     sequence->Step();
+    if (sequence && sequence->IsMultiChoice())
+    {
+        sequence->SelectedIndex = -1;
+        ClampSelectionToValidChoice(1);
+    }
+
     ResetTypewriter();
 }
 
@@ -253,5 +320,11 @@ void LuaManager::StartSequence(lua_State* L)
 
     sequence = std::make_unique<ScriptedSequence>(threadL);
     sequence->Step();
+    if (sequence && sequence->IsMultiChoice())
+    {
+        sequence->SelectedIndex = -1;
+        ClampSelectionToValidChoice(1);
+    }
+
     ResetTypewriter();
 }

@@ -412,6 +412,15 @@ void Director::ShakeEntity(const std::string& nameID, float amount, float totalT
 }
 
 
+void Director::StopEntity(const std::string& nameID)
+{
+    if (Entity* entity = Director::Get().GetEntity(nameID))
+    {
+        entity->GetTween().StopAll();
+    }
+}
+
+
 
 //void Director::SetEntityScene(const std::string& entityID, const std::string& targetSceneID)
 //{

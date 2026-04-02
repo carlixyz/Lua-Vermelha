@@ -161,6 +161,9 @@ class LuaManager : public Singleton<LuaManager>
     float ShadeAlpha = 0.35f;
     float CurrentAlpha = 0.0;
 
+    bool IsDummyChoice(int index) const;
+    void ClampSelectionToValidChoice(int direction = 1);
+
 public:
     bool Init();
     bool Deinit();

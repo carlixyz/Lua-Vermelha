@@ -88,6 +88,8 @@ public:
 
     void ShakeEntity(const std::string& nameID, float amount, float totalTime);
 
+    void StopEntity(const std::string& nameID);
+
 
 
 

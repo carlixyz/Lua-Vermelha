@@ -1,6 +1,8 @@
 #include "Audio.h"
 #include <raylib-cpp.hpp>
 #include "./reasings.h"
+#include "../Game/Assets.h"
+
 
 bool Audio::Init()
 {
@@ -33,6 +35,12 @@ bool Audio::Deinit()
 
 void Audio::PlaySound(const std::string& soundFile)
 {
+    if (Assets::Get().HasSoundID(soundFile))
+    {
+        ::PlaySound(GetSound(soundFile));
+        return;
+    }
+
     if (!SoundsMap.contains(soundFile))
         PreloadSound(soundFile);
 
@@ -94,6 +102,16 @@ void Audio::FadeMusicOut()
     MusicVolumeEnd = 0.0f;
     CurrentTime = 0.0f;
     IsMusicFading = true;
+}
+
+void Audio::SetMusicVol(float volume)
+{
+    volume = Clamp(volume, 0.0f, 1.0f);
+
+    MusicVolumeNow = volume;
+
+    if (IsMusicValid(SoundTrack))
+        SetMusicVolume(SoundTrack, MusicVolumeNow);
 }
 
 void Audio::ToggleMusic()

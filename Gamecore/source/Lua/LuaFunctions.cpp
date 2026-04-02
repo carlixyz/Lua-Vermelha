@@ -3,11 +3,11 @@
 #include "LuaManager.h"
 #include "../Graphics/Graphics.h"
 #include "../Game/Assets.h"
-//#include "../Audio/Audio.h"
 #include "../Game/Director.h"
 #include "../Game/Game.h"
 #include "../Game/Scenes/Entity.h"
 #include "../Game/Scenes/FSM.h"
+#include "../Audio/Audio.h"
 
 #include <raylib-cpp.hpp>
 
@@ -614,8 +614,17 @@ int Lua_ShakeEntity(lua_State* L)
     return 0; // No return values
 }
 
+int Lua_StopTween(lua_State* L)
+{
+    // Expecting 1 argument: (entityName)
+    const std::string& nameID = luaL_checkstring(L, 1);
+    Director::Get().StopEntity(nameID);
+
+    return 0; // No return values
+}
+
+
 // AUDIO BINDINGS
-/*
 int Lua_PlaySound(lua_State* L)
 {
     const char* soundArg = luaL_checkstring(L, 1);
@@ -695,6 +704,16 @@ int Lua_IsPlayingMusic(lua_State* L)
     lua_pushboolean(L, Audio::Get().IsPlayingMusic());
     return 1;
 }
+
+int Lua_SetMusicVolume(lua_State* L)
+{
+    float volume = (float)luaL_checknumber(L, 1);
+    Audio::Get().SetMusicVol(volume);
+    return 0;
+}
+
+/*
+
 */
 
 
@@ -972,6 +991,8 @@ void RegisterLuaFunctions() // C++ Foo Register in Lua
 
     LuaManager::Get().RegisterFunction("Shake", Lua_ShakeEntity);
 
+    LuaManager::Get().RegisterFunction("StopTween", Lua_StopTween);
+
     LuaManager::Get().RegisterFunction("SetEntityScene", Lua_SetEntityScene);
 
     LuaManager::Get().RegisterFunction("IsEntityInScene", Lua_IsEntityInScene);
@@ -998,13 +1019,14 @@ void RegisterLuaFunctions() // C++ Foo Register in Lua
 
     // AUDIO BINDINGS
 
-    //LuaManager::Get().RegisterFunction("PreloadSound", Lua_PreloadSound);
-    //LuaManager::Get().RegisterFunction("PlaySound", Lua_PlaySound);
-    //LuaManager::Get().RegisterFunction("PlayMusic", Lua_PlayMusic);
-    //LuaManager::Get().RegisterFunction("StopMusic", Lua_StopMusic);
-    //LuaManager::Get().RegisterFunction("FadeMusic", Lua_FadeMusic);
-    //LuaManager::Get().RegisterFunction("ToggleMusic", Lua_ToggleMusic);
-    //LuaManager::Get().RegisterFunction("IsPlayingMusic", Lua_IsPlayingMusic);
+    LuaManager::Get().RegisterFunction("PreloadSound", Lua_PreloadSound);
+    LuaManager::Get().RegisterFunction("PlaySound", Lua_PlaySound);
+    LuaManager::Get().RegisterFunction("PlayMusic", Lua_PlayMusic);
+    LuaManager::Get().RegisterFunction("StopMusic", Lua_StopMusic);
+    LuaManager::Get().RegisterFunction("FadeMusic", Lua_FadeMusic);
+    LuaManager::Get().RegisterFunction("ToggleMusic", Lua_ToggleMusic);
+    LuaManager::Get().RegisterFunction("IsPlayingMusic", Lua_IsPlayingMusic);
+    LuaManager::Get().RegisterFunction("SetMusicVolume", Lua_SetMusicVolume);
 
 }
 

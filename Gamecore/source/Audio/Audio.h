@@ -10,14 +10,14 @@
 
 class Audio : public Singleton<Audio>
 {
-	bool Pause = false;
-	bool IsMusicFading = false;
-	float CurrentTime = 0.0f;
-	float TotalTime = 5.0f;
+	bool Pause				= false;
+	bool IsMusicFading		= false;
+	float CurrentTime		= 0.0f;
+	float TotalTime			= 5.0f;
 
-	float MusicVolumeNow = 1.0f;
-	float MusicVolumeEnd = 0.0f;
-	float MusicVolumeStart = 0.0f;
+	float MusicVolumeNow	= 1.0f;
+	float MusicVolumeEnd	= 0.0f;
+	float MusicVolumeStart	= 0.0f;
 
 	Music SoundTrack;
 
@@ -41,6 +41,8 @@ public:
 	void StopMusic();
 	void FadeMusicIn();
 	void FadeMusicOut();
+	void SetMusicVol(float volume);
+
 
 	void ToggleMusic();
 

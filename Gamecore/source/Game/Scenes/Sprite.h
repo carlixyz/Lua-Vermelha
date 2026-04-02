@@ -67,6 +67,11 @@ public:
 
 	explicit Tween(SpriteInfo& info) : Sprite(info) { }
 
+	inline void StopAll()
+	{
+		Tweens.clear();
+	}
+
 	inline Tween& ActionFade(float startValue, float endValue, float totalTime)
 	{
 		Tweens.emplace_back(Action {

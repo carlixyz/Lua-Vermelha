@@ -15,6 +15,7 @@ bool Assets::Init()
 	PreloadFonts();
 	PreloadSounds();
 	PreloadMusic();
+	PreloadThunders();
 
 	return true;
 }
@@ -25,6 +26,7 @@ bool Assets::Deinit()
 	UnloadAnimations();
 	UnloadImages();
 	UnloadFonts();
+	UnloadThunders();
 	UnloadSounds();
 	UnloadMusic();
 
@@ -74,6 +76,7 @@ bool Assets::HasMusicID(const std::string& musicID)
 {
 	return Musics.contains(musicID);
 }
+
 
 void Assets::PreloadTextures()
 {
@@ -205,13 +208,39 @@ void Assets::PreloadSounds()
 			Sounds[Name] = Sound;
 		};
 
-	//Load("Fire", "Data/Sound/MiniGun_A.wav");
+	Load("Crime", "data/Sound/dark-crime-piano-drama.ogg");
+	Load("Viola", "data/Sound/trumpet-piano-viola.ogg");
+	Load("CarWarning", "data/Sound/CarWarning.ogg");
+	Load("CarDoor", "data/Sound/CarDoor.ogg");
+	Load("SeatbeltClick", "data/Sound/SeatbeltClick.ogg");
+	Load("SwipeIn", "data/Sound/SwiftIn.ogg");
+	Load("SwipeOut", "data/Sound/SwiftOut.ogg");
+	Load("Inspection", "data/Sound/Inspection.ogg");
 
-	Load("Thunderbolt", "Data/Sound/Thunderbolt.mp3");
-	Load("Bang", "Data/Sound/Sonorous_Bang.mp3");
-	Load("Storm", "Data/Sound/Storm_Roar.mp3");
-	Load("Rumble", "Data/Sound/Heavy_Rumble.mp3");
-	Load("Thunder", "Data/Sound/Crumbling_Thunder.mp3");
+	Load("SwitchOn", "data/Sound/SwitchOn.ogg");
+	Load("SwitchOff", "data/Sound/SwitchOff.ogg");
+	Load("PianoMi", "data/Sound/piano-mi.ogg");
+	Load("LockedDoor", "data/Sound/LockedDoorKnob.ogg");
+	Load("OldClock", "data/Sound/OldClock.ogg");
+	Load("GlassBreak", "data/Sound/glass-break.ogg");
+	Load("WolfStalk", "data/Sound/werewolf-stalks.ogg");
+	Load("Suspense", "data/Sound/car-drive-soundfx.ogg");
+	Load("TitleFX", "data/Sound/IntroTitle.ogg");
+
+
+	Load("Bang", "data/Sound/Sonorous_Bang.ogg");
+	Load("Storm", "data/Sound/Storm_Roar.ogg");
+	Load("Sky", "data/Sound/Sky_Rumble.ogg");
+	Load("Crumble", "data/Sound/Crumbling_Thunder.ogg");
+	Load("Dry", "data/Sound/ThunderDry.ogg");
+	Load("Peals", "data/Sound/ThunderPeals.ogg");
+
+	Load("Rumble", "data/Sound/Heavy_Rumble.ogg");
+	Load("Thunderbolt", "data/Sound/Thunderbolt.ogg");
+	Load("Thunder", "data/Sound/Rolling_Thunder.ogg");
+	Load("Roar", "data/Sound/Heavenly_Roar.ogg");
+	Load("Loud", "data/Sound/ThunderLoud.ogg");
+	Load("Universal", "data/Sound/ThunderUniversity.ogg");
 }
 
 void Assets::UnloadSounds()
@@ -231,7 +260,11 @@ void Assets::PreloadMusic()
 			Musics[Name] = Music;
 		};
 	
-	//Load("FireLoop", "Data/Sound/stg_st003_88pro-loop.ogg", false);
+	Load("RainDrive", "data/Sound/NightDriveRain.ogg");
+	Load("WetAsphalt", "data/Sound/WetAsphaltSymphony.ogg");
+
+
+	//Load("FireLoop", "data/Sound/stg_st003_88pro-loop.ogg", false);
 }
 
 void Assets::UnloadMusic()
@@ -241,5 +274,61 @@ void Assets::UnloadMusic()
 	{
 		UnloadMusicStream(GetMusic(music.first));
 	}
+}
+
+void Assets::PreloadThunders()
+{
+
+
+	BangsArray = { 
+		LoadSoundAlias(GetSound("Bang")), LoadSoundAlias(GetSound("Storm")),
+		LoadSoundAlias(GetSound("Sky")), LoadSoundAlias(GetSound("Crumble")),
+		LoadSoundAlias(GetSound("Dry")), LoadSoundAlias(GetSound("Peals")),
+		LoadSoundAlias(GetSound("Bang")), LoadSoundAlias(GetSound("Storm")),
+		LoadSoundAlias(GetSound("Sky")), LoadSoundAlias(GetSound("Crumble")),
+		LoadSoundAlias(GetSound("Dry")), LoadSoundAlias(GetSound("Peals"))
+	};
+	CurrentBang = 0;
+
+	ClapsArray = {
+		LoadSoundAlias(GetSound("Rumble")), LoadSoundAlias(GetSound("Thunderbolt")),
+		LoadSoundAlias(GetSound("Thunder")), LoadSoundAlias(GetSound("Roar")),
+		LoadSoundAlias(GetSound("Loud")), LoadSoundAlias(GetSound("Universal")),
+		LoadSoundAlias(GetSound("Rumble")), LoadSoundAlias(GetSound("Thunderbolt")),
+		LoadSoundAlias(GetSound("Thunder")), LoadSoundAlias(GetSound("Roar")),
+		LoadSoundAlias(GetSound("Loud")), LoadSoundAlias(GetSound("Universal"))
+	};
+	CurrentClap = 0;
+}
+
+void Assets::UnloadThunders()
+{
+	for (auto& b : BangsArray)
+		UnloadSoundAlias(b);     // Unload sound aliases
+
+	for (auto& c : ClapsArray)
+		UnloadSoundAlias(c);     // Unload sound aliases
+}
+
+
+Sound& Assets::GetThunderBang()
+{
+
+	//::PlaySound(BangsArray[CurrentBang]);			// play the next open sound slot
+
+	CurrentBang++;									// increment the sound slot
+	CurrentBang %= MAX_BANGS;						// if the sound slot is out of bounds, go back to 0.
+
+	return BangsArray[CurrentBang];
+}
+
+Sound& Assets::GetThunderClap()
+{
+	//::PlaySound(ClapsArray[CurrentClap]);			// play the next open sound slot
+
+	CurrentClap++;									// increment the sound slot
+	CurrentClap %= MAX_CLAPS;						// if the sound slot is out of bounds, go back to 0.
+
+	return ClapsArray[CurrentClap];
 }
 

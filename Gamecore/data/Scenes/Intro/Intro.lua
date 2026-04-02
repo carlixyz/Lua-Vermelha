@@ -37,6 +37,7 @@ return {
             end
             function self.OnCommentLook() Say("Looks like someone forgot to lock a door\n perhaps the wind opened it.", 5.0) Say() end
             function self.OnLook() StartSequence(self.OnCommentLook) end
+            function self.OnEnter() self.ClickedOnce = false end
             function self.OnCommentEnter() Say("rain just stopped, I guess now is the right time\n to leave the car and walk there", 5.0) Say() end
             function self.OnInteract()
                 if not self.Transition then
@@ -44,12 +45,19 @@ return {
                         self.Transition = true
                         SetAlpha("Dark", 0.0)
                         SetVisible("Dark", true)
-                        Fade("Dark", 1.0, 2)
-                        Schedule( 2.1, "SetCurrentScene", "IntroFinal")
-                        Schedule( 3.0, "Fade", "Dark", 0.0, 3)
+                        Fade("Dark", 1.0, 5)
+
+                        SetMusicVolume(0.75)
+                        PlaySound("SeatbeltClick")
+                        Schedule( 6.0, "SetCurrentScene", "IntroFinal")
+                        Schedule( 8.0, "Fade", "Dark", 0.0, 3)
                     else
+                        PlaySound("CarDoor")
+                        Schedule( 0.5, "SetMusicVolume", 1.0)
+                        --SetMusicVolume(1.0)
+
                         self.ClickedOnce = true
-                        StartSequence(self.OnCommentEnter) 
+                        StartSequence(self.OnCommentEnter)
                     end
                 end
             end 

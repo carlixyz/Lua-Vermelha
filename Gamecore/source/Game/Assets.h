@@ -6,7 +6,7 @@
 #include <map>
 #include <unordered_map>
 #include <vector>
-
+#include <array>
 
 
 class Assets : public Singleton<Assets>
@@ -48,6 +48,10 @@ public:
 
 	bool HasMusicID(const std::string& musicID);
 
+	Sound& GetThunderBang();
+
+	Sound& GetThunderClap();
+
 	std::vector<Texture2D>& MansionIntro() { return MansionFrames; }
 
 	std::vector<Texture2D>& NightDriveIntro() { return NightDriveFrames; }
@@ -75,6 +79,20 @@ private:
 
 	void PreloadMusic();
 	void UnloadMusic();
+
+	void PreloadThunders();
+	void UnloadThunders();
+
+#define MAX_BANGS 12
+	//Sound BangsArray[MAX_BANGS] = { 0 };
+	std::array<Sound, MAX_BANGS> BangsArray;
+	int CurrentBang;
+
+
+#define MAX_CLAPS 12
+	//Sound ClapsArray[MAX_CLAPS] = { 0 };
+	std::array<Sound, MAX_CLAPS> ClapsArray;
+	int CurrentClap;
 };
 
 

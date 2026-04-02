@@ -3,8 +3,19 @@
 #include <ctime>
 #include "raylib.h"
 
+#include "../../Game/Assets.h"
+#include "../../Audio/Audio.h"
+
 class ThunderFlash
 {
+//#define MAX_BANGS 6
+//    Sound BangsArray[MAX_BANGS] = { 0 };
+//    int CurrentBang;
+//
+//
+//#define MAX_CLAPS 10
+//    Sound ClapsArray[MAX_CLAPS] = { 0 };
+//    int CurrentClap;
 
 public:
     ThunderFlash()
@@ -12,8 +23,8 @@ public:
         srand((unsigned int)time(nullptr));
     }
 
-    void Enable(bool on = true) { enabled = on; }
-    void Disable() { enabled = false; }
+    void Enable(bool on = true) { enabled = on;}
+    void Disable() { enabled = false; ;}
 
     bool IsEnabled() const { return enabled; }
 
@@ -37,6 +48,7 @@ public:
         // Manual queued flashes take priority
         if (!active && queuedTriggers > 0)
         {
+            ::PlaySound(Assets::Get().GetThunderClap());         // play the next open sound slot
             StartFlash(triggerMinAlpha, triggerMaxAlpha);
             queuedTriggers--;
         }
@@ -45,6 +57,7 @@ public:
         if (!active && queuedTriggers == 0 &&
             ((rand() % 10000) / 10000.0f) < ambientFrequency)
         {
+            ::PlaySound(Assets::Get().GetThunderBang());         // play the next open sound slot
             StartFlash(ambientMinAlpha, ambientMaxAlpha);
         }
 

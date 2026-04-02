@@ -214,7 +214,8 @@ Scenes = {
 -- Set here the first scene to Initialize
 --Scenes.StartScene = "Intro"
 --Scenes.StartScene = "Boot"
-Scenes.StartScene = "GuestRoom"
+Scenes.StartScene = "Title"
+--Scenes.StartScene = "GuestRoom"
 
 -- Set here a top access scene to have shared access
 Scenes.SharedScene = "Global"

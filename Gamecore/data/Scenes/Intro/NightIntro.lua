@@ -17,6 +17,7 @@ local function OnEnter()
     SetNoise(true)
     --SetVisible("Dark")
 
+
     SetAlpha( "Dark", 0.0)
     TriggerThunder( 2)
     ---PlaySound("Rumble")
@@ -39,6 +40,8 @@ local function OnEnter()
     Schedule( 7, "Fade", "Black", 0.0, 5)
 
     Schedule(12, "StartSequence", "OnIntroInteraction")
+    PlayMusic("WetAsphalt", true)
+    SetMusicVolume(0.6)
     --StartSequence(NightIntro.OnIntroInteraction) --StartSequence("OnNightDriveTalk") 
 
 end
@@ -49,23 +52,23 @@ function OnIntroInteraction()
 
     SetAlpha("Panel", 0.0)
     SetVisible("Panel")
-    ---PlaySound("Storm")
 
-    Say("Oof I'm so tired, can't see anthing at this point...", 4.0)
+    Say("must be burnout, I'm hallucinating things now....", 4.0)
     Fade("Panel", 0.6, 5)
-    Say("those thunderbolts are roaring!")
-
-    TriggerThunder( 2)
+    --TriggerThunder( 1)
+    Say("Damn thunderbolts won't stops roaring!")
+    
 
     Say("Now, What's up here?", 3.0)
     Say("Mhh Someone left a door open...", 3.0)
+    SetThunder(false)
     
     SetActive("Rear mirror")
     SetActive("Door entry")
     SetActive("Fachade")
-    TriggerThunder( 1)
+    --TriggerThunder( 1)
 
-    Say("\n\n\n Left click: Interactions | Right click: Look")
+    Say("\n\n\n Left click: Interactions | Right click: Observations")
 
 end
 
@@ -76,6 +79,12 @@ local function OnExit()
     SetVisible("Panel", false)
     SetAlpha("Panel", 0.0)
     SetAlpha("Black", 1.0)
+
+    --Schedule( 0.5, "PlaySound", "SeatbeltClick")
+    --Schedule( 1, "PlaySound", "CarDoor")
+    
+    --FadeMusic(false)
+    SetMusicVolume(0.6)
     
     --SetThunder(false)
     --SetNoise(false)

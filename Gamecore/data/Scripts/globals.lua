@@ -13,6 +13,7 @@
 
 Globals = {}
 
+math.randomseed(os.time())
 
 -- Assign to globals safely (Don't rewrite this function!')
 function Set(varName, value)

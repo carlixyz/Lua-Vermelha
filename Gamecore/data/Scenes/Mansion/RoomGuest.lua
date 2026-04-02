@@ -6,13 +6,13 @@ return {
     { IntroWakeUp = (function() 
             local self = { Painted = false }
             function self.OnConstruct() return { NameId = "IntroWakeup", Clickable = false,
-            Textures = { { IW1 = "data/Scenes/Mansion/WakeEyes.jpg"}, {IW2 = "data/Scenes/Mansion/WakeUp.jpg"} }, --CurrentImage = "WakeEyes" 
+            Textures = { { IW1 = "data/Scenes/Mansion/WakeEyes.jpg"}, {IW2 = "data/Scenes/Mansion/WakeUp.jpg"} }, --CurrentImage = "IW1" 
         }
         end
 
         function self.OnInit()
 
-            SetAlpha("Dark", 1.0)
+            SetAlpha("Dark", 1)
             SetVisible("Dark", true)
 
             SetAlpha("Shade", 0)
@@ -22,7 +22,7 @@ return {
             --SetNoise(false)
 
             Schedule( 4, "TriggerThunder", 2)
-            Schedule( 5, "Fade", "Dark", 0.0, 1.0)
+            Schedule( 5, "Fade", "Dark", 0.0, 2.0)
 
             Schedule( 6.5, "TriggerThunder", 3)
             Schedule( 7, "SetState", "IntroWakeup", "IW2")
@@ -31,7 +31,6 @@ return {
             --print("Title =", Title)
             --print("type(Title) =", type(Title))
             --assert(type(Title) == "function", "Title is not a function!")
-            --ShowTitle("FIRST GUEST", 7, 64.0,  320, 140, 255, 255, 255, 64)
             
             Schedule( 8.0, "Fade", "IntroWakeup", 0.0, 10.0)
             Schedule( 8.1, "ShowTitle", "FIRST GUEST", 7, 64.0,  320, 140, 255, 255, 255, 64)
@@ -107,6 +106,7 @@ return {
             return self
         end)()
     }, -- SECRET DOOR
+    --[[
 
     { Quad = (function() 
         local self = {}
@@ -118,5 +118,6 @@ return {
         return self
         end)() 
     } -- EXIT DOOR
+    ]]
 
 }
