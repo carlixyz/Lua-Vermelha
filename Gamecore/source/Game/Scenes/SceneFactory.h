@@ -285,8 +285,8 @@ private:
 
         if (isInlineEntity)
         {
-            // Inline format { Entity = "Dark", ... }
-            SpriteInfo data = SpriteFromLua(LuaContext, absIndex);
+            /// Inline format { Entity = "Dark", ... }
+            SpriteInfo data = SpriteFromLua(LuaContext, absIndex);  // Lualess Entity is just a bare Sprite 
             entity = Director::Get().CreateEntity(data);
             return entity;
         }
@@ -327,7 +327,7 @@ private:
         return entity;
     }
 
-    SpriteInfo SpriteFromLua(lua_State* L, int tableIndex)
+    SpriteInfo SpriteFromLua(lua_State* L, int tableIndex)      // Lualess Entity is just a bare Sprite 
     {
         SpriteInfo data;
         data.Clickable = false;

@@ -68,7 +68,7 @@ function OnIntroInteraction()
     SetActive("Fachade")
     --TriggerThunder( 1)
 
-    Say("\n\n\n Left click: Interactions | Right click: Observations")
+    Say("\n\n Left click: Interactions | Right click: Observations")
 
 end
 

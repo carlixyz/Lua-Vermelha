@@ -3,7 +3,7 @@
 #include <string>
 #include <iomanip>  // for std::setw / std::setfill
 #include <sstream>
-
+#include "Game.h"
 
 bool Assets::Init()
 {
@@ -13,9 +13,13 @@ bool Assets::Init()
 #endif
 	PreloadImages();
 	PreloadFonts();
-	PreloadSounds();
-	PreloadMusic();
-	PreloadThunders();
+
+	if (Game::Get().IsAudioEnabled())
+	{
+		PreloadSounds();
+		PreloadMusic();
+		PreloadThunders();
+	}
 
 	return true;
 }
@@ -90,7 +94,29 @@ void Assets::PreloadTextures()
 
 	LoadTextureID("MA", "data/bibata_A.png");
 	LoadTextureID("MB", "data/bibata_B.png");
+
 	LoadTextureID("Shade", "data/Images/t.png");
+	LoadTextureID("TDisabled", "data/Images/Thiago/TDisabled.png");
+
+	LoadTextureID("TNeutral", "data/Images/Thiago/TNeutral.png");
+	LoadTextureID("TSuspect", "data/Images/Thiago/TSuspect.png");
+	LoadTextureID("TThink", "data/Images/Thiago/TThink.png");
+	LoadTextureID("TWorry", "data/Images/Thiago/TWorry.png");
+	LoadTextureID("TPeace", "data/Images/Thiago/TPeace.png");
+	LoadTextureID("TScary", "data/Images/Thiago/TScary.png");
+
+	LoadTextureID("TComplicity", "data/Images/Thiago/TComplicity.png");
+	LoadTextureID("TSurprise", "data/Images/Thiago/TSurprise.png");
+	LoadTextureID("TSmile", "data/Images/Thiago/TSmile.png");
+	LoadTextureID("TLaugh", "data/Images/Thiago/TLaugh.png");
+	LoadTextureID("TAngry", "data/Images/Thiago/TAngry.png");
+
+	LoadTextureID("T4Wall", "data/Images/Thiago/T4Wall.png");
+	LoadTextureID("TLook", "data/Images/Thiago/TLook.png");
+	LoadTextureID("TOof", "data/Images/Thiago/TOof.png");
+	LoadTextureID("TSad", "data/Images/Thiago/TSad.png");
+	LoadTextureID("TSpy", "data/Images/Thiago/TSpy.png");
+
 	//LoadTextureID("MansionDay", "data/Scenes/Mansion_Day.png");
 	//LoadTextureID("MansionNight", "data/Scenes/Mansion_Night.png");
 }

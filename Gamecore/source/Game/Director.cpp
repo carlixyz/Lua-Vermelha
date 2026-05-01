@@ -233,7 +233,11 @@ Entity* Director::CreateEntity(const std::string& type, const std::string& scrip
     if (type == "Quad")
         entity = new Quad(scriptPath); // Simple HitBox simplification
     else
+    {
         entity = new EntityLua(scriptPath); // Fallback
+        if (entity->GetID().empty())
+            entity->GetInfo().NameId = type;
+    }
 
     RegisterEntity(entity);
 
@@ -249,7 +253,11 @@ Entity* Director::CreateEntityInline(const std::string& type, int tableIndex)
     if (type == "Quad")
         entity = new Quad(tableIndex); // Simple HitBox simplification
     else
+    {
         entity = new EntityLua(tableIndex); // Fallback
+        if (entity->GetID().empty())
+            entity->GetInfo().NameId = type;
+    }
     
     RegisterEntity(entity);
 
@@ -258,6 +266,13 @@ Entity* Director::CreateEntityInline(const std::string& type, int tableIndex)
         lua_State* L = LuaManager::Get().GetState();
         lua_rawgeti(L, LUA_REGISTRYINDEX, eLua->GetRef());   // push entity table
         lua_setglobal(L, type.c_str());                   // _G[type] = entity_table
+
+        //const std::string& id = eLua->GetID(); // entity->GetID();
+        //if (!id.empty())
+        //{
+        //    lua_rawgeti(L, LUA_REGISTRYINDEX, eLua->GetRef());
+        //    lua_setglobal(L, id.c_str());
+        //}
     }
 
     return entity;

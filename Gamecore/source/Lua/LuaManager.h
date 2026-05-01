@@ -138,8 +138,6 @@ private:
     }
 };
 
-
-
 class LuaManager : public Singleton<LuaManager>
 {
     LuaManager() = default;
@@ -152,7 +150,8 @@ class LuaManager : public Singleton<LuaManager>
     bool messageComplete = true;
 
     int TextX = (int)(GetScreenWidth() * 0.2f);
-    int TextY = (int)(GetScreenHeight() * 0.75f);
+    int TextY = (int)(GetScreenHeight() * 0.8f);
+    int ChoiceY = (int)(GetScreenHeight() * 0.75f);
     int FontSize = 24;
 
     int visibleChars = 0;
@@ -163,6 +162,8 @@ class LuaManager : public Singleton<LuaManager>
 
     bool IsDummyChoice(int index) const;
     void ClampSelectionToValidChoice(int direction = 1);
+
+    std::string Emotion = "TDisabled";                  // Our character customizable emotions
 
 public:
     bool Init();
@@ -177,7 +178,9 @@ public:
 
     void Advance(int choiceIndex = -1);
     void ResetTypewriter();
+
     GETTERSETTER(float, ShadeAlpha, ShadeAlpha)
+    GETTERSETTER(std::string, Emotion, Emotion)
 
     lua_State* GetState() { return LuaContext; }
 

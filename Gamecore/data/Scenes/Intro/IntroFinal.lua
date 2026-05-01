@@ -142,66 +142,63 @@ return {
         end)()
     }, -- Piano
 
-    {
-        Quad = (function()
-            local self = {}
+    { Quad = (function()
+        local self = {}
 
-            function self.OnConstruct()
-                return {
-                    NameId = "IntroRightSide", NameView = "Right\nSide",
-                    Position = { x = 840, y = 0 },
-                    Size = { Width = 80, Height = 516 },
-                    Clickable = true
-                }
-            end
+        function self.OnConstruct()
+            return {
+                NameId = "IntroRightSide", NameView = "Right\nSide",
+                Position = { x = 840, y = 0 },
+                Size = { Width = 80, Height = 516 },
+                Clickable = true
+            }
+        end
 
-            function self.OnInteract()
-                PlaySound("SwipeIn")
-                Move("IntroLobby", -604)
-                SetClickable("IntroLeftSide")
-                SetClickable("IntroRightSide", false)
-                SetClickable("Clock", true)
-                SetClickable("IntroRightWindows", true)
-                SetClickable("IntroTable", true)
-                SetClickable("IntroBackDoor", false)
-                SetClickable("Piano", false)
-                SetClickable("IntroSmallTable", false)
-                SetClickable("IntroLeftWindows", false)
-                Schedule(1.5, "SetClickable", "IntroPowerBoard")
-                --SetClickable("IntroPowerBoard", true)
-            end
+        function self.OnInteract()
+            PlaySound("SwipeIn")
+            Move("IntroLobby", -604)
+            SetClickable("IntroLeftSide")
+            SetClickable("IntroRightSide", false)
+            SetClickable("Clock", true)
+            SetClickable("IntroRightWindows", true)
+            SetClickable("IntroTable", true)
+            SetClickable("IntroBackDoor", false)
+            SetClickable("Piano", false)
+            SetClickable("IntroSmallTable", false)
+            SetClickable("IntroLeftWindows", false)
+            Schedule(1.5, "SetClickable", "IntroPowerBoard")
+            --SetClickable("IntroPowerBoard", true)
+        end
 
-            return self
-        end)()
+        return self
+    end)()
     }, -- RIGHT SIDE
 
-    {
-        Quad = (function()
-            local self = {}
+    { Quad = (function()
+        local self = {}
 
-            function self.OnConstruct()
-                return {
-                    NameId = "IntroRightWindows", NameView = "Right Windows",
-                    Position = { x = 360, y = 96 },
-                    Size = { Width = 410, Height = 150 },
-                    Clickable = false
-                }
-            end
+        function self.OnConstruct()
+            return {
+                NameId = "IntroRightWindows", NameView = "Right Windows",
+                Position = { x = 360, y = 96 },
+                Size = { Width = 410, Height = 150 },
+                Clickable = false
+            }
+        end
 
-            function self.OnComment()
-                Say("Between flashes of light, I can glimpse some trees\nswaying in the darkness of the night...", 6.0)
-                Say()
-            end
+        function self.OnComment()
+            Say("Between flashes of light, I can glimpse some trees\nswaying in the darkness of the night...", 6.0)
+            Say()
+        end
 
-            function self.OnInteract() StartSequence(self.OnComment) end
-            function self.OnLook() StartSequence(self.OnComment) end
+        function self.OnInteract() StartSequence(self.OnComment) end
+        function self.OnLook() StartSequence(self.OnComment) end
 
-            return self
-        end)()
+        return self
+    end)()
     }, -- Right windows
 
-    {
-        Quad = (function()
+    { Quad = (function()
             local self = {}
 
             function self.OnConstruct()
@@ -225,8 +222,7 @@ return {
         end)()
     }, -- CLOCK
 
-    {
-        Quad = (function()
+    { Quad = (function()
             local self = {}
 
             function self.OnConstruct()
@@ -251,131 +247,131 @@ return {
         end)()
     }, -- Table
 
-    {
-        Quad = (function()
-            local self = {
-                ClickedOnce = false,
-                ClickedTwice = false,
-                Timer = 16.0,
-                Count = 0.5,
-                ThunderCancelID = 0
-            }
+    { Quad = (function()
+        local self = {
+            ClickedOnce = false,
+            ClickedTwice = false,
+            Timer = 16.0,
+            Count = 0.5,
+            ThunderCancelID = 0
+        }
 
-            function AlternateThunders()
-                self.Timer = self.Timer - 1.0
-                local sound =  math.random(0, 2)
+        function AlternateThunders()
+            self.Timer = self.Timer - 1.0
+            local sound =  math.random(0, 2)
 
 
-                if self.Timer <= 0.0 then
-                    self.Timer = 8.0
-                    Schedule(1.0, "SetState", "IntroLobby", "I3")
-                    Schedule(1.2, "SetState", "IntroLobby", "I2")
+            if self.Timer <= 0.0 then
+                self.Timer = 8.0
+                Schedule(1.0, "SetState", "IntroLobby", "I3")
+                Schedule(1.2, "SetState", "IntroLobby", "I2")
 
-                    self.Count = self.Count - 0.1
-                    if (self.Count > 0.1) then
-                        SetMusicVolume(self.Count)
-                    else
-                        FadeMusic(false)
-                    end
+                self.Count = self.Count - 0.1
+                if (self.Count > 0.1) then
+                    SetMusicVolume(self.Count)
+                else
+                    FadeMusic(false)
+                end
  
-                    if sound == 0 then
-                        Schedule(1.5, "PlaySound", "Bang")
-                    elseif sound == 1 then
-                        Schedule(1.5, "PlaySound", "Sky")
-                    elseif sound == 2 then
-                        Schedule(1.5, "PlaySound", "Crumble")
-                    else
-                        Schedule(1.5, "PlaySound", "Dry")
-                    end
+                if sound == 0 then
+                    Schedule(1.5, "PlaySound", "Bang")
+                elseif sound == 1 then
+                    Schedule(1.5, "PlaySound", "Sky")
+                elseif sound == 2 then
+                    Schedule(1.5, "PlaySound", "Crumble")
+                else
+                    Schedule(1.5, "PlaySound", "Dry")
+                end
     
 
-                    Schedule(1.4, "SetState", "IntroLobby", "I3")
-                    Schedule(1.6, "SetState", "IntroLobby", "I2")
+                Schedule(1.4, "SetState", "IntroLobby", "I3")
+                Schedule(1.6, "SetState", "IntroLobby", "I2")
 
-                    Schedule(1.8, "SetState", "IntroLobby", "I3")
-                    Schedule(2.0, "SetState", "IntroLobby", "I2")
-                    ---Schedule(2.0, "PlaySound", "Thunder")
+                Schedule(1.8, "SetState", "IntroLobby", "I3")
+                Schedule(2.0, "SetState", "IntroLobby", "I2")
+                ---Schedule(2.0, "PlaySound", "Thunder")
 
-                    Schedule(3, "TriggerThunder", 2)
-                end
+                Schedule(3, "TriggerThunder", 2)
             end
+        end
 
-            function self.OnConstruct()
-                return {
-                    NameId = "IntroPowerBoard",
-                    NameView = "Power\nBoard",
-                    Position = { x = 820, y = 150 },
-                    Size = { Width = 70, Height = 70 },
-                    Clickable = false
-                }
+        function self.OnConstruct()
+            return {
+                NameId = "IntroPowerBoard",
+                NameView = "Power\nBoard",
+                Position = { x = 820, y = 150 },
+                Size = { Width = 70, Height = 70 },
+                Clickable = false
+            }
+        end
+
+        function self.OnScreenInput()
+            if self.ClickedOnce == false then
+                self.ThunderCancelID = ScheduleRepeat(1, "AlternateThunders", "ThunderCancelID")
+                self.ClickedOnce = true
+                PlaySound("SwitchOff")
+                SetMusicVolume(0.5)
+                --FadeMusic(false)
+
+                SetState("IntroLobby", "I2")
+                Schedule(3, "TriggerThunder", 2)
+                StartSequence(self.OnLightsOut)
             end
+        end
 
-            function self.OnScreenInput()
-                if self.ClickedOnce == false then
-                    self.ThunderCancelID = ScheduleRepeat(1, "AlternateThunders", "ThunderCancelID")
-                    self.ClickedOnce = true
-                    PlaySound("SwitchOff")
-                    SetMusicVolume(0.5)
-                    --FadeMusic(false)
+        function self.OnLightsOut()
+            Say("Damn, what just happened?", 3.0)
+            Say("I can't see a thing!", 3.0)
+            Say()
+        end
 
-                    SetState("IntroLobby", "I2")
-                    Schedule(3, "TriggerThunder", 2)
-                    StartSequence(self.OnLightsOut)
-                end
-            end
-
-            function self.OnLightsOut()
-                Say("Damn, what just happened?", 3.0)
-                Say("I can't see a thing!", 3.0)
+        function self.OnBoardEntry()
+            if not self.ClickedTwice then
+                FadeMusic(false)
+                Say("Let's see if I can fix the lights here...", 5.0)
+                PlaySound("Inspection")
+                SetVisible("ElectricBoard")
                 Say()
-            end
-
-            function self.OnBoardEntry()
-                if not self.ClickedTwice then
-                    Say("Let's see if I can fix the lights here...", 5.0)
-                    PlaySound("Inspection")
-                    SetVisible("ElectricBoard")
-                    Say()
-                    self.ClickedTwice = true
-                else
-                    PlaySound("SwitchOn")
-                    SetClickable("ElectricBoard", false)
-                    Fade("ElectricBoard", 0.0, 3.0)
+                self.ClickedTwice = true
+            else
+                PlaySound("SwitchOn")
+                SetClickable("ElectricBoard", false)
+                Fade("ElectricBoard", 0.0, 3.0)
                     
-                    SetThunder(false)
-                    Say("Ohh everything is already enabled here", 3.0)
-                    Say("I guess it's a general outagge...", 3.0)
-                    Say()
-                    PlaySound("WolfStalk")
-                    SetThunder(false)
-                    --Schedule(0.0, "PlaySound", "WolfStalk")
+                SetThunder(false)
+                Say("Ohh everything is already enabled here", 3.0)
+                Say("I guess it's a general outagge...", 3.0)
+                Say()
+                PlaySound("WolfStalk")
+                SetThunder(false)
+                --Schedule(0.0, "PlaySound", "WolfStalk")
 
-                    SetClickable("IntroLeftSide", false)
-                    SetClickable("IntroPowerBoard", false)
-                    SetClickable("IntroTable", false)
-                    SetClickable("IntroRightWindows", false)
-                    SetClickable("Clock", false)
+                SetClickable("IntroLeftSide", false)
+                SetClickable("IntroPowerBoard", false)
+                SetClickable("IntroTable", false)
+                SetClickable("IntroRightWindows", false)
+                SetClickable("Clock", false)
 
-                    Schedule(4.0, "PlaySound", "GlassBreak")
-                    Schedule(4.0, "SetVisible", "IntroWolf")
-                    Schedule(4.0, "Shake", "IntroWolf", 64.0, 2.0)
-                    Schedule(4.5, "SetVisible", "Dark")
-                    Schedule(4.5, "Fade", "Dark", 1.0, 1.0)
-                    Schedule(6.0, "SetVisible", "IntroLobby", false)
-                    Schedule(6.0, "SetVisible", "IntroWolf", false)
-                    StopMusic()
+                Schedule(4.0, "PlaySound", "GlassBreak")
+                Schedule(4.0, "SetVisible", "IntroWolf")
+                Schedule(4.0, "Shake", "IntroWolf", 64.0, 2.0)
+                Schedule(4.5, "SetVisible", "Dark")
+                Schedule(4.5, "Fade", "Dark", 1.0, 1.0)
+                Schedule(6.0, "SetVisible", "IntroLobby", false)
+                Schedule(6.0, "SetVisible", "IntroWolf", false)
+                StopMusic()
 
-                    Schedule(8.0, "Fade", "Dark", 1.0, 0.5)
-                    Schedule(8.8, "BlendScene", "Title")
+                Schedule(8.0, "Fade", "Dark", 1.0, 0.5)
+                Schedule(8.8, "BlendScene", "Title")
 
-                end
             end
+        end
 
-            function self.OnInteract() StartSequence(self.OnBoardEntry) end
-            function self.OnLook() StartSequence(self.OnBoardEntry) end
-            function self.OnExit() SetMusicVolume(1.0) end
+        function self.OnInteract() StartSequence(self.OnBoardEntry) end
+        function self.OnLook() StartSequence(self.OnBoardEntry) end
+        function self.OnExit() SetMusicVolume(1.0) self.ClickedOnce = false ClickedTwice = false end
 
-            return self
-        end)()
+        return self
+    end)()
     }, -- ELECTRIC BOARD
 }

@@ -77,15 +77,20 @@ print("Say from Lua is: ", Say)
 
 print("Say=", Say)
 
---[[
-function Say(line)
-    if _inBlock then
-        return function() coroutine.yield({ type="SAY", text=line }) end
-    else
-        coroutine.yield({ type="SAY", text=line })
+
+function PickUp(item, inventoryDelay)
+    if IsEntityInScene(item, "Inventory") then
+        print("Item Already in Inventory")
+        return
+    end
+
+    SetEntityScene(item, "Inventory")
+    SetClickable(item)
+
+    if inventoryDelay then
+        ShowInventory(inventoryDelay)
     end
 end
-]]--
 
 -- Core executor
 local function run_action(a)

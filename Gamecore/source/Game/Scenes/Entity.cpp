@@ -3,6 +3,7 @@
 #include "../Director.h"
 #include "../Game.h"
 #include <raylib-cpp.hpp>
+#include <filesystem>
 
 void EntityLua::OnReturn()
 {
@@ -41,13 +42,9 @@ void EntityLua::OnReturn()
         Info.Active = lua_toboolean(LuaContext, -1);
     lua_pop(LuaContext, 1);
 
-    lua_getfield(LuaContext, -1, "Clickable");
-    if (lua_isboolean(LuaContext, -1))
-        Info.Clickable = lua_toboolean(LuaContext, -1);
-    lua_pop(LuaContext, 1);
-
     // Get Textures table
     lua_getfield(LuaContext, -1, "Textures");
+
     if (lua_istable(LuaContext, -1))
     {
         // Lambda to load all string string pairs in the current table
@@ -82,6 +79,18 @@ void EntityLua::OnReturn()
                     loadFlatTable(lua_gettop(LuaContext)); // process each inner table
         }
     }
+    else if (lua_isstring(LuaContext, -1))          // LAZY texture designation I.Ex.: Textures = "data/Scenes/Inventory/BrokenPhone.png"
+    {
+        //std::string name = Info.NameId;
+        std::string path = lua_tostring(LuaContext, -1);
+
+        // if for some reason We don't have an actual name ID then use the image file as the texture ID
+        std::string name = !Info.NameId.empty() ? Info.NameId : std::filesystem::path(path).stem().string();
+
+        Assets::Get().LoadTextureID(name, path);
+        Info.TexturesIDs.push_back(name);
+    }
+
     lua_pop(LuaContext, 1); // pop Textures
 
 
@@ -96,36 +105,41 @@ void EntityLua::OnReturn()
     if (!CurrentID.empty())
         SetSprite(CurrentID);
 
-    lua_getfield(LuaContext, -1, "Position");
-    if (lua_istable(LuaContext, -1)) {
-        lua_getfield(LuaContext, -1, "x");
-        if (lua_isnumber(LuaContext, -1)) Info.PositionX = (int)lua_tonumber(LuaContext, -1);
-        lua_pop(LuaContext, 1);
+    auto ReadPositionField = [&](const char* fieldName)
+    {
+        lua_getfield(LuaContext, -1, fieldName);
 
-        lua_getfield(LuaContext, -1, "y");
-        if (lua_isnumber(LuaContext, -1)) Info.PositionY = (int)lua_tonumber(LuaContext, -1);
-        lua_pop(LuaContext, 1);
-    }
-    lua_pop(LuaContext, 1);
+        if (lua_istable(LuaContext, -1))
+        {
+            lua_getfield(LuaContext, -1, "x");
+            if (lua_isnumber(LuaContext, -1))
+                Info.PositionX = (int)lua_tonumber(LuaContext, -1);
+            lua_pop(LuaContext, 1);
 
-    lua_getfield(LuaContext, -1, "Pos");
-    if (lua_istable(LuaContext, -1)) {
-        lua_getfield(LuaContext, -1, "x");
-        if (lua_isnumber(LuaContext, -1)) Info.PositionX = (int)lua_tonumber(LuaContext, -1);
-        lua_pop(LuaContext, 1);
+            lua_getfield(LuaContext, -1, "y");
+            if (lua_isnumber(LuaContext, -1))
+                Info.PositionY = (int)lua_tonumber(LuaContext, -1);
+            lua_pop(LuaContext, 1);
+        }
 
-        lua_getfield(LuaContext, -1, "y");
-        if (lua_isnumber(LuaContext, -1)) Info.PositionY = (int)lua_tonumber(LuaContext, -1);
+        if (Info.PositionX == 0 && Info.PositionY == 0) // If position is at 0,0 disable clicks by default to avoid Inventory conflict
+            Info.Clickable = false;
+
         lua_pop(LuaContext, 1);
-    }
+    };
+
+    ReadPositionField("Position");
+    ReadPositionField("Pos");
+
+    lua_getfield(LuaContext, -1, "Clickable");          // Besides entity position, Clickable setting has always higher priority
+    if (lua_isboolean(LuaContext, -1))
+        Info.Clickable = lua_toboolean(LuaContext, -1);
     lua_pop(LuaContext, 1);
 
     lua_getfield(LuaContext, -1, "Alpha");
     if (lua_isnumber(LuaContext, -1)) 
         Info.Alpha = (float)lua_tonumber(LuaContext, -1);
     lua_pop(LuaContext, 1);
-
-    //lua_pop(LuaContext, 1);
 }
 
 void Entity::Debug()

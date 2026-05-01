@@ -143,10 +143,16 @@ void Inventory::OnUpdate(float dt)
     const Vector2 mouse = GetMousePosition();
     const float   mouseY = mouse.y;
 
-    const bool hoverTop = (mouseY < (float)HoverThreshold);
+    const bool forcedVisibility = ForceVisibleDelay > 0.0f;
+    if (forcedVisibility) 
+        ForceVisibleDelay -= dt;
 
-    const float panelDelta = (hoverTop ? PanelFadeIn : -PanelFadeOut) * dt;
-    const float itemsDelta = (hoverTop ? ItemsFadeIn : -ItemsFadeOut) * dt;
+    const bool IsEmpty = Entities.empty();
+    const bool hoverTop = (mouseY < (float)HoverThreshold);
+    const bool IsVisible = (forcedVisibility || hoverTop) && !IsEmpty; // Is not empty
+
+    const float panelDelta = (IsVisible ? PanelFadeIn : -PanelFadeOut) * dt;
+    const float itemsDelta = (IsVisible ? ItemsFadeIn : -ItemsFadeOut) * dt;
 
     PanelAlpha = Clamp(PanelAlpha + panelDelta, 0.0f, 1.0f);
     ItemsAlpha = Clamp(ItemsAlpha + itemsDelta, 0.0f, 1.0f);
@@ -288,6 +294,9 @@ void Inventory::OnRender()
 
         DrawTexturePro( tex, src, dst, { 0,0 }, 0.0f,
             ColorAlpha(WHITE, e->GetInfo().Alpha * iconAlphaFactor) );
+
+        if (Game::Get().IsDebugMode())
+            DrawRectangleLines((int)dst.x, (int)dst.y, (int)dst.width, (int)dst.height, RED);
     }
 
     // -------------------------------

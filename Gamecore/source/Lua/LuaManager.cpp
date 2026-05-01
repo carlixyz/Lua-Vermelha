@@ -85,7 +85,7 @@ void LuaManager::Update(float deltaTime)
             if (IsDummyChoice(i))
                 continue;
 
-            int textY = TextY + 30 * i;
+            int textY = ChoiceY + 30 * i;
             int textWidth = MeasureText(sequence->CurrentOptions[i].c_str(), FontSize);
 
             Rectangle rect = { (float)TextX - 8, (float)textY - 4,
@@ -168,12 +168,14 @@ void LuaManager::Render()
         CurrentAlpha = Clamp(CurrentAlpha, 0.f, ShadeAlpha);
         DrawTexture(GetTexture("Shade"), 0, 316, ColorAlpha(WHITE, CurrentAlpha));
 
+        DrawTexture(GetTexture(Emotion), 16, 290, ColorAlpha(WHITE, CurrentAlpha * 2));
+
         for (int i = 0; i < (int)sequence->CurrentOptions.size(); i++)
         {
             if (IsDummyChoice(i))
                 continue;
 
-            int textY = TextY + 30 * i;
+            int textY = ChoiceY + 30 * i;
             const char* text = sequence->CurrentOptions[i].c_str();
             bool isSelected = (i == sequence->SelectedIndex);
 
@@ -203,9 +205,11 @@ void LuaManager::Render()
     const bool textVisible = charsToShow > 0;
     const bool speakerVisible = !speaker.empty();
 
-    CurrentAlpha += (textVisible || speakerVisible) ? GetFrameTime()*2 : -GetFrameTime();
+    CurrentAlpha += (textVisible || speakerVisible) ? GetFrameTime()*2 : -GetFrameTime()*.25f;
     CurrentAlpha = Clamp(CurrentAlpha, 0.f, ShadeAlpha);
     DrawTexture(GetTexture("Shade"), 0, 316, ColorAlpha(WHITE, CurrentAlpha));
+
+    DrawTexture(GetTexture(Emotion), 16, 290, ColorAlpha(WHITE, CurrentAlpha *2));
 
     if (speakerVisible)
         DrawTextEx(GetFont("Noto"), speaker.c_str(),

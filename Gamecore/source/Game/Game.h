@@ -26,8 +26,11 @@ public:
 
 	void RenderCursor();
 
-	inline bool HasFinished() const	{ return finish; }
-	inline bool IsDebugMode() const { return debug; }
+
+	inline bool HasFinished()		const	{ return finish; }
+	inline bool IsDebugMode()		const { return debug; }
+	inline bool IsAudioEnabled()	const { return !appProperties.AudioDisabled; }
+	inline bool IsAudioDisabled()	const { return !IsAudioEnabled(); }
 	//inline bool SkipIntro()	  const { return appProperties.SkipIntro; }
 
 protected:

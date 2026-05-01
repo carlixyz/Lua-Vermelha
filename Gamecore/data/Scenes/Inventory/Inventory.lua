@@ -1,14 +1,14 @@
 return {
-    { Entity = "Med", Position = { x = 32, y = 32 }, Textures = "data/Scenes/Inventory/Medication.png", Clickable = true},
-    { Entity = "MainKey", Position = { x = 128, y = 32 }, Textures = "data/Scenes/Inventory/MainKey.png", Clickable = true},
-    { Entity = "PaintCan", Position = { x = 512, y = 32 }, Textures = "data/Scenes/Inventory/PaintCan.png", Clickable = true},
-    { Entity = "Knife", Position = { x = 256, y = 32 }, Textures = "data/Scenes/Inventory/Knife.png", Clickable = true},
-    --{ Entity = "Bullets", Position = { x = 386, y = 32 }, Textures = "data/Scenes/Inventory/Bullets.png", Clickable = true}
+    -- { Entity = "Med", Position = { x = 32, y = 32 }, Textures = "data/Scenes/Inventory/Medication.png", Clickable = true},
+    -- { Entity = "MainKey", Position = { x = 128, y = 32 }, Textures = "data/Scenes/Inventory/MainKey.png", Clickable = true},
+    -- { Entity = "PaintCan", Position = { x = 512, y = 32 }, Textures = "data/Scenes/Inventory/PaintCan.png", Clickable = true},
+    -- { Entity = "Knife", Position = { x = 256, y = 32 }, Textures = "data/Scenes/Inventory/Knife.png", Clickable = true},
 
+    --[[
     { Bullets = 
         (function() 
             local self = { Painted = false }
-            function self.OnConstruct() return { NameId = "Bullets", Clickable = true, Textures = { 
+            function self.OnConstruct() return { NameId = "Bullets", Clickable = true, Textures = {
                 {BCopper = "data/Scenes/Inventory/Bullets.png"}, {BSilver = "data/Scenes/Inventory/BulletsSilver.png"} 
             }, --CurrentImage = "BCopper" 
                 }
@@ -31,5 +31,6 @@ return {
             return self
         end)()
     }
+    ]]--
 
 }

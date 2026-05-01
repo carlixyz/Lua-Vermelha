@@ -128,6 +128,20 @@ int Lua_Say(lua_State* L)
     return lua_yield(L, 1);
 }
 
+int Lua_SetEmotion(lua_State* L)
+{
+    std::string emotionId = luaL_optstring(L, 1, "TDisabled");
+
+    if (emotionId.empty())
+        emotionId = "TDisabled";
+
+    LuaManager::Get().SetEmotion(emotionId);
+
+    return 0;
+}
+
+
+
 int Lua_SetThunder(lua_State* L)
 {
     int n = lua_gettop(L);
@@ -192,7 +206,16 @@ int Lua_SetInventory(lua_State* L)
     return 0;
 }
 
+int Lua_ShowInventory(lua_State* L)
+{
+    float delay = (float)luaL_checknumber(L, 1);
+    
+    Inventory* inventory = ((Inventory*)Game::Get().Scenes.GetInventory());
 
+    inventory->ForceVisible(delay);
+
+    return 0;
+}
 
 int Lua_ToastMessage(lua_State* L)
 {
@@ -937,6 +960,8 @@ void RegisterLuaFunctions() // C++ Foo Register in Lua
 
     LuaManager::Get().RegisterFunction("StartSequence", Lua_StartSequence);
 
+    LuaManager::Get().RegisterFunction("SetEmotion", Lua_SetEmotion);
+
     LuaManager::Get().RegisterFunction("EndSequence", Lua_EndSequence);
 
     LuaManager::Get().RegisterFunction("Schedule", Lua_Schedule);
@@ -950,6 +975,8 @@ void RegisterLuaFunctions() // C++ Foo Register in Lua
     LuaManager::Get().RegisterFunction("CancelScheduled", Lua_CancelScheduled);
 
     LuaManager::Get().RegisterFunction("SetInventory", Lua_SetInventory);           // SetInventory( enabled = true)
+
+    LuaManager::Get().RegisterFunction("ShowInventory", Lua_ShowInventory);           // SetInventory( enabled = true)
 
     LuaManager::Get().RegisterFunction("SetThunder", Lua_SetThunder);               // SetThunder( enabled = true)
 

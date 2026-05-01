@@ -31,6 +31,7 @@ public:
     // External enable/disable (for cinematics, etc.)
     void SetEnabled(bool enabled)   { Enabled = enabled; }
     bool IsEnabled() const          { return Enabled; }
+    void ForceVisible(float delay)  { ForceVisibleDelay = delay; }
 
     void SyncSlotsWithEntities();
     void LayoutSlots();
@@ -66,6 +67,7 @@ private:
     float PanelFadeOut              = 8.0f;
     float ItemsFadeIn               = 6.0f;
     float ItemsFadeOut              = 5.0f;
+    float ForceVisibleDelay         = 0.0f;
 
     std::vector<SlotInfo> Slots;
     int   HoverIndex                = -1;

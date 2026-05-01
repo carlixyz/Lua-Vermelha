@@ -35,174 +35,31 @@ Scenes = {
     -----------------------------------------------------------------------------------------------------------------------------
     GuestRoom = "data/Scenes/Mansion/RoomGuest.lua",
 
-    Hallway = {
-        { Entity = "Hallway", Position = { x = 0, y = 0 }, Textures = {
-            {HallwayDay = "data/Scenes/Mansion/HallwayDay.jpg"}, 
-            {HallwaySunset = "data/Scenes/Mansion/HallwaySunset.jpg"}, 
-            {HallwayDusk = "data/Scenes/Mansion/HallwayDusk.jpg"}, 
-            {HallwayNight = "data/Scenes/Mansion/HallwayNight.jpg" }} 
-        },
+    HallwayInit = "data/Scenes/Mansion/HallwayInit.lua",
 
-        { Entity = "MansionView", Textures = { MansionView = "data/Scenes/Mansion/GeneralViewpointSeg.jpg"}, Visible = false },
+    Lobby = "data/Scenes/Mansion/Lobby.lua",
 
-        { Quad = { OnConstruct = function() return { NameId = "Lobby entry", Position = { x = 700, y = 300 },
-            Size = { Width = 200, Height = 280 }} end, OnInteract = function() SwipeScene("Lobby", "Down") end } 
-        }
-    },
+    Park = "data/Scenes/Parking/Park.lua",
 
-    Lobby = {
-        { Entity = "Lobby", Position = { x = 0, y = 0 }, Textures = {
-            {LobbyDay = "data/Scenes/Mansion/LobbyDay.jpg"}, 
-            {LobbySunset = "data/Scenes/Mansion/LobbySunset.jpg"}, 
-            {LobbyDusk = "data/Scenes/Mansion/LobbyDusk.jpg"}, 
-            {LobbyNight = "data/Scenes/Mansion/LobbyNight.jpg" }} 
-        },
+    ParkPath = "data/Scenes/Parking/ParkPath.lua",
 
-        { Quad = { OnConstruct = function() return { NameId = "Lobby exit", Position = { x = 600, y = 100 },
-            Size = { Width = 200, Height = 280 }} end, OnInteract = function() SwipeScene("Park", "Down") end } 
-        }
-    },
+    --ParkSide = "data/Scenes/Parking/ParkSide.lua",
 
-    Park = {
-        { Entity = "Park", Textures = {
-            {ParkFrontDay = "data/Scenes/Parking/MansionDay.jpg"}, 
-            {ParkFrontCloudy = "data/Scenes/Parking/MansionCloudy.jpg"}, 
-            {ParkFrontSunset = "data/Scenes/Parking/MansionSunset.jpg"}, 
-            {ParkFrontNight = "data/Scenes/Parking/MansionNight.jpg"}, 
-            {ParkFrontLua = "data/Scenes/Parking/MansionLua.jpg"}}
-        },
+    Cemetery = "data/Scenes/Parking/ParkGate.lua",
 
-        { Entity = "ParkSide", Position = { x = 0, y = 0 }, Textures = "data/Scenes/Parking/FachadeSide.jpg", Visible = false, Alpha = 0.0  },
-        { Entity = "ParkTop", Position = { x = 0, y = 0 }, Textures = "data/Scenes/Parking/ParkTop.jpg", Visible = false, Alpha = 0.0  },
+    PlazaPan = "data/Scenes/Town/PlazaPan.lua",
 
-        { Quad = { OnConstruct = function() return { NameId = "Park exit", Position = { x = 600, y = 100 },
-            Size = { Width = 200, Height = 280 }} end, OnInteract = function() SwipeScene("ParkPath", "Down") end } 
-        }
-    },
+    PlazaExit = "data/Scenes/Town/PlazaExit.lua",
 
-    ParkPath = {
-        { Entity = "Town Branch", Textures = {
-            {TownPathDeep = "data/Scenes/Parking/TownPathDeep.jpg"}, 
-            {TownPathA = "data/Scenes/Parking/TownPathA.jpg"}, 
-            {TownPathB = "data/Scenes/Parking/TownPathB.jpg"}, 
-            {TownView = "data/Scenes/Parking/TownView.jpg"}}
-        },
+    Luperta = "data/Scenes/Town/Luperta.lua",
 
-        { Quad = { OnConstruct = function() return { NameId = "Woods Path", Position = { x = 600, y = 100 },
-            Size = { Width = 200, Height = 280 }} end, OnInteract = function() SwipeScene("Cemetery", "Down") end } 
-        }
-    },
+    PlazaReturn = "data/Scenes/Town/PlazaReturn.lua",
 
-    Cemetery = {
-        { Entity = "Cemetery", Textures = {
-            {CemeteryOut = "data/Scenes/Parking/Sanctuary.jpg" },
-            {CemeteryEntry = "data/Scenes/Parking/CemeteryGate.jpg"}, 
-            {Cemetery = "data/Scenes/Parking/Cemetery.jpg"}}
-        },
+    PlazaFountain = "data/Scenes/Town/PlazaFountain.lua",
 
-        { Quad = { OnConstruct = function() return { NameId = "Cemetery Gate", Position = { x = 600, y = 100 },
-            Size = { Width = 200, Height = 280 }} end, OnInteract = function() SwipeScene("PlazaPan", "Down") end } 
-        }
-    },
+    Hospital = "data/Scenes/Town/TownHospital.lua",
 
-    PlazaPan = {
-        { Entity = "PlazaPan", Position = { x = 0, y = 0 }, Textures = {
-            {PlazaPanDay = "data/Scenes/Town/PlazaPanDay.jpg"}, 
-            {PlazaPanSunset = "data/Scenes/Town/PlazaPanSunset.jpg"}, 
-            {PlazaPanNight = "data/Scenes/Town/PlazaPanNight.jpg"}, 
-            {PlazaPanThug = "data/Scenes/Town/PlazaPanNightThugs.jpg"}, 
-            {PlazaPanFire = "data/Scenes/Town/PlazaPanNightFire.jpg"}, 
-            {PlazaPanLua = "data/Scenes/Town/PlazaPanLua.jpg" }} 
-        },
-
-        { Entity = "Thugs", Textures = {
-            {ThugsFar = "data/Scenes/Town/ThugsFar.jpg"}, {ThugsNear = "data/Scenes/Town/ThugsFar.jpg"} }, Visible = false },
-
-        { Quad = { OnConstruct = function() return { NameId = "Path ending", Position = { x = 600, y = 100 },
-            Size = { Width = 200, Height = 280 }} end, OnInteract = function() SwipeScene("PlazaExit", "Down") end } 
-        }
-    },
-
-    PlazaExit = {
-        { Entity = "PlazaExit", Textures = {
-            {PlazaExitDay = "data/Scenes/Town/PlazaExitDay.jpg"}, 
-            {PlazaExitDusk = "data/Scenes/Town/PlazaExitSunset.jpg"}, 
-            {PlazaExitSunset = "data/Scenes/Town/PlazaExitNight.jpg"}, 
-            {PlazaExitNight = "data/Scenes/Town/PlazaExitLua.jpg" }} 
-        },
-
-        { Quad = { OnConstruct = function() return { NameId = "Tunnel entry", Position = { x = 600, y = 100 },
-            Size = { Width = 200, Height = 280 }} end, OnInteract = function() SwipeScene("Luperta", "Down") end } 
-        }
-    },
-
-    Luperta = {
-        { Entity = "LupertaStatue", Textures = {
-            {LupertaDayClosed = "data/Scenes/Town/LupertaDayClosed.jpg"},
-            {LupertaDayOpen = "data/Scenes/Town/LupertaDayOpen.jpg"},
-            {LupertaSunOff = "data/Scenes/Town/LupertaSunsetOff.jpg"},
-            {LupertaSunOn = "data/Scenes/Town/LupertaSunsetOn.jpg" },
-            {LupertaCloseUp = "data/Scenes/Town/LupertaSunsetCloseUp.jpg" }} 
-        },
-
-        { Quad = { OnConstruct = function() return { NameId = "Plaza Return", Position = { x = 600, y = 100 },
-            Size = { Width = 200, Height = 280 }} end, OnInteract = function() SwipeScene("PlazaReturn", "Down") end } 
-        }
-    },
-
-    PlazaReturn = {
-        { Entity = "PlazaReturn", Textures = {
-            {ReturnDay = "data/Scenes/Town/PlazaReturnDay.jpg"}, 
-            {ReturnDusk = "data/Scenes/Town/PlazaReturnSunset.jpg"}, 
-            {ReturnSunset = "data/Scenes/Town/PlazaReturnNight.jpg"}, 
-            {ReturnNight = "data/Scenes/Town/PlazaReturnLua.jpg" }}
-        },
-
-        { Quad = { OnConstruct = function() return { NameId = "Fountain path", Position = { x = 600, y = 100 },
-            Size = { Width = 200, Height = 280 }} end, OnInteract = function() SwipeScene("PlazaFountain", "Down") end } 
-        }
-    },
-
-    PlazaFountain = {
-        { Entity = "Fountain", Textures = {
-            {FountainDay = "data/Scenes/Town/PlazaFountainDay.jpg"}, 
-            {FountainDusk = "data/Scenes/Town/PlazaFountainSunset.jpg"}, 
-            {FountainSunset = "data/Scenes/Town/PlazaFountainNight.jpg"}, 
-            {FountainNight = "data/Scenes/Town/PlazaFountainLua.jpg" }} 
-        },
-
-        { Quad = { OnConstruct = function() return { NameId = "Path Hospital", Position = { x = 600, y = 100 },
-            Size = { Width = 200, Height = 280 }} end, OnInteract = function() SwipeScene("Hospital", "Down") end } 
-        }
-    },
-
-    Hospital = {
-        { Entity = "Hospital", Textures = {
-            {HospitalDay = "data/Scenes/Town/HospitalOutDay.jpg"}, 
-            {HospitalNight = "data/Scenes/Town/HospitalOutNight.jpg"}, 
-            {HospitalLua = "data/Scenes/Town/HospitalOutLua.jpg" }, 
-            {Medic = "data/Scenes/Town/Medic.jpg" }} 
-        },
-
-        { Quad = { OnConstruct = function() return { NameId = "Bar side", Position = { x = 600, y = 100 },
-            Size = { Width = 200, Height = 280 }} end, OnInteract = function() SwipeScene("Bar", "Down") end } 
-        }
-    },
-
-    Bar = {
-        { Entity = "Bar", Textures = {
-            {BarOutDay = "data/Scenes/Town/BarOutDay.jpg"},
-            {BarOutNight = "data/Scenes/Town/BarOutNight.jpg"},
-            {BarOutLua = "data/Scenes/Town/BarOutLua.jpg" },
-            {BarInDay = "data/Scenes/Town/BarInDay.jpg" },
-            {BarInNight = "data/Scenes/Town/BarInNight.jpg" },
-            {Drunk = "data/Scenes/Town/Drunk.jpg" }}
-        },
-
-        { Quad = { OnConstruct = function() return { NameId = "Path entry", Position = { x = 600, y = 100 },
-            Size = { Width = 200, Height = 280 }} end, OnInteract = function() SwipeScene("PlazaPan", "Down") end } 
-        }
-    },
+    Bar = "data/Scenes/Town/TownBar.lua",
 
     -----------------------------------------------------------------------------------------------------------------------------
 
@@ -212,10 +69,13 @@ Scenes = {
 
 
 -- Set here the first scene to Initialize
---Scenes.StartScene = "Intro"
+
+
+--Scenes.StartScene = "HallwayInit"
 --Scenes.StartScene = "Boot"
-Scenes.StartScene = "Title"
+--Scenes.StartScene = "Title"
 --Scenes.StartScene = "GuestRoom"
+Scenes.StartScene = "HallwayInit"
 
 -- Set here a top access scene to have shared access
 Scenes.SharedScene = "Global"

@@ -14,5 +14,6 @@ struct ApplicationProperties
 	bool Fullscreen				= false;
 	bool DebugMode				= false;
 	bool SkipIntro				= false;
+	bool AudioDisabled			= true;
 };
 

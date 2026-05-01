@@ -60,7 +60,8 @@ return {
                         StartSequence(self.OnCommentEnter)
                     end
                 end
-            end 
+            end
+            function self.OnExit() self.Transition = false end
             return self -- DOOR ENTRY
         end)() 
     }, -- DOOR ENTRY

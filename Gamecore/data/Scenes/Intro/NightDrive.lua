@@ -23,11 +23,6 @@ local function OnEnter()
     
     --Title("LUA VERMELHA", 5, 72.0, 0, 0, 255, 255, 255, 64)
     Schedule( 7, "ShowTitle", "A FRACTAL SENSATION", 8, 72.0, 0, 0, 255, 255, 255, 64)   
-
-    --Schedule( 7, "PlayMusic", "RainDrive")
-    --Schedule( 7.1, "SetMusicVolume", 0.0)
-    --Schedule( 8, "FadeMusic")
-
     Schedule( 9, "Fade", "Dark", 0.0, 5)       --ScheduleDirector(5.0, "FadeEntity", "Dark", "0.0", "5.0")
 
     Schedule( 10, "PlaySound", "Crime")
@@ -144,8 +139,6 @@ local function OnExit()
     --SetThunder(false)
     --SetNoise(false)
 end
-
-
 
 Drive.OnConstruct = OnConstruct
 Drive.OnNightDriveTalk = OnNightDriveTalk

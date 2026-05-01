@@ -2,11 +2,13 @@
 #include <raylib-cpp.hpp>
 #include "./reasings.h"
 #include "../Game/Assets.h"
+#include "../Game/Game.h"
 
 
 bool Audio::Init()
 {
-    InitAudioDevice();
+    if (Game::Get().IsAudioEnabled())
+        InitAudioDevice();
 
     //SoundTrack = LoadMusicStream("LP.mp3");
 
@@ -18,6 +20,9 @@ bool Audio::Deinit()
     //if (IsMusicReady(SoundTrack))
     //    UnloadMusicStream(SoundTrack);    
     /// Let's handle this from Assets Unloading to avoid more issues
+
+    if (Game::Get().IsAudioDisabled())
+        return true;
 
     for (auto& sound : SoundsMap)
     {
@@ -35,6 +40,9 @@ bool Audio::Deinit()
 
 void Audio::PlaySound(const std::string& soundFile)
 {
+    if (Game::Get().IsAudioDisabled())
+        return;
+
     if (Assets::Get().HasSoundID(soundFile))
     {
         ::PlaySound(GetSound(soundFile));
@@ -50,6 +58,9 @@ void Audio::PlaySound(const std::string& soundFile)
 
 void Audio::PreloadSound(const std::string& soundFile)
 {
+    if (Game::Get().IsAudioDisabled())
+        return;
+
     if (!SoundsMap.contains(soundFile))
     {
         SoundsMap[soundFile] = new raylib::Sound();
@@ -59,6 +70,9 @@ void Audio::PreloadSound(const std::string& soundFile)
 
 void Audio::PlayMusic(const std::string& musicFile, bool isLooping)
 {
+    if (Game::Get().IsAudioDisabled())
+        return;
+
     SoundTrack = LoadMusicStream(musicFile.c_str());
     SoundTrack.looping = isLooping;
 
@@ -72,6 +86,9 @@ void Audio::PlayMusic(const std::string& musicFile, bool isLooping)
 
 void Audio::PlayMusic(const Music& soundTrack, bool isLooping)
 {
+    if (Game::Get().IsAudioDisabled())
+        return;
+
     SoundTrack = soundTrack;
     SoundTrack.looping = isLooping;
 
@@ -85,6 +102,9 @@ void Audio::PlayMusic(const Music& soundTrack, bool isLooping)
 
 void Audio::StopMusic()
 {
+    if (Game::Get().IsAudioDisabled())
+        return;
+
     StopMusicStream(SoundTrack);
 }
 
@@ -106,6 +126,9 @@ void Audio::FadeMusicOut()
 
 void Audio::SetMusicVol(float volume)
 {
+    if (Game::Get().IsAudioDisabled())
+        return;
+
     volume = Clamp(volume, 0.0f, 1.0f);
 
     MusicVolumeNow = volume;
@@ -125,11 +148,17 @@ void Audio::ToggleMusic()
 
 bool Audio::IsPlayingMusic()
 {
+    if (Game::Get().IsAudioDisabled())
+        return false;
+
     return IsMusicStreamPlaying(SoundTrack);
 }
 
 void Audio::Update()
 {
+    if (Game::Get().IsAudioDisabled())
+        return;
+
     if (IsMusicFading)
     {
         CurrentTime += GetFrameTime();

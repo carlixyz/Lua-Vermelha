@@ -83,7 +83,7 @@ protected:
 public:
 	EntityLua(const std::string& scriptPath) : LuaInterface(scriptPath) { Call("OnConstruct"); }
 
-	EntityLua(int tableIndex) : LuaInterface(tableIndex) { Call("OnConstruct"); }
+	EntityLua(int tableIndex) : LuaInterface(tableIndex)		{ Call("OnConstruct"); }
 
 	virtual void OnInit() override								{ Entity::OnInit(); Call("OnInit"); }
 	virtual void OnDeinit() override							{ Call("OnDeinit"); Entity::OnDeinit(); }
