@@ -94,6 +94,10 @@ void Assets::PreloadTextures()
 
 	LoadTextureID("MA", "data/bibata_A.png");
 	LoadTextureID("MB", "data/bibata_B.png");
+	LoadTextureID("MUp", "data/bibata_Up.png");
+	LoadTextureID("MDown", "data/bibata_Down.png");
+	LoadTextureID("MRight", "data/bibata_Right.png");
+	LoadTextureID("MLeft", "data/bibata_Left.png");
 
 	LoadTextureID("Shade", "data/Images/t.png");
 	LoadTextureID("TDisabled", "data/Images/Thiago/TDisabled.png");

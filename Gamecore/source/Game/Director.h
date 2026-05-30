@@ -53,7 +53,7 @@ public:
     void CancelScheduledTask(const std::string& id);
 
 
-    Entity* CreateEntity(const SpriteInfo& data);
+    Entity* CreateDummyEntity(const SpriteInfo& data);
 
     Entity* CreateEntity(const std::string& type, const std::string& scriptPath);
 
@@ -62,9 +62,12 @@ public:
     Entity* GetEntity(const std::string& id);
 
 
+
     void StartSequence(const std::string& sequenceID);
 
     void RegisterEntity(Entity* entity);
+
+    void RegisterLuaGlobal(const std::string& name, Entity* entity);
 
     void RequestAction(const std::string& id, const std::function<void(Entity*)>& action);
 

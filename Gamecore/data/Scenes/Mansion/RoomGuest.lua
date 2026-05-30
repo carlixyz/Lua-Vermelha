@@ -1,6 +1,7 @@
 return {
     { Entity = "GuestRoom", Textures = { GuestRoom = "data/Scenes/Mansion/RoomGuest.jpg"} },
 
+    --[[
     { CarKey = (function() local self = {}
         function self.OnConstruct() return {NameView = "Car Keys", Textures = "data/Scenes/Inventory/CarKeys.png", Visible = false } end
         function self.OnLookComment()
@@ -11,6 +12,7 @@ return {
         return self
         end)() 
     }, -- Car Keys
+    ]]--
 
     { Wallet = (function() local self = {}
         function self.OnConstruct() return { Textures = "data/Scenes/Inventory/Wallet.png", Visible = false } end
@@ -97,11 +99,11 @@ return {
         end
 
         function self.CountItem()
-            if self.TotalItems <= 3 then
+            if self.TotalItems <= 2 then
                 self.TotalItems = self.TotalItems + 1
             end
 
-            if self.TotalItems == 3 then
+            if self.TotalItems == 2 then
                 self.SetItemsInScene(false)
                 print("Called Injury event")
                         
@@ -124,6 +126,7 @@ return {
             SetClickable("HideDoorA", clickable)
             SetClickable("LBedTable", clickable)
             SetClickable("RBedTable", clickable)
+            SetClickable("GuestWindow", clickable)
         end
 
         function self.OnDoorKnocking()
@@ -164,25 +167,32 @@ return {
            
             SetEmotion("T4Wall")
             Say( "Femenine voice","Oh so, you can talk, that's good!", 3.0)
-            Say( "Femenine voice","Ok Sir, Can you tell me what's your name then?", 4.0)
+            SetEmotion("TNeutral")
+            Say( "Femenine voice","Alright Sir, Do you want to open the door?\nSo We can properly introduce ourselves..", 6.0)
+            Say("Thiago" ,"Sure, just give me a sec", 3.0)
+            Say()
+
+            BlendScene("HallwayInit")
             
+            --[[
             SetEmotion("TPeace")
             Say("Ah yes, I'm Thiago Veira")
             Say( "Femenine voice","Oh hello Mister Thiago Veira then!", 4.0)
             Say("Thiago" ,"Just call me Thiago please", 3.0)
-
             SetEmotion("TNeutral")
+
             Say( "Femenine voice","Alright Thiago, Do you want to open the door?", 5.0)
             Say("Thiago" ,"Sure, just give me a sec", 3.0)
             Say()
             BlendScene("HallwayInit")
+            ]]--
 
         end
 
         function self.OnExit()
-            -- SetAlpha("Shade", 0.0)      -- 
             Fade("Shade", 0.0, 0.3)
-            SetShadeAlpha( 0.35 )       -- Enable auto shade
+            SetShadeAlpha( 0.65 )       -- Enable auto shade
+            --SetShadeAlpha( 0.35 )       -- Enable auto shade
         end
 
         return self
@@ -209,23 +219,9 @@ return {
     { Quad = (function() 
         local self = {}
         function self.OnConstruct() return { NameId = "vestidor", NameView = "Dresser", Pos = { x = 284, y = 232 }, Size = { Width = 70, Height = 105 }, Clickable = false} end
-        function self.OnCommentEntry() Say("\nThe dresser is empty", 3.0) Say() end
-        function self.OnWalletFound() Say("\nHey here's my wallet...\ngood to know I haven't lost it", 5.0) Say() end
-        function self.OnCommentLook() Say("\nA big dresser with a bunch of drawers", 3.0) Say() end
-        function self.OnInteract()
-            if not IsEntityInScene("Wallet", "Inventory") then
-                --PickUp("Wallet", 2)
-                
-                PickUp("Wallet")
-                if IntroWakeup.CountItem() == 3 then return end
-                ShowInventory(2)
-                
-                StartSequence(self.OnWalletFound)
-            else
-                StartSequence(self.OnCommentEntry)
-            end
-
-        end
+        function self.OnCommentEntry() Say("\nThere's just a bunch of old socks and sheets", 4.0) Say() end
+        function self.OnCommentLook() Say("\nA big dresser with a bunch of drawers, nothing important inside", 4.0) Say() end
+        function self.OnInteract() StartSequence(self.OnCommentEntry) end
         function self.OnLook() StartSequence(self.OnCommentLook) end 
         return self
         end)()
@@ -250,18 +246,24 @@ return {
         function self.OnConstruct() return { NameId = "RBedTable", NameView = "Right Bedside table", Pos = { x = 562, y = 264 }, 
             Size = { Width = 40, Height = 65 }, Clickable = false} end
         function self.OnCommentEntry() Say("\nThe drawer is empty", 3.0) Say() end
-        function self.OnCommentFound() Say("\nNice, Found my car keys", 3.0) Say() end
+        function self.OnWalletFound() 
+            PickUp("Wallet", 2)
+            Say("\nHey here's my wallet...\ngood to know I haven't lost it", 5.0) 
+            Say("",0.5)
+            IntroWakeup.CountItem()
+            
+        end
         function self.OnCommentLook() Say("\nA bedside table with one small drawer", 4.0) Say() end
         function self.OnInteract()
 
-            if not IsEntityInScene("CarKey", "Inventory") then
-                PickUp("CarKey")
+            if not IsEntityInScene("Wallet", "Inventory") then
+                StartSequence(self.OnWalletFound)
+                --PickUp("Wallet")
+                --if IntroWakeup.CountItem() == 2 then return end
+                --ShowInventory(2)
                 
-                if IntroWakeup.CountItem() == 3 then return end
-                ShowInventory(3)
-                StartSequence(self.OnCommentFound) 
             else
-                StartSequence(self.OnCommentEntry) 
+                StartSequence(self.OnCommentEntry)
             end
         end
 
@@ -273,20 +275,21 @@ return {
     { Quad = (function() local self = {}
         function self.OnConstruct() return { NameId = "GuestBed",  NameView = "Bed", Pos = { x = 405, y = 226 }, Size = { Width = 158, Height = 143 }, Clickable = false} end
         function self.OnCommentEntry() Say("\nI don't want to go back there\nI've rested enough.", 5.0) Say() end
-        function self.OnPhoneFound() Say("\nHey my phone is under the bed", 3.0) Say() end
-        function self.OnCommentLook() Say("\njust a normal bed, nothing of interest", 3.0) Say() end
+        function self.OnPhoneFound()
+            Say("\nLet me bend down to see what's underneath the bed...", 5.0) 
+            PickUp("Phone", 2)
+            Say("\nHey my phone is here!", 3.0)
+            Say("",0.5)
+            IntroWakeup.CountItem()
+        end
+        function self.OnCommentLook() Say("\njust a normal bed, nothing more", 3.0) Say() end
         function self.OnInteract()
             StartSequence(self.OnCommentEntry) 
         end 
                 
         function self.OnLook()
             if not IsEntityInScene("Phone", "Inventory") then
-                
-                PickUp("Phone")
-                if IntroWakeup.CountItem() == 3 then return end
-                ShowInventory(3)
-                StartSequence(self.OnPhoneFound) 
-
+                StartSequence(self.OnPhoneFound)
             else
                 StartSequence(self.OnCommentLook) 
             end
@@ -316,6 +319,17 @@ return {
         return self
         end)()
     }, -- SECRET DOOR
+        
+    { Quad = (function() 
+        local self = {}
+        function self.OnConstruct() 
+            return { NameId = "GuestWindow",  NameView = "Window", Pos = { x = 425, y = 120 }, Size = { Width = 108, Height = 90 }, Clickable = false} end
+        function self.OnCommentEntry() Say("\nSo finally we have a sunny day.", 3.0) Say() end
+        function self.OnCommentLook() Say("\nOutside, there's a dense forest \nthat fades into the mountains in the distance.", 6.0) Say() end
+        function self.OnInteract() StartSequence(self.OnCommentEntry) end function self.OnLook() StartSequence(self.OnCommentLook) end 
+        return self
+        end)()
+    }, -- WINDOW
 
     --[[
     { Quad = (function() 

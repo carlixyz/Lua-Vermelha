@@ -4,7 +4,7 @@
 
 struct ApplicationProperties
 {
-	std::string ApplicationName = "Raycaster";
+	std::string ApplicationName = "Seventh Incarnation";
 
 	unsigned Width				= 920; // = 720; // = 920 // 1280
 	unsigned Height				= 512;  // = 480; // = 500 // = 720
@@ -14,6 +14,6 @@ struct ApplicationProperties
 	bool Fullscreen				= false;
 	bool DebugMode				= false;
 	bool SkipIntro				= false;
-	bool AudioDisabled			= true;
+	bool AudioDisabled			= false;
 };
 

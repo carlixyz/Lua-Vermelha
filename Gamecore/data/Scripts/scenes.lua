@@ -7,7 +7,10 @@ Scenes = {
 
     Global = {
         { Entity = "Shade", Textures = "data/Images/t.png", Alpha = 0.6, Position = { x = 0, y = 316 }, Visible = false },
-        { Entity = "Dark", Textures = { Dark = "data/Images/Dark.png"}, Visible = false, Alpha = 1.0  }
+        { Entity = "Dark", Textures = { Dark = "data/Images/Dark.png"}, Visible = false, Alpha = 1.0  },
+        { Ilsa = "data/Actors/Ilsa/Ilsa.lua" },
+        { Ada = "data/Actors/Ada/Ada.lua" }
+
         --{ Dark = { OnConstruct = function() return { NameId = "Dark", Visible = false, Active = false, Clickable = false,
         --          Alpha = 1.0, Textures = { { Dark = "data/Images/Dark.png" } }, CurrentImage = "Dark" } end } }
     },
@@ -39,17 +42,35 @@ Scenes = {
 
     Lobby = "data/Scenes/Mansion/Lobby.lua",
 
-    Park = "data/Scenes/Parking/Park.lua",
+    Fireplace = "data/Scenes/Mansion/Fireplace.lua",
 
-    ParkPath = "data/Scenes/Parking/ParkPath.lua",
+    -------------------------------------------------
 
-    --ParkSide = "data/Scenes/Parking/ParkSide.lua",
+    MansionFront = "data/Scenes/Parking/MansionFront.lua",
 
-    Cemetery = "data/Scenes/Parking/ParkGate.lua",
+    MansionSide = "data/Scenes/Parking/MansionSide.lua",
+
+    RoadPath = "data/Scenes/Parking/RoadPath.lua", --
+
+    Cemetery = "data/Scenes/Parking/Cemetery.lua", --
+
+    Car = "data/Scenes/Parking/Car.lua",
+
+    Trunk = "data/Scenes/Parking/Trunk.lua",
+
+    TownPath = "data/Scenes/Parking/TownPath.lua", -- **********
+
+    TownPathDeep = "data/Scenes/Parking/TownPathDeep.lua",
+
+    TownView = "data/Scenes/Parking/TownView.lua",
+
+    -------------------------------------------------
 
     PlazaPan = "data/Scenes/Town/PlazaPan.lua",
 
     PlazaExit = "data/Scenes/Town/PlazaExit.lua",
+
+    Tunnel = "data/Scenes/Town/Tunnel.lua",
 
     Luperta = "data/Scenes/Town/Luperta.lua",
 
@@ -57,9 +78,13 @@ Scenes = {
 
     PlazaFountain = "data/Scenes/Town/PlazaFountain.lua",
 
-    Hospital = "data/Scenes/Town/TownHospital.lua",
+    HospitalOutside = "data/Scenes/Town/TownHospitalOut.lua",
 
-    Bar = "data/Scenes/Town/TownBar.lua",
+    HospitalInside = "data/Scenes/Town/TownHospitalIn.lua",
+
+    BarOutside = "data/Scenes/Town/TownBarOut.lua",
+
+    BarInside = "data/Scenes/Town/TownBarIn.lua",
 
     -----------------------------------------------------------------------------------------------------------------------------
 
@@ -73,9 +98,11 @@ Scenes = {
 
 --Scenes.StartScene = "HallwayInit"
 --Scenes.StartScene = "Boot"
+--Scenes.StartScene = "Intro"
 --Scenes.StartScene = "Title"
---Scenes.StartScene = "GuestRoom"
-Scenes.StartScene = "HallwayInit"
+Scenes.StartScene = "GuestRoom"
+--Scenes.StartScene = "MansionFront"
+--Scenes.StartScene = "TownPathDeep"
 
 -- Set here a top access scene to have shared access
 Scenes.SharedScene = "Global"

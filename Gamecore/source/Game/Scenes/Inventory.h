@@ -18,7 +18,6 @@ public:
     void OnExit()           override {}
     void OnEnter()          override {}
 
-
     // Bind the pointer FSM will keep updating
     void BindWorldScene(GameScene** currentScenePtr);
 

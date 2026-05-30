@@ -287,7 +287,7 @@ private:
         {
             /// Inline format { Entity = "Dark", ... }
             SpriteInfo data = SpriteFromLua(LuaContext, absIndex);  // Lualess Entity is just a bare Sprite 
-            entity = Director::Get().CreateEntity(data);
+            entity = Director::Get().CreateDummyEntity(data);
             return entity;
         }
 

@@ -1,7 +1,7 @@
 return {
-    -- { Entity = "Med", Position = { x = 32, y = 32 }, Textures = "data/Scenes/Inventory/Medication.png", Clickable = true},
-    -- { Entity = "MainKey", Position = { x = 128, y = 32 }, Textures = "data/Scenes/Inventory/MainKey.png", Clickable = true},
-    -- { Entity = "PaintCan", Position = { x = 512, y = 32 }, Textures = "data/Scenes/Inventory/PaintCan.png", Clickable = true},
+    --{ Entity = "Med", Position = { x = 32, y = 32 }, Textures = "data/Scenes/Inventory/Medication.png", Clickable = true},
+    --{ Entity = "MainKey", Position = { x = 128, y = 32 }, Textures = "data/Scenes/Inventory/MainKey.png", Clickable = true},
+    --{ Entity = "PaintCan", Position = { x = 512, y = 32 }, Textures = "data/Scenes/Inventory/PaintCan.png", Clickable = true},
     -- { Entity = "Knife", Position = { x = 256, y = 32 }, Textures = "data/Scenes/Inventory/Knife.png", Clickable = true},
 
     --[[

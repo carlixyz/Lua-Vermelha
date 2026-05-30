@@ -1,6 +1,6 @@
 
-    Elder = {}
-    Elder.enabled = false
+Elder = {}
+Elder.enabled = false
 
 local function OnConstruct()
     
@@ -18,8 +18,7 @@ local function OnConstruct()
 end
 
 local function OnInit()
-    
-        print("called elder.OnInit")
+    print("called elder.OnInit")
 end
 
 local function OnDeinit()

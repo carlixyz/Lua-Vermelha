@@ -1,5 +1,5 @@
 return {
-    { Entity = "LupertaStatue", Textures = {
+    { Entity = "LupertaStatueBG", Textures = {
         {LupertaDayClosed = "data/Scenes/Town/LupertaDayClosed.jpg"},
         {LupertaDayOpen = "data/Scenes/Town/LupertaDayOpen.jpg"},
         {LupertaSunOff = "data/Scenes/Town/LupertaSunsetOff.jpg"},
@@ -7,7 +7,9 @@ return {
         {LupertaCloseUp = "data/Scenes/Town/LupertaSunsetCloseUp.jpg" }} 
     },
 
-    { Quad = { OnConstruct = function() return { NameId = "Plaza Return", Position = { x = 600, y = 100 },
-        Size = { Width = 200, Height = 280 }} end, OnInteract = function() SwipeScene("PlazaReturn", "Down") end } 
+    { Quad = { OnConstruct = function() return { NameId = "Plaza Return", Cursor = "MRight", Position = { x = 700, y = 100 },
+        Size = { Width = 220, Height = 280 }} end, OnInteract = function() SwipeScene("PlazaPan", "Left") 
+        if PlazaPan.State == 0 then PlazaPan.GoRight() end
+        end } 
     }
 }

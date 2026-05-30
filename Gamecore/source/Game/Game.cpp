@@ -33,7 +33,6 @@ bool Game::Init()
 
 	result = result && Scenes.Init();							//	Scenes.Init(Scenes.introState);
 
-
 	return result;
 }
 
@@ -126,19 +125,45 @@ void Game::RenderCursor()
 {
 	Vector2 m = GetMousePosition();
 
-	bool anyHovered = false;
+	// Then resolve hovering ONCE (topmost hovered wins)
+	Entity* hovered = nullptr;
+
+	//bool anyHovered = false;
 	// You can store hovered pointer in the scene instead of scanning
 	for (Entity* e : Scenes.GetCurrent()->Entities)
 		if (e->GetIsHovered())
 		{
-			anyHovered = true;
+			//anyHovered = true;
+			hovered = e;
 
 			/// --- Hover feedback ---
-			if (e->GetIsClickable())
+			if (e->GetIsClickable() && e->GetCursor().empty())
 				DrawTextEx(GetFont("Noto"),e->GetInfo().NameView.c_str(), { m.x + 12, m.y + 24 }, 16, 1.0f, WHITE);
 
 			break;
 		}
 
-	DrawTexture(GetTexture(anyHovered ? "MB" : "MA"), (int)m.x, (int)m.y, WHITE);
+	//DrawTexture(GetTexture(hovered ? "MB" : "MA"), (int)m.x, (int)m.y, WHITE);
+	//const Texture2D& mouseCursor = GetTexture(hovered->GetCursor());
+
+	//if(hovered)
+	//	DrawTexture(mouseCursor.id != 0 ? mouseCursor : GetTexture("MB"), (int)m.x, (int)m.y, WHITE);
+	//else
+	//	DrawTexture(GetTexture("MA"), (int)m.x, (int)m.y, WHITE);
+
+
+	if (hovered)
+	{
+		if (hovered->GetCursor().empty())
+			DrawTexture(GetTexture("MB"), (int)m.x, (int)m.y, WHITE);
+		else if (const Texture2D* mouseCursor = &GetTexture(hovered->GetCursor()))
+			DrawTexture(*mouseCursor, (int)m.x, (int)m.y, WHITE);
+	}
+	else
+		DrawTexture(GetTexture("MA"), (int)m.x, (int)m.y, WHITE);
+
+
+	//const Texture2D* mouseCursor = &GetTexture(hovered && !hovered->GetCursor().empty() ? hovered->GetCursor() : "MA");
+	//DrawTexture(mouseCursor != nullptr ? *mouseCursor : GetTexture("MB"), (int)m.x, (int)m.y, WHITE);
+
 }

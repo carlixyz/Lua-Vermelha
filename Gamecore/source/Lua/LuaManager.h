@@ -157,7 +157,7 @@ class LuaManager : public Singleton<LuaManager>
     int visibleChars = 0;
     float typeTimer = 0.0f;
     float typeSpeed = 0.03f; // seconds per character
-    float ShadeAlpha = 0.35f;
+    float ShadeAlpha = 0.65f;
     float CurrentAlpha = 0.0;
 
     bool IsDummyChoice(int index) const;

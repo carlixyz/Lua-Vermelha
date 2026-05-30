@@ -18,7 +18,7 @@ return {
                 { "Play",
                     function()
                         Say("So let's jump to the first chapter ", 1.0)
-                        SetThunder(false)
+                        --SetThunder(false)
                         SetAlpha("Dark", 1)
                         BlendScene("GuestRoom")
                     end },
@@ -26,7 +26,7 @@ return {
                 { self.StatusEnabled, "Status",
                     function()
                         Say("You decide to see more options")
-                        SetThunder(false)
+                        --SetThunder(false)
                         Say()
                         self.DoOptionsMenu()
                         --StartSequence(self.DoOptionsMenu)

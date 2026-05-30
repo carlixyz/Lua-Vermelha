@@ -11,134 +11,130 @@ return {
     { Entity = "Seventh", Position = { x = -100, y = -220 }, Textures = "data/Scenes/Intro/SeventhFractal.png", Visible = false, Alpha = 0.0 },
 
     { Quad = (function()
-            local self = {}
+        local self = {}
 
-            function self.OnConstruct()
-                return {
-                    NameId = "IntroLeftSide",
-                    NameView = "Left\nSide",
-                    Position = { x = 0, y = 0 },
-                    Size = { Width = 60, Height = 516 },
-                    Clickable = false
-                }
-            end
+        function self.OnConstruct()
+            return {
+                NameId = "IntroLeftSide",
+                NameView = "Left\nSide",
+                Position = { x = 0, y = 0 },
+                Size = { Width = 60, Height = 516 },
+                Clickable = false
+            }
+        end
 
-            function self.OnInteract()
-                Move("IntroLobby", 0)
-                PlaySound("SwipeOut")
-                SetClickable("IntroLeftSide", false)
-                SetClickable("IntroRightSide")
-                SetClickable("Clock", false)
-                SetClickable("IntroRightWindows", false)
-                SetClickable("IntroTable", false)
-                SetClickable("IntroPowerBoard", false)
-                SetClickable("IntroBackDoor")
-                SetClickable("Piano")
-                SetClickable("IntroSmallTable")
-                SetClickable("IntroLeftWindows")
-            end
+        function self.OnInteract()
+            Move("IntroLobby", 0)
+            PlaySound("SwipeOut")
+            SetClickable("IntroLeftSide", false)
+            SetClickable("IntroRightSide")
+            SetClickable("Clock", false)
+            SetClickable("IntroRightWindows", false)
+            SetClickable("IntroTable", false)
+            SetClickable("IntroPowerBoard", false)
+            SetClickable("IntroBackDoor")
+            SetClickable("Piano")
+            SetClickable("IntroSmallTable")
+            SetClickable("IntroLeftWindows")
+        end
 
-            return self
+        return self
         end)()
     }, -- LEFT SIDE
 
-    {
-        Quad = (function()
-            local self = {}
+    { Quad = (function()
+        local self = {}
 
-            function self.OnConstruct()
-                return {
-                    NameId = "IntroLeftWindows", NameView = "Left Windows",
-                    Position = { x = 80, y = 80 },
-                    Size = { Width = 400, Height = 150 },
-                    Active = true
-                }
-            end
+        function self.OnConstruct()
+            return {
+                NameId = "IntroLeftWindows", NameView = "Left Windows",
+                Position = { x = 80, y = 80 },
+                Size = { Width = 400, Height = 150 },
+                Active = true
+            }
+        end
 
-            function self.OnComment()
-                Say("Rain stopped a bit,\nbut the sky is still rumbling.", 5.0)
-                Say()
-            end
+        function self.OnComment()
+            Say("Rain stopped a bit,\nbut the sky is still rumbling.", 5.0)
+            Say()
+        end
 
-            function self.OnInteract() StartSequence(self.OnComment) end
-            function self.OnLook() StartSequence(self.OnComment) end
+        function self.OnInteract() StartSequence(self.OnComment) end
+        function self.OnLook() StartSequence(self.OnComment) end
 
-            return self
+        return self
         end)()
     }, -- Left windows
 
-    {
-        Quad = (function()
-            local self = {}
+    {Quad = (function()
+        local self = {}
 
-            function self.OnConstruct()
-                return {
-                    NameId = "IntroSmallTable", NameView = "Small Table",
-                    Position = { x = 210, y = 260 },
-                    Size = { Width = 130, Height = 90 },
-                    Active = true
-                }
-            end
+        function self.OnConstruct()
+            return {
+                NameId = "IntroSmallTable", NameView = "Small Table",
+                Position = { x = 210, y = 260 },
+                Size = { Width = 130, Height = 90 },
+                Active = true
+            }
+        end
 
-            function self.OnCommentEntry()
-                Say("A small table with a decoration bowl and some books\nCan't read nothing'", 6.0)
-                Say()
-            end
+        function self.OnCommentEntry()
+            Say("A small table with a decoration bowl and some books\nCan't read nothing'", 6.0)
+            Say()
+        end
 
-            function self.OnInteract() StartSequence(self.OnCommentEntry) end
-            function self.OnLook() StartSequence(self.OnCommentEntry) end
+        function self.OnInteract() StartSequence(self.OnCommentEntry) end
+        function self.OnLook() StartSequence(self.OnCommentEntry) end
 
-            return self
+        return self
         end)()
     }, -- Small Table
 
-    {
-        Quad = (function()
-            local self = {}
+    {Quad = (function()
+        local self = {}
 
-            function self.OnConstruct()
-                return {
-                    NameId = "IntroBackDoor", NameView = "Back Door",
-                    Position = { x = 655, y = 114 },
-                    Size = { Width = 55, Height = 120 },
-                    Active = true
-                }
-            end
+        function self.OnConstruct()
+            return {
+                NameId = "IntroBackDoor", NameView = "Back Door",
+                Position = { x = 655, y = 114 },
+                Size = { Width = 55, Height = 120 },
+                Active = true
+            }
+        end
 
-            function self.OnCommentEntry()
-                Say("There's a door there but is closed \nand I don't see a key anywhere", 5.0)
-                Say()
-            end
+        function self.OnCommentEntry()
+            Say("There's a door there but is closed \nand I don't see a key anywhere", 5.0)
+            Say()
+        end
 
-            function self.OnInteract() PlaySound("LockedDoor") end
-            function self.OnLook() StartSequence(self.OnCommentEntry) end
+        function self.OnInteract() PlaySound("LockedDoor") end
+        function self.OnLook() StartSequence(self.OnCommentEntry) end
 
-            return self
+        return self
         end)()
     }, -- Back Door
 
-    {
-        Quad = (function()
-            local self = {}
+    {Quad = (function()
+        local self = {}
 
-            function self.OnConstruct()
-                return {
-                    NameId = "Piano",
-                    Position = { x = 520, y = 180 },
-                    Size = { Width = 80, Height = 60 },
-                    Active = true
-                }
-            end
+        function self.OnConstruct()
+            return {
+                NameId = "Piano",
+                Position = { x = 520, y = 180 },
+                Size = { Width = 80, Height = 60 },
+                Active = true
+            }
+        end
 
-            function self.OnComment()
-                Say("There's a piano in the other side of the room", 5.0)
-                Say()
-            end
+        function self.OnComment()
+            Say("There's a piano in the other side of the room", 5.0)
+            Say()
+        end
 
-            function self.OnInteract() PlaySound("PianoMi") end
-            function self.OnLook() StartSequence(self.OnComment) end
+        function self.OnInteract() PlaySound("PianoMi") end
+        function self.OnLook() StartSequence(self.OnComment) end
 
-            return self
+        return self
         end)()
     }, -- Piano
 
@@ -171,7 +167,7 @@ return {
         end
 
         return self
-    end)()
+        end)()
     }, -- RIGHT SIDE
 
     { Quad = (function()
@@ -195,55 +191,55 @@ return {
         function self.OnLook() StartSequence(self.OnComment) end
 
         return self
-    end)()
+        end)()
     }, -- Right windows
 
     { Quad = (function()
-            local self = {}
+        local self = {}
 
-            function self.OnConstruct()
-                return {
-                    NameId = "Clock",
-                    Position = { x = 280, y = 130 },
-                    Size = { Width = 20, Height = 100 },
-                    Clickable = false
-                }
-            end
+        function self.OnConstruct()
+            return {
+                NameId = "Clock",
+                Position = { x = 280, y = 130 },
+                Size = { Width = 20, Height = 100 },
+                Clickable = false
+            }
+        end
 
-            function self.OnCommentEntry()
-                Say("Something is ticking there..\nI guess We're safe for now", 6.0)
-                Say()
-            end
+        function self.OnCommentEntry()
+            Say("Something is ticking there..\nI guess We're safe for now", 6.0)
+            Say()
+        end
 
-            function self.OnInteract() PlaySound("OldClock") end
-            function self.OnLook() StartSequence(self.OnCommentEntry) end
+        function self.OnInteract() PlaySound("OldClock") end
+        function self.OnLook() StartSequence(self.OnCommentEntry) end
 
-            return self
+        return self
         end)()
     }, -- CLOCK
 
     { Quad = (function()
-            local self = {}
+        local self = {}
 
-            function self.OnConstruct()
-                return {
-                    NameId = "IntroTable",
-                    NameView = "Table",
-                    Position = { x = 310, y = 260 },
-                    Size = { Width = 160, Height = 60 },
-                    Clickable = false
-                }
-            end
+        function self.OnConstruct()
+            return {
+                NameId = "IntroTable",
+                NameView = "Table",
+                Position = { x = 310, y = 260 },
+                Size = { Width = 160, Height = 60 },
+                Clickable = false
+            }
+        end
 
-            function self.OnCommentEntry()
-                Say("There's a cup of wine and something slimey\nI can't see nothing really", 6.0)
-                Say()
-            end
+        function self.OnCommentEntry()
+            Say("There's a cup of wine and something slimey\nI can't see nothing really", 6.0)
+            Say()
+        end
 
-            function self.OnInteract() StartSequence(self.OnCommentEntry) end
-            function self.OnLook() StartSequence(self.OnCommentEntry) end
+        function self.OnInteract() StartSequence(self.OnCommentEntry) end
+        function self.OnLook() StartSequence(self.OnCommentEntry) end
 
-            return self
+        return self
         end)()
     }, -- Table
 
@@ -307,8 +303,12 @@ return {
 
         function self.OnScreenInput()
             if self.ClickedOnce == false then
-                self.ThunderCancelID = ScheduleRepeat(1, "AlternateThunders", "ThunderCancelID")
                 self.ClickedOnce = true
+                self.ThunderCancelID = ScheduleRepeat(1, "AlternateThunders", "ThunderCancelID")
+
+               -- Drive.IndicatorID = ScheduleRepeat( 1, "AlternateIndicator", "IndicatorCancelID")
+               --CancelScheduled(Drive.IndicatorID) --CancelScheduled("IndicatorCancelID") --
+
                 PlaySound("SwitchOff")
                 SetMusicVolume(0.5)
                 --FadeMusic(false)
@@ -342,6 +342,7 @@ return {
                 Say("Ohh everything is already enabled here", 3.0)
                 Say("I guess it's a general outagge...", 3.0)
                 Say()
+                CancelScheduled(self.ThunderCancelID) --CancelScheduled("ThunderCancelID") --
                 PlaySound("WolfStalk")
                 SetThunder(false)
                 --Schedule(0.0, "PlaySound", "WolfStalk")
@@ -363,7 +364,6 @@ return {
 
                 Schedule(8.0, "Fade", "Dark", 1.0, 0.5)
                 Schedule(8.8, "BlendScene", "Title")
-
             end
         end
 
@@ -372,6 +372,6 @@ return {
         function self.OnExit() SetMusicVolume(1.0) self.ClickedOnce = false ClickedTwice = false end
 
         return self
-    end)()
+        end)()
     }, -- ELECTRIC BOARD
 }

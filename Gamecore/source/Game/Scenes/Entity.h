@@ -45,10 +45,11 @@ protected:
 
 public:
 
-	inline const std::string& GetID()	{ return Info.NameId; }
-	inline SpriteInfo& GetInfo()		{ return Info; }
-	inline Texture2D& GetSprite()		{ return CurrentSprite; }
-	inline Tween& GetTween()			{ return tween; }
+	inline const std::string& GetID()		{ return Info.NameId; }
+	inline SpriteInfo& GetInfo()			{ return Info; }
+	inline Texture2D& GetSprite()			{ return CurrentSprite; }
+	inline Tween& GetTween()				{ return tween; }
+	inline const std::string& GetCursor()	{ return Info.CustomCursor; }
 
 	void SetSprite(const std::string& textureID);
 
@@ -79,6 +80,7 @@ class EntityLua : public Entity, public LuaInterface
 {
 protected:
 	virtual void OnReturn() override;
+
 
 public:
 	EntityLua(const std::string& scriptPath) : LuaInterface(scriptPath) { Call("OnConstruct"); }

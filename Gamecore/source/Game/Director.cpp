@@ -4,6 +4,7 @@
 #include "Scenes/Entity.h"
 #include "Scenes/SceneFactory.h"
 #include "../Lua/LuaManager.h"
+#include "../Graphics/Graphics.h"
 #include <raylib-cpp.hpp>
 
 
@@ -195,7 +196,7 @@ void Director::CancelScheduledTask(const std::string& id)
 }
 
 
-Entity* Director::CreateEntity(const SpriteInfo& data)
+Entity* Director::CreateDummyEntity(const SpriteInfo& data)
 {
     /// Creates a Dummy 'scriptless' Entity
     Entity* e = new Entity();
@@ -231,12 +232,14 @@ Entity* Director::CreateEntity(const std::string& type, const std::string& scrip
 
     /// --- Special subclass handling ---
     if (type == "Quad")
-        entity = new Quad(scriptPath); // Simple HitBox simplification
+        entity = new Quad(scriptPath);      // Simple HitBox simplification
     else
     {
         entity = new EntityLua(scriptPath); // Fallback
         if (entity->GetID().empty())
             entity->GetInfo().NameId = type;
+
+        RegisterLuaGlobal(type, entity);    // We assume that type can be used as a Lua Entity name
     }
 
     RegisterEntity(entity);
@@ -251,29 +254,18 @@ Entity* Director::CreateEntityInline(const std::string& type, int tableIndex)
 
     /// --- Special subclass handling ---
     if (type == "Quad")
-        entity = new Quad(tableIndex); // Simple HitBox simplification
+        entity = new Quad(tableIndex);      // Generic Simple HitBox simplification
     else
     {
         entity = new EntityLua(tableIndex); // Fallback
         if (entity->GetID().empty())
             entity->GetInfo().NameId = type;
+
+        RegisterLuaGlobal(type, entity);    // We assume that type can be used as a Lua Entity name
     }
-    
+
+    // Check type is actually an Id and avoid a dupe
     RegisterEntity(entity);
-
-    if (EntityLua* eLua = (EntityLua*)entity)
-    {
-        lua_State* L = LuaManager::Get().GetState();
-        lua_rawgeti(L, LUA_REGISTRYINDEX, eLua->GetRef());   // push entity table
-        lua_setglobal(L, type.c_str());                   // _G[type] = entity_table
-
-        //const std::string& id = eLua->GetID(); // entity->GetID();
-        //if (!id.empty())
-        //{
-        //    lua_rawgeti(L, LUA_REGISTRYINDEX, eLua->GetRef());
-        //    lua_setglobal(L, id.c_str());
-        //}
-    }
 
     return entity;
 }
@@ -288,10 +280,18 @@ void Director::RegisterEntity(Entity* entity)
     if (!entity)
         return;
 
-    const std::string& nameId = entity->GetInfo().NameId;
+    const std::string& nameId = entity->GetID();
 
     if (Entities.contains(nameId))
-        return;
+    {
+        std::string msg = " \n [ERROR] Director::RegisterEntity() DUPLICATED Entity NameId: " + nameId + " already created! \n\n";
+
+        Graphics::Get().ShowPopup(msg, 5.0f);
+        std::cout << msg << std::endl;
+        std::cerr << msg << std::endl;
+
+        throw std::runtime_error(msg); //  execution stops here
+    }
 
     if (nameId.empty())
         return;
@@ -299,27 +299,23 @@ void Director::RegisterEntity(Entity* entity)
     Entities[nameId] = entity;
 }
 
-void RegisterEntityInLua(const std::string& name, int luaRef)
+void Director::RegisterLuaGlobal(const std::string& name, Entity* entity)
 {
-    lua_State* L = LuaManager::Get().GetState();
-
-    // Ensure global "Entities" table exists
-    lua_getglobal(L, "Globals");
-    if (!lua_istable(L, -1))
+    if (EntityLua* eLua = (EntityLua*)entity)
     {
-        lua_pop(L, 1);        // pop nil
-        lua_newtable(L);      // create Globals = {}
-        lua_pushvalue(L, -1); // duplicate
-        lua_setglobal(L, "Globals");
+        if (name.empty() || eLua->GetRef() == LUA_NOREF)
+            return;
+
+        lua_State* L = LuaManager::Get().GetState();
+
+        if (lua_getglobal(L, name.c_str()) == LUA_TNIL)
+        {
+            lua_rawgeti(L, LUA_REGISTRYINDEX, eLua->GetRef());
+            lua_setglobal(L, name.c_str());
+        }
+
+        lua_pop(L, 1);
     }
-
-    // Entities[name] = <entity_table>
-    lua_pushstring(L, name.c_str());
-    lua_rawgeti(L, LUA_REGISTRYINDEX, luaRef);
-    lua_settable(L, -3);
-
-    // Pop Entities table
-    lua_pop(L, 1);
 }
 
 Entity* Director::GetEntity(const std::string& id)
