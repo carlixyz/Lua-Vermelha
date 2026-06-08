@@ -61,6 +61,7 @@ public:
 	GETTERSETTER(bool, IsHovered, Hovered)
 	GETTERSETTER(int, PositionX, Info.PositionX )
 	GETTERSETTER(int, PositionY, Info.PositionY )
+	GETTERSETTER(float, Scale, Info.Scale)
 	GETTERSETTER(float, Alpha, Info.Alpha)
  
  

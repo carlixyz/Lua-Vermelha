@@ -625,6 +625,17 @@ int Lua_FadeEntity(lua_State* L)
     return 0; // No return values
 }
 
+int Lua_ScaleEntity(lua_State* L)
+{
+    // Expecting 2~3 arguments: (entityName, endScale, timeLapse)
+    const std::string& nameID = luaL_checkstring(L, 1);
+    float factor = (float)luaL_optnumber(L, 2, 1.0f);
+    float lapse = (float)luaL_optnumber(L, 3, 3.0f);
+
+    Director::Get().ScaleEntity(nameID, factor, lapse);
+    return 0;
+}
+
 int Lua_ShakeEntity(lua_State* L)
 {
     // Expecting 2~3 arguments: (entityName, targetValue, timeLapse)
@@ -1015,6 +1026,8 @@ void RegisterLuaFunctions() // C++ Foo Register in Lua
     LuaManager::Get().RegisterFunction("Fade", Lua_FadeEntity);
 
     LuaManager::Get().RegisterFunction("Move", Lua_MoveEntity);
+
+    LuaManager::Get().RegisterFunction("Scale", Lua_ScaleEntity);
 
     LuaManager::Get().RegisterFunction("Shake", Lua_ShakeEntity);
 

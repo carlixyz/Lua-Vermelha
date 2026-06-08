@@ -89,6 +89,8 @@ public:
 
     void FadeEntity(const std::string& nameID, float startValue, float endValue, float totalTime = 3.0f);
 
+    void ScaleEntity(const std::string& nameID, float factor, float totalTime);
+
     void ShakeEntity(const std::string& nameID, float amount, float totalTime);
 
     void StopEntity(const std::string& nameID);

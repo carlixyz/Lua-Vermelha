@@ -20,7 +20,6 @@ return (function()
             Visible = false,
             Clickable = false,
             Pos = { x = 320, y = 0 },
-            Alpha = 1.0,
             Textures = {
                 { ANeutral =    "data/Actors/Ada/ANeutral.png"    },
                 { AHappy =      "data/Actors/Ada/AHappy.png"      },
@@ -91,11 +90,13 @@ return (function()
     function self.OnInteract()
         print("called Ada.OnInteract")
         self.StartTalk()
+        --Scale("Ada", 3, 3)
     end
 
     function self.OnLook()
         print("called Ada.OnLook")
         self.StopTalk()
+        --Scale("Ada", 1, 3)
     end
 
     return self

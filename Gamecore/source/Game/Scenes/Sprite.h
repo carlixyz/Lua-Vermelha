@@ -54,6 +54,7 @@ struct SpriteInfo
 	int PositionX= 0;								// Current Horizontal position in Screen
 	int PositionY = 0;								// Current Vertical position in Screen
 	float Alpha = 1.f;								// Current Alpha Color Value
+	float Scale = 1.f;								// Current Alpha Color Value
 
 	Rectangle Size = { 0.0f, 0.0f, 1.0f, 1.0f };
 	std::vector<std::string> TexturesIDs;
@@ -96,6 +97,34 @@ public:
 				Sprite.PositionX = (int)EaseExpoOut(currentTime, startPos.x, endPos.x - startPos.x, totalTime);
 				Sprite.PositionY = (int)EaseExpoOut(currentTime, startPos.y, endPos.y - startPos.y, totalTime);
 				return currentTime < totalTime; // return false when finished (auto-remove)
+			}
+			});
+
+		return *this;
+	}
+
+	inline Tween& ActionScale(float startFactor, float endFactor, float totalTime)
+	{
+		Tweens.emplace_back(Action{
+			[this, startFactor, endFactor, totalTime, currentTime = 0.0f]
+			(float dt) mutable
+			{
+				currentTime += dt;
+
+				Sprite.Scale = EaseExpoOut(
+					currentTime,
+					startFactor,
+					endFactor - startFactor,
+					totalTime
+				);
+
+				if (currentTime >= totalTime)
+				{
+					Sprite.Scale = endFactor;
+					return false;
+				}
+
+				return true;
 			}
 			});
 

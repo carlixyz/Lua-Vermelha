@@ -109,7 +109,8 @@ return {
 
     { Quad = { OnConstruct = function() return { NameId = "ClockStart", NameView = "Clock", Clickable = true, 
         Pos = { x = 1200, y = 136 }, Size = { Width = 34, Height = 120 }} end, 
-        OnLook = function() StartSequence(function() Say("Time is ticking...", 3.0) Say() end) end } 
+        OnLook = function() StartSequence(function() Say("Mhhh...", 3.0) 
+        Say("The clock isn't moving anymore, weird,\n lookslike it's broken", 6.0) Say() end) end } 
     }, -- CLOCK
 
     { Quad = { OnConstruct = function() return { NameId = "PowerBoardStart", NameView = "Power\nBoard", Clickable = true, 

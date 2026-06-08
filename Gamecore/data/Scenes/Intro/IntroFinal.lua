@@ -327,12 +327,14 @@ return {
 
         function self.OnBoardEntry()
             if not self.ClickedTwice then
-                FadeMusic(false)
+                self.ClickedTwice = true
                 Say("Let's see if I can fix the lights here...", 5.0)
+                FadeMusic(false)
                 PlaySound("Inspection")
                 SetVisible("ElectricBoard")
+                CancelScheduled(self.ThunderCancelID) --CancelScheduled("ThunderCancelID") --
+                SetThunder(false)
                 Say()
-                self.ClickedTwice = true
             else
                 PlaySound("SwitchOn")
                 SetClickable("ElectricBoard", false)
@@ -342,9 +344,8 @@ return {
                 Say("Ohh everything is already enabled here", 3.0)
                 Say("I guess it's a general outagge...", 3.0)
                 Say()
-                CancelScheduled(self.ThunderCancelID) --CancelScheduled("ThunderCancelID") --
+
                 PlaySound("WolfStalk")
-                SetThunder(false)
                 --Schedule(0.0, "PlaySound", "WolfStalk")
 
                 SetClickable("IntroLeftSide", false)

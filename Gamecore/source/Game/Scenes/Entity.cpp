@@ -211,8 +211,13 @@ void Entity::OnUpdate(float deltaTime)
 
 void Entity::OnRender()
 {
+    Vector2 drawPos {
+        Info.Scale == 1.0f ? Info.PositionX : Info.PositionX - (CurrentSprite.width * (Info.Scale - 1.0f) * 0.5f),
+        Info.Scale == 1.0f ? Info.PositionY : Info.PositionY - (CurrentSprite.height * (Info.Scale - 1.0f) * 0.5f)
+    };
+
     if (IsTextureValid(CurrentSprite))
-        DrawTexture(CurrentSprite, Info.PositionX, Info.PositionY, ColorAlpha(WHITE, Info.Alpha)); //Fade(WHITE, Info.Alpha));
+        DrawTextureEx(CurrentSprite, drawPos, 0.0f, Info.Scale, ColorAlpha(WHITE, Info.Alpha)); //Fade(WHITE, Info.Alpha));
 
     if (Game::Get().IsDebugMode())
         Debug(); //DrawRectangle(Info.PositionX, Info.PositionY, CurrentSprite.width, CurrentSprite.height, ColorAlpha(RED, 0.1f));
@@ -224,21 +229,13 @@ void Entity::OnRender()
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) || IsMouseButtonPressed(MOUSE_RIGHT_BUTTON) )
         highlightLapse = 0.1f;
 
-    if (highlightLapse > 0.f /*&& IsTextureValid(CurrentSprite)*/)
+    if (highlightLapse > 0.f)
     {
         highlightLapse -= GetFrameTime();
         BeginBlendMode(BLEND_ADDITIVE);
-        DrawTexture(CurrentSprite, Info.PositionX, Info.PositionY, Fade(WHITE, 0.25f));
+        DrawTextureEx(CurrentSprite, drawPos, 0.0f, Info.Scale, ColorAlpha(WHITE, Info.Alpha));
         EndBlendMode();
     }
-    //else if (highlightLapse > 0.f) highlightLapse -= GetFrameTime();
-
-    /*
-    //DrawTexture( GetTexture("MB"), (int)MouseCursor.x, (int)MouseCursor.y, WHITE);
-    Vector2 MouseCursor = GetMousePosition();
-
-    DrawTextEx(GetFont("Noto"), Info.NameView.c_str(), { MouseCursor.x + 12, MouseCursor.y + 24 }, 16, 1.0f, WHITE);
-    */
 }
 
 bool Entity::IsMouseOver()

@@ -96,11 +96,11 @@ Scenes = {
 -- Set here the first scene to Initialize
 
 
---Scenes.StartScene = "HallwayInit"
+Scenes.StartScene = "HallwayInit"
 --Scenes.StartScene = "Boot"
 --Scenes.StartScene = "Intro"
 --Scenes.StartScene = "Title"
-Scenes.StartScene = "GuestRoom"
+--Scenes.StartScene = "GuestRoom"
 --Scenes.StartScene = "MansionFront"
 --Scenes.StartScene = "TownPathDeep"
 

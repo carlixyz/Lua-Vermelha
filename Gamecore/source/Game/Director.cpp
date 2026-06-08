@@ -414,6 +414,14 @@ void Director::FadeEntity(const std::string& nameID, float startValue, float end
     }
 }
 
+void Director::ScaleEntity(const std::string& nameID, float factor, float totalTime)
+{
+    if (Entity* entity = Director::Get().GetEntity(nameID))
+    {
+        entity->GetTween().ActionScale(entity->GetScale(), factor, totalTime);
+    }
+}
+
 void Director::ShakeEntity(const std::string& nameID, float amount, float totalTime)
 {
     if (Entity* entity = Director::Get().GetEntity(nameID))
