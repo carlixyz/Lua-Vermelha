@@ -149,6 +149,11 @@ void EntityLua::OnReturn()
     if (lua_isnumber(LuaContext, -1)) 
         Info.Alpha = (float)lua_tonumber(LuaContext, -1);
     lua_pop(LuaContext, 1);
+
+    lua_getfield(LuaContext, -1, "Scale");
+    if (lua_isnumber(LuaContext, -1))
+        Info.Scale = (float)lua_tonumber(LuaContext, -1);
+    lua_pop(LuaContext, 1);
 }
 
 void Entity::Debug()
@@ -216,8 +221,22 @@ void Entity::OnRender()
         Info.Scale == 1.0f ? Info.PositionY : Info.PositionY - (CurrentSprite.height * (Info.Scale - 1.0f) * 0.5f)
     };
 
+    if (Info.Rotation != 0.0f)  // Compensate DrawTextureEx top-left rotation, so tiny rotations feel centered.
+    {
+        float rad = Info.Rotation * DEG2RAD;
+
+        float cx = (CurrentSprite.width * Info.Scale) * 0.5f;
+        float cy = (CurrentSprite.height * Info.Scale) * 0.5f;
+
+        float rotatedCx = cx * cosf(rad) - cy * sinf(rad);
+        float rotatedCy = cx * sinf(rad) + cy * cosf(rad);
+
+        drawPos.x += cx - rotatedCx;
+        drawPos.y += cy - rotatedCy;
+    }
+
     if (IsTextureValid(CurrentSprite))
-        DrawTextureEx(CurrentSprite, drawPos, 0.0f, Info.Scale, ColorAlpha(WHITE, Info.Alpha)); //Fade(WHITE, Info.Alpha));
+        DrawTextureEx(CurrentSprite, drawPos, Info.Rotation, Info.Scale, ColorAlpha(WHITE, Info.Alpha)); //Fade(WHITE, Info.Alpha));
 
     if (Game::Get().IsDebugMode())
         Debug(); //DrawRectangle(Info.PositionX, Info.PositionY, CurrentSprite.width, CurrentSprite.height, ColorAlpha(RED, 0.1f));
@@ -233,7 +252,7 @@ void Entity::OnRender()
     {
         highlightLapse -= GetFrameTime();
         BeginBlendMode(BLEND_ADDITIVE);
-        DrawTextureEx(CurrentSprite, drawPos, 0.0f, Info.Scale, ColorAlpha(WHITE, Info.Alpha));
+        DrawTextureEx(CurrentSprite, drawPos, Info.Rotation, Info.Scale, ColorAlpha(WHITE, Info.Alpha));
         EndBlendMode();
     }
 }

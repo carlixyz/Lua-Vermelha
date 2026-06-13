@@ -2,7 +2,7 @@ return {
         
         { Entity = "7Moon", Position = { x = -100, y = -220 }, Textures = "data/Scenes/Intro/7thMoon.png", Visible = true, Alpha = 1.0  },
         { TitleText = (function() 
-                local self = { MenuEnabled = false, StatusEnabled = true }
+                local self = { MenuEnabled = false, StatusEnabled = true, DemoMode = false }
                 function self.OnConstruct() return 
                 { NameId = "7Title", Position = { x = 0, y = 0 }, Clickable = false, Visible = true, Alpha = 0.0, 
                 Textures = { TITLETEXT = "data/Scenes/Intro/7thText.png"}, --CurrentImage = "data/Scenes/Intro/7thTitle.png" 
@@ -17,15 +17,21 @@ return {
                 { "" },
                 { "Play",
                     function()
-                        Say("So let's jump to the first chapter ", 1.0)
-                        --SetThunder(false)
-                        SetAlpha("Dark", 1)
-                        BlendScene("GuestRoom")
+                        if self.DemoMode then
+                            Say("Game still under development")
+                            Say("Come back later")
+                            self.DoOptionsMenu()
+                        else
+                            Say("So let's jump to the first chapter ", 1.0)
+                            --SetThunder(false)
+                            SetAlpha("Dark", 1)
+                            BlendScene("GuestRoom")
+                        end
                     end },
 
                 { self.StatusEnabled, "Status",
                     function()
-                        Say("You decide to see more options")
+                        Say("Nothing to show here yet")
                         --SetThunder(false)
                         Say()
                         self.DoOptionsMenu()

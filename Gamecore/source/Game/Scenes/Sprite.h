@@ -54,7 +54,8 @@ struct SpriteInfo
 	int PositionX= 0;								// Current Horizontal position in Screen
 	int PositionY = 0;								// Current Vertical position in Screen
 	float Alpha = 1.f;								// Current Alpha Color Value
-	float Scale = 1.f;								// Current Alpha Color Value
+	float Scale = 1.f;
+	float Rotation = 0.0f;						
 
 	Rectangle Size = { 0.0f, 0.0f, 1.0f, 1.0f };
 	std::vector<std::string> TexturesIDs;
@@ -166,6 +167,35 @@ public:
 				return true;
 			}
 			});
+
+		return *this;
+	}
+
+	inline Tween& ActionWobble(float maxAngle, float totalTime)
+	{
+		Tweens.emplace_back(Action{
+			[this, maxAngle, totalTime, currentTime = 0.0f]
+			(float dt) mutable
+			{
+				currentTime += dt;
+
+				float t = currentTime / totalTime;
+				if (t > 1.0f) t = 1.0f;
+
+				float damping = 1.0f - t;
+				float swings = 4.0f;
+
+				Sprite.Rotation = sinf(t * swings * PI * 2.0f) * maxAngle * damping;
+
+				if (currentTime >= totalTime)
+				{
+					Sprite.Rotation = 0.0f;
+					return false;
+				}
+
+				return true;
+			}
+		});
 
 		return *this;
 	}

@@ -41,7 +41,7 @@ if(EMSCRIPTEN)
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CMAKE_SOURCE_DIR}/data/"
         "${CMAKE_BINARY_DIR}/data/"
-)
+    )
 
     set(LINK_OPTS
       "-s USE_GLFW=3"

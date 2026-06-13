@@ -132,67 +132,130 @@ return {
         function self.OnDoorKnocking()
             SetEmotion()
             Say("\n\nOoouch!", 3.0)
-            Say()
             SetShadeAlpha(.65)
+            Wait(1)
 
             Say("Damn my leg... it hurts", 3.0)
-            Say("What happened yesterday!?", 3.0)
+            Say("What happened yesterday?\ncan't think straight with this Noggin ache", 6.0)
             Say("I don't remember about anything at all", 4.0)
+            Say("Well I guess is not that bad, I can walk fine...", 5.0)
+            Say("But I'll have to check it later", 4.0)
 
-            Say("Well I guess is not that bad", 4.0)
-            Say("I think can walk...", 4.0)
-            Say("But I'll need to check a doctor later", 4.0)
-
-            Say()
+            Wait(1.0)
             SetState("IntroWakeup", "IW4")
             Say("'Knock Knock'", 3.0)
-            
             SetEmotion("TWorry")
             Say("...Now what?", 3.0)
             Say("Someone is knocking at the door..", 4.0)
             
             SetEmotion("TNeutral")
             Say("Who is it?", 3.0)
-            Say( "Femenine voice","Hello sir, are you awake!?", 4.0)
-            
+            Say("Girl","Hello sir, are you awake!?", 4.0)
             SetEmotion("TSuspect")
-            Say("...", 3.0)
-            Say("It's a woman...", 3.0)
-            Say( "Femenine voice","Please answer me, are you awake??", 4.0)
-            
+            Say("It's a young woman...", 3.0)
+            Say("Girl","Please answer me, are you awake??", 4.0)
+
             SetEmotion("TSurprise")
-            Say( "Femenine voice","Otherwise, we'll need to force the door down\nsince you might be unconscious, dead or something!", 9.0)
+            Say( "Girl","Otherwise, we'll need to force the door down\nsince you might be unconscious, dead or something!", 9.0)
             SetEmotion("TNeutral")
             Say("Hey, wait yes, I'm awake!", 4.0)
-           
+            SetState("Ada","ASmile") SetAlpha("Ada", 0.0) SetVisible("Ada")
+ 
             SetEmotion("T4Wall")
-            Say( "Femenine voice","Oh so, you can talk, that's good!", 3.0)
+            Say("Girl","Oh so, you can talk, that's good!", 3.0)
             SetEmotion("TNeutral")
-            Say( "Femenine voice","Alright Sir, Do you want to open the door?\nSo We can properly introduce ourselves..", 6.0)
-            Say("Thiago" ,"Sure, just give me a sec", 3.0)
-            Say()
+            Say("Girl","Alright Sir, Do you want to open the door?\nSo We can properly introduce ourselves..", 7.0)
+            Say("Sure, just give me a sec", 3.0)
 
-            BlendScene("HallwayInit")
-            
-            --[[
+            Fade("Ada", 1.0, 3)
+            Say("Hello hello\nSorry for the rush but you slept all morning..", 6)
+            Ada.StartTalk()
+            SetEmotion("TSurprise")
+            Say("Ada", "Well, I'm Ada\nDo you have a name?", 5)
+
+            Ada.StopTalk()
+            SetEmotion("TSmile")
+            Say("Thiago", "I'm Thiago Veira, Nice to meet you Ada", 5)
+            Ada.StartTalk()
+            SetEmotion("TNeutral")
+            Say("Ada", "You must feel quite confussed right now", 3)
+            Say("Ada", "Let me help you with a bit of context", 4)
+
+            MansionView.AnimatePan()
+            Fade("MansionView", 1.0, 5)
+            Say("Ada", "We're in the Schwarz Fazenda, a huge agricultural company...", 5)
+            SetCurrentScene("HallwayInit")
+            Say("Ada", "Located inside the capao seco woods", 4)
+            SetVisible("Ilsa")
+            Ada.StopTalk()
+            Say("Ada", "Somewhere between the mountains of espretador valley", 5)
+
+            Wait(4)
+            Fade("MansionView", 0, 7)
+            Wait(4)
             SetEmotion("TPeace")
-            Say("Ah yes, I'm Thiago Veira")
-            Say( "Femenine voice","Oh hello Mister Thiago Veira then!", 4.0)
-            Say("Thiago" ,"Just call me Thiago please", 3.0)
+            Ada.StartTalk()
+            Say("Ada", "And this is my mother, Ilsa Schwarz\nThe family head and main administrator of family busisness", 9)
+            Ada.StopTalk()
+
+            Say("Thiago", "Hi, nice to meet you Ms Schwarz", 3)
+            Ilsa.StartTalk()
             SetEmotion("TNeutral")
+            Say("Ilsa", "Hey Are you Ok? How do you feel? ", 5)
+            SetEmotion("TSuspect")
+            Say("Ilsa", "We found you yesterday laying unconscious in the floor\n you really scared us", 7)
 
-            Say( "Femenine voice","Alright Thiago, Do you want to open the door?", 5.0)
-            Say("Thiago" ,"Sure, just give me a sec", 3.0)
+            Ilsa.StopTalk()
+            SetEmotion("TNeutral")
+            Say("Thiago", "Yes Well, thanks for your care\nto be honest I don't remember anything at all", 7)
+            Say("Thiago", "Frankly, I was hoping you to explain me what really happened", 5)
+            Ilsa.StartTalk()
+
+            Say("Ilsa", "I guess you were so tired that just felt asleep", 4)
+            Say("Ilsa", "And how is your leg? I'm affraid You'll need to see a doctor", 5)
+            Say("Ilsa", "Ada, please guide our guest to the town's path\nso He can go to the hospital", 6)
+            Ilsa.StopTalk()
+
+            SetState("Ada","AAprove")
+            Say("Ada", "Yep sure", 3) Ada.StopTalk() Ilsa.StartTalk()
+            Say("Ilsa", "Mind you, I wish We could continue talking\nbut I've duties and urgencies to attend", 6)
+            Say("Ilsa", "Sorry, I've a meeting with a couple of officers'..", 4)
+            Ilsa.StopTalk()
+
+            Ada.StartTalk()
+            Say("Ada", "Ok, see you later mother", 4)
+            Fade("Ilsa", 0.0, 2)
+            Move("Ilsa", -256)
+            Ada.StopTalk()
+            Wait(2)
+
+            Ada.StartTalk()
+            Say("Ada", "So, Let's continue with this onboarding...", 4)
+            Say("Ada", "We're in the main hallway\nAll rooms are connected to this gallery hub", 6)
+            Say("Ada", "Now follow me I'll take you to the Lobby", 5)
+            Ada.StopTalk()
+
+            LobbyInit.GoRight()
+            Fade("Dark", 1, 3)
+            Wait(false)
+            SetEntityScene("Ada", "Lobby")
+            SetCurrentScene("Lobby")
+            Wait(2.5, false)
+
+            Fade("Dark", 0, 3)
+            Wait(false, 3.5)
+            Ada.StartTalk()
+            Say("Ada", "So here is where we found you last night, no recalls yet?", 4)
+            Say("Ada", "Give it a look around\nand when you're done talk with me to continue", 6)
+            Ada.StopTalk()
+            Say("Thiago", "Alright")
             Say()
-            BlendScene("HallwayInit")
-            ]]--
-
+            SetClickable("Ada")
         end
 
         function self.OnExit()
             Fade("Shade", 0.0, 0.3)
-            SetShadeAlpha( 0.65 )       -- Enable auto shade
-            --SetShadeAlpha( 0.35 )       -- Enable auto shade
+            SetShadeAlpha( 0.65 )       -- Enable auto shade 0.35
         end
 
         return self
@@ -204,12 +267,18 @@ return {
     { Quad = (function() 
         local self = {}
         function self.OnConstruct() return { NameId = "Tapiz", NameView = "Tapestry", Pos = { x = 45, y = 80 }, Size = { Width = 160, Height = 280 }, Clickable = false} end
-        --function self.OnCommentEntry() Say("/nCacho", "I don't want to touch that\n It's full of dust", 4.0) Say() end
         function self.OnCommentEntry() Say("\nI don't want to touch that\n It's full of dust", 4.0) Say() end
-        function self.OnCommentLook() Say("\nIt's just a room decoration", 3.0) Say() end
+        function self.OnCommentLook() 
+            if IntroWakeup.TotalItems < 2 then
+                Say("\nI've no time for that,\n I need to search my wallet and cellphone", 5.0) 
+            else
+                Say("\nIt's just a room decoration", 3.0) 
+            end
+        Say() 
+        end
         function self.OnInteract()
             StartSequence(self.OnCommentEntry) 
-            end 
+        end 
 
         function self.OnLook() StartSequence(self.OnCommentLook) end 
         return self
@@ -251,8 +320,8 @@ return {
             Say("\nHey here's my wallet...\ngood to know I haven't lost it", 5.0) 
             Say("",0.5)
             IntroWakeup.CountItem()
-            
         end
+            
         function self.OnCommentLook() Say("\nA bedside table with one small drawer", 4.0) Say() end
         function self.OnInteract()
 
@@ -302,7 +371,14 @@ return {
         local self = {}
         function self.OnConstruct() return { NameId = "PaintA", NameView = "Floresta\npaint", Pos = { x = 760, y = 107 }, Size = { Width = 148, Height = 138 }, Clickable = false} end
         function self.OnCommentEntry() Say("\nNothing to do with that", 3.0) Say() end
-        function self.OnCommentLook() Say("\nA nice painting of the mato grosso\nArt style is fine, A bit generic maybe", 5.0) Say() end
+        function self.OnCommentLook()
+            if IntroWakeup.TotalItems < 2 then
+                Say("\nI've no time for that,\n I need to search my wallet and cellphone", 5.0)
+            else
+                Say("\nA nice painting of the mato grosso\nArt style is fine, A bit generic maybe", 5.0)
+            end
+            Say() 
+        end
         function self.OnInteract() StartSequence(self.OnCommentEntry) end function self.OnLook() StartSequence(self.OnCommentLook) end 
         return self
         end)()

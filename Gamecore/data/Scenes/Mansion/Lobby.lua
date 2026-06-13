@@ -42,6 +42,11 @@ return {
                 Move("PowerBoardStart", 1500)
                 Move("FireplaceStart", 716)
 
+                if IsEntityInScene("Ada", "Lobby") and GetVisible("Ada") and GetAlpha("Ada") then
+                    Move("Ada", 1060)
+                    SetClickable("HouseExit", false)    -- Let's disable temporarely the exit
+                end
+
             elseif self.State == 1 then
                 Move("LobbyInit", -604)
                 SetClickable("LobbyInitLSide", true)
@@ -52,6 +57,10 @@ return {
                 Move("ClockStart", 280)
                 Move("PowerBoardStart", 820)
                 Move("FireplaceStart", 110)
+
+                if IsEntityInScene("Ada", "Lobby") and GetVisible("Ada") and GetAlpha("Ada") then
+                    Move("Ada", 360)
+                end
             end
         end
 
@@ -88,7 +97,7 @@ return {
         OnInteract = function() SwipeScene("HallwayInit", "Down") end } 
     }, -- HALLWAY RETURN
 
-    { Quad = { OnConstruct = function() return { NameId = "House exit", Cursor = "MDown", Pos = { x = 215, y = 413 },
+    { Quad = { OnConstruct = function() return { NameId = "HouseExit", Cursor = "MDown", Pos = { x = 215, y = 413 },
             Size = { Width = 590, Height = 100 }, Clickable = true } end, OnInteract = function() SwipeScene("MansionFront", "Up") end } 
     }, -- HOUSE EXIT
 
@@ -102,7 +111,6 @@ return {
 
     { Quad = { OnConstruct = function() return { NameId = "FireplaceStart", NameView = "Fire place",
         Clickable = true, Pos = { x = 716, y = 133 }, Size = { Width = 120, Height = 120 }} end, 
-        --OnInteract = function() BlendScene("Fireplace")  end,
         OnInteract = function() SwipeScene("Fireplace", "Down")  end,
         OnLook = function() StartSequence(function() Say("It's a fireplace with some decorations over", 4.0) Say() end) end } 
     }, -- FIRE PLACE
@@ -110,7 +118,7 @@ return {
     { Quad = { OnConstruct = function() return { NameId = "ClockStart", NameView = "Clock", Clickable = true, 
         Pos = { x = 1200, y = 136 }, Size = { Width = 34, Height = 120 }} end, 
         OnLook = function() StartSequence(function() Say("Mhhh...", 3.0) 
-        Say("The clock isn't moving anymore, weird,\n lookslike it's broken", 6.0) Say() end) end } 
+        Say("The clock isn't moving anymore, weird,\n looks like it's broken", 6.0) Say() end) end } 
     }, -- CLOCK
 
     { Quad = { OnConstruct = function() return { NameId = "PowerBoardStart", NameView = "Power\nBoard", Clickable = true, 

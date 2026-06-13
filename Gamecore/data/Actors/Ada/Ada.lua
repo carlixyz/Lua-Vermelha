@@ -2,6 +2,7 @@
 
 return (function()
     local self = {
+        Guidance = true,
         TalkAnimID = 0,
         TalkFrame = 0,
         TalkCount = 0,
@@ -12,14 +13,15 @@ return (function()
 
         QuietTimeMin = 10,
         QuietTimeMax = 20,
-        QuietAmount = 10
+        QuietAmount = 10,
     }
 
     function self.OnConstruct()
         return {
-            Visible = false,
+            NameView = "Ada",
+            Visible = true,
             Clickable = false,
-            Pos = { x = 320, y = 0 },
+            Pos = { x = 370, y = 0 },
             Textures = {
                 { ANeutral =    "data/Actors/Ada/ANeutral.png"    },
                 { AHappy =      "data/Actors/Ada/AHappy.png"      },
@@ -89,14 +91,62 @@ return (function()
 
     function self.OnInteract()
         print("called Ada.OnInteract")
-        self.StartTalk()
-        --Scale("Ada", 3, 3)
+
+        --Wobble("Ada", 5, 3)
+
+        if self.Guidance then
+            SetState("Ada", "ASmile")
+            Schedule(0.5, "SetState", "Ada", "ATalkClose")
+            print("Ok, let's go")
+        end
     end
 
     function self.OnLook()
         print("called Ada.OnLook")
-        self.StopTalk()
-        --Scale("Ada", 1, 3)
+    end
+
+    function self.TalkAda()
+        Choice(
+            { "I'm done, let's go to the hospital",
+                function()
+                    Say("Alright Let me show you the way", 3.0)
+                    SetEntityScene("Ada", "Global")
+                    SetAlpha("Dark", 1)
+                    --BlendScene("GuestRoom")
+                end },
+
+            { "Ask about the Mansion", 
+                function() 
+                    Say("Well I believe the Mannor is like almost 100 years old", 3)
+                    Say()
+                    --StartSequence(self.DoOptionsMenu)
+                end },
+
+            { self.StatusEnabled, "About the family",
+                function()
+                    Say("Oh we're like 5 brothers")
+                    Say()
+                    --self.DoOptionsMenu()
+                end },
+
+                
+            { "Nevermind", function() Say("Thiago","Oh nevermind,\njust forgot what I was going to say", 1.5) end }
+        )
+    end
+    
+    function self.ContinueOnboarding()
+    end
+
+    function self.TalkAboutAdaDisease()
+    end
+
+    function self.TalkAboutFamily()
+    end
+
+    function self.TalkAboutMansion()
+    end
+
+    function self.TalkAboutPolice()
     end
 
     return self

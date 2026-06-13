@@ -7,9 +7,10 @@ Scenes = {
 
     Global = {
         { Entity = "Shade", Textures = "data/Images/t.png", Alpha = 0.6, Position = { x = 0, y = 316 }, Visible = false },
-        { Entity = "Dark", Textures = { Dark = "data/Images/Dark.png"}, Visible = false, Alpha = 1.0  },
         { Ilsa = "data/Actors/Ilsa/Ilsa.lua" },
-        { Ada = "data/Actors/Ada/Ada.lua" }
+        { Ada = "data/Actors/Ada/Ada.lua" },
+        { MansionView = "data/Scenes/Mansion/GeneralViewpoint.lua" },
+        { Entity = "Dark", Textures = { Dark = "data/Images/Dark.png"}, Visible = false, Alpha = 1.0  }
 
         --{ Dark = { OnConstruct = function() return { NameId = "Dark", Visible = false, Active = false, Clickable = false,
         --          Alpha = 1.0, Textures = { { Dark = "data/Images/Dark.png" } }, CurrentImage = "Dark" } end } }

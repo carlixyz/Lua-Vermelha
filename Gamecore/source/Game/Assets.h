@@ -36,6 +36,12 @@ public:
 
 	Texture2D& GetTexture(const std::string& NameID) { return Textures.at(NameID); }
 
+	Texture2D* TryGetTexture(const std::string& NameID) 
+	{
+		auto it = Textures.find(NameID); 
+		return (it != Textures.end()) ? &it->second : nullptr;
+	}
+
 	Image GetImage(const std::string& NameID) { return Images.at(NameID); }
 
 	Font GetFont(const std::string& NameID) { return Fonts.at(NameID); }
@@ -96,6 +102,7 @@ private:
 };
 
 
+#define TryGetTexture( NameID ) Assets::Get().TryGetTexture( NameID )
 #define GetTexture( NameID ) Assets::Get().GetTexture( NameID )
 #define GetImage( NameID ) Assets::Get().GetImage( NameID )
 #define GetFramesCount( NameID ) Assets::Get().GetAnimFrames( NameID )

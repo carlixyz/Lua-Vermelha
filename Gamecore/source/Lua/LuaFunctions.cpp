@@ -37,6 +37,37 @@ int Lua_StartSequence(lua_State* L)
     return 0; // no Lua return values
 }
 
+int Lua_Wait(lua_State* L)
+{
+    float duration = 3.0f;
+    bool panel = true;
+
+    if (lua_isnumber(L, 1))
+    {
+        duration = (float)lua_tonumber(L, 1);
+
+        if (lua_isboolean(L, 2))
+            panel = lua_toboolean(L, 2) != 0;
+    }
+    else if (lua_isboolean(L, 1))
+    {
+        panel = lua_toboolean(L, 1) != 0;
+    }
+
+    lua_newtable(L);
+
+    lua_pushstring(L, "WAIT");
+    lua_setfield(L, -2, "type");
+
+    lua_pushnumber(L, duration);
+    lua_setfield(L, -2, "duration");
+
+    lua_pushboolean(L, panel);
+    lua_setfield(L, -2, "panel");
+
+    return lua_yield(L, 1);
+}
+
 int Lua_EndSequence(lua_State* L)
 {
     if (!LuaManager::Get().IsSequenceRunning())
@@ -444,6 +475,18 @@ int Lua_SetShadeAlpha(lua_State* L)
     return 0;
 }
 
+int Lua_SetEntityCursor(lua_State* L)
+{
+    // Expecting: (string entityID, string sceneID)
+    const std::string& nameID = luaL_checkstring(L, 1);
+    const std::string& cursorID = luaL_checkstring(L, 2);
+
+    if (Entity* entity = Director::Get().GetEntity(nameID))
+        if (Assets::Get().HasTextureID(cursorID))
+            entity->GetInfo().CustomCursor = cursorID;
+
+    return 0;
+}
 
 int Lua_SetEntityScene(lua_State* L) 
 {
@@ -638,12 +681,24 @@ int Lua_ScaleEntity(lua_State* L)
 
 int Lua_ShakeEntity(lua_State* L)
 {
+    // Expecting 2~3 arguments: (entityName, targetValue 3.f ~ 10.f, timeLapse 0.5f ~ 1.0f)
+    const std::string& nameID = luaL_checkstring(L, 1);
+    float amount = (float)luaL_optnumber(L, 2, 5.0f);
+    float totalTime = (float)luaL_optnumber(L, 3, 3.0f);
+
+    Director::Get().ShakeEntity(nameID, amount, totalTime);
+
+    return 0; // No return values
+}
+
+int Lua_WobbleEntity(lua_State* L)
+{
     // Expecting 2~3 arguments: (entityName, targetValue, timeLapse)
     const std::string& nameID = luaL_checkstring(L, 1);
     float amount = (float)luaL_checknumber(L, 2);
     float totalTime = (float)luaL_optnumber(L, 3, 3.0f);
 
-    Director::Get().ShakeEntity(nameID, amount, totalTime);
+    Director::Get().WobbleEntity(nameID, amount, totalTime);
 
     return 0; // No return values
 }
@@ -971,9 +1026,11 @@ void RegisterLuaFunctions() // C++ Foo Register in Lua
 
     LuaManager::Get().RegisterFunction("StartSequence", Lua_StartSequence);
 
-    LuaManager::Get().RegisterFunction("SetEmotion", Lua_SetEmotion);
-
     LuaManager::Get().RegisterFunction("EndSequence", Lua_EndSequence);
+
+    LuaManager::Get().RegisterFunction("Wait", Lua_Wait);
+
+    LuaManager::Get().RegisterFunction("SetEmotion", Lua_SetEmotion);
 
     LuaManager::Get().RegisterFunction("Schedule", Lua_Schedule);
 
@@ -1031,7 +1088,11 @@ void RegisterLuaFunctions() // C++ Foo Register in Lua
 
     LuaManager::Get().RegisterFunction("Shake", Lua_ShakeEntity);
 
+    LuaManager::Get().RegisterFunction("Wobble", Lua_WobbleEntity);
+
     LuaManager::Get().RegisterFunction("StopTween", Lua_StopTween);
+
+    LuaManager::Get().RegisterFunction("SetEntityCursor", Lua_SetEntityCursor);
 
     LuaManager::Get().RegisterFunction("SetEntityScene", Lua_SetEntityScene);
 

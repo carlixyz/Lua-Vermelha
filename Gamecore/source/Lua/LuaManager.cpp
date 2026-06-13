@@ -48,6 +48,15 @@ void LuaManager::ClampSelectionToValidChoice(int direction)
     }
 }
 
+void LuaManager::RenderDialogueBackdrop(bool visible)
+{
+    CurrentAlpha += visible ? GetFrameTime() * 2.0f : -GetFrameTime() * 0.25f;
+    CurrentAlpha = Clamp(CurrentAlpha, 0.f, ShadeAlpha);
+
+    DrawTexture(GetTexture("Shade"), 0, 316, ColorAlpha(WHITE, CurrentAlpha));
+    DrawTexture(GetTexture(Emotion), 16, 290, ColorAlpha(WHITE, CurrentAlpha * 2));
+}
+
 bool LuaManager::Init()
 {
     LuaContext = luaL_newstate();
@@ -74,6 +83,17 @@ bool LuaManager::Deinit()
 void LuaManager::Update(float deltaTime)
 {
     if (!sequence || !sequence->IsRunning()) return;
+
+    // === WAIT MODE ===
+    if (sequence->IsWaiting())
+    {
+        sequence->Duration -= deltaTime;
+
+        if (sequence->Duration <= 0.0f)
+            Advance();
+
+        return; // ignore mouse / keyboard input while waiting
+    }
 
     // === CHOICE MODE ===
     if (sequence->IsMultiChoice())
@@ -156,7 +176,15 @@ void LuaManager::Update(float deltaTime)
 
 void LuaManager::Render()
 {
-    if (!sequence || sequence->CurrentOptions.empty()) return;
+    if (!sequence) return;
+
+    if (sequence->IsWaiting())
+    {
+        RenderDialogueBackdrop(sequence->IsPanelShown());
+        return;
+    }
+
+    if (sequence->CurrentOptions.empty()) return;
 
     if (sequence->IsMultiChoice())
     {
@@ -164,11 +192,12 @@ void LuaManager::Render()
         hoverPulse += GetFrameTime() * 3.0f;
         float pulse = (sinf(hoverPulse) * 0.5f + 0.5f);
 
-        CurrentAlpha += GetFrameTime() * 2;
-        CurrentAlpha = Clamp(CurrentAlpha, 0.f, ShadeAlpha);
-        DrawTexture(GetTexture("Shade"), 0, 316, ColorAlpha(WHITE, CurrentAlpha));
+        //CurrentAlpha += GetFrameTime() * 2;
+        //CurrentAlpha = Clamp(CurrentAlpha, 0.f, ShadeAlpha);
+        //DrawTexture(GetTexture("Shade"), 0, 316, ColorAlpha(WHITE, CurrentAlpha));
+        //DrawTexture(GetTexture(Emotion), 16, 290, ColorAlpha(WHITE, CurrentAlpha * 2));
 
-        DrawTexture(GetTexture(Emotion), 16, 290, ColorAlpha(WHITE, CurrentAlpha * 2));
+        RenderDialogueBackdrop(true);
 
         for (int i = 0; i < (int)sequence->CurrentOptions.size(); i++)
         {
@@ -205,11 +234,14 @@ void LuaManager::Render()
     const bool textVisible = charsToShow > 0;
     const bool speakerVisible = !speaker.empty();
 
-    CurrentAlpha += (textVisible || speakerVisible) ? GetFrameTime()*2 : -GetFrameTime()*.25f;
-    CurrentAlpha = Clamp(CurrentAlpha, 0.f, ShadeAlpha);
-    DrawTexture(GetTexture("Shade"), 0, 316, ColorAlpha(WHITE, CurrentAlpha));
+    //CurrentAlpha += (textVisible || speakerVisible) ? GetFrameTime()*2 : -GetFrameTime()*.25f;
+    //CurrentAlpha = Clamp(CurrentAlpha, 0.f, ShadeAlpha);
+    //DrawTexture(GetTexture("Shade"), 0, 316, ColorAlpha(WHITE, CurrentAlpha));
 
-    DrawTexture(GetTexture(Emotion), 16, 290, ColorAlpha(WHITE, CurrentAlpha *2));
+    //DrawTexture(GetTexture(Emotion), 16, 290, ColorAlpha(WHITE, CurrentAlpha *2));
+
+    RenderDialogueBackdrop((textVisible || speakerVisible));
+
 
     if (speakerVisible)
         DrawTextEx(GetFont("Noto"), speaker.c_str(),

@@ -93,6 +93,8 @@ public:
 
     void ShakeEntity(const std::string& nameID, float amount, float totalTime);
 
+    void WobbleEntity(const std::string& nameID, float amount, float totalTime);
+
     void StopEntity(const std::string& nameID);
 
 

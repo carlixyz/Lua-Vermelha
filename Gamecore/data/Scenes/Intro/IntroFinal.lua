@@ -16,7 +16,8 @@ return {
         function self.OnConstruct()
             return {
                 NameId = "IntroLeftSide",
-                NameView = "Left\nSide",
+                NameView = "Left\nSide", 
+                Cursor = "MLeft",
                 Position = { x = 0, y = 0 },
                 Size = { Width = 60, Height = 516 },
                 Clickable = false
@@ -143,7 +144,7 @@ return {
 
         function self.OnConstruct()
             return {
-                NameId = "IntroRightSide", NameView = "Right\nSide",
+                NameId = "IntroRightSide", NameView = "Right\nSide", Cursor = "MRight",
                 Position = { x = 840, y = 0 },
                 Size = { Width = 80, Height = 516 },
                 Clickable = true

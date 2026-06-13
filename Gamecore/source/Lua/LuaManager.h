@@ -16,6 +16,8 @@ struct ScriptedSequence
     std::vector<std::string> CurrentOptions;
     float Duration = -1.0f;
     bool AutoStep = false;
+    bool Wait = false;
+    bool PanelShown = false;
 
     ScriptedSequence(lua_State* mainL, const std::string& funcName)
     {
@@ -28,6 +30,10 @@ struct ScriptedSequence
     inline bool IsMultiChoice() const { return HasMultipleChoice; }
 
     inline bool IsRunning() const { return lua_status(Thread) == LUA_YIELD; }
+
+    inline bool IsWaiting() const { return Wait; }
+
+    inline bool IsPanelShown() const { return PanelShown; }
 
     // ---- main step (for SAY) ----
     inline void Step() { ResumeCore(0); }
@@ -72,6 +78,8 @@ private:
         // Make sure CurrentOptions is clean and we won't accidentally keep duration
         CurrentOptions.clear();
         HasMultipleChoice = false;
+        Wait = false;
+        PanelShown = true;
         Duration = -1.0f; // default unset unless overridden
 
         lua_getfield(Thread, -1, "type");
@@ -115,6 +123,18 @@ private:
             //return;
         }
 
+        else if (type == "WAIT")
+        {
+            Wait = true;
+
+            lua_getfield(Thread, -1, "duration");
+            Duration = lua_isnumber(Thread, -1) ? (float)lua_tonumber(Thread, -1) : 3.0f;
+            lua_pop(Thread, 1);
+
+            lua_getfield(Thread, -1, "panel");
+            PanelShown = !lua_isboolean(Thread, -1) || lua_toboolean(Thread, -1);
+            lua_pop(Thread, 1);
+        }
 
         // ----- CHOICE -----
         else if (type == "CHOICE")
@@ -162,6 +182,7 @@ class LuaManager : public Singleton<LuaManager>
 
     bool IsDummyChoice(int index) const;
     void ClampSelectionToValidChoice(int direction = 1);
+    void RenderDialogueBackdrop(bool visible);
 
     std::string Emotion = "TDisabled";                  // Our character customizable emotions
 

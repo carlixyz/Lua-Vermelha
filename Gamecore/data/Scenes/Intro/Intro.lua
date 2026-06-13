@@ -32,7 +32,7 @@ return {
     { Quad = 
         (function()  
             local self = { ClickedOnce = false, Transition = false }
-            function self.OnConstruct()
+            function self.OnConstruct() -- Cursor = "MUp",
                 return { NameId = "Door entry", Position = { x = 600, y = 100 }, Size = { Width = 200, Height = 280 }, Active = false }
             end
             function self.OnCommentLook() Say("Looks like someone forgot to lock a door\n perhaps the wind opened it.", 5.0) Say() end
@@ -54,6 +54,7 @@ return {
                     else
                         PlaySound("CarDoor")
                         Schedule( 0.5, "SetMusicVolume", 1.0)
+                        SetEntityCursor("Door entry","MUp")
                         --SetMusicVolume(1.0)
 
                         self.ClickedOnce = true

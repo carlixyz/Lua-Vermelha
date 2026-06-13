@@ -81,13 +81,6 @@ void Director::Update(float dt)
 
 void Director::InitFunctionMap()
 {
-    // ScheduleFunction(3.0, "FadeEntity", "John", "0.0", "1.0", "2.0")
-    //FunctionMap["FadeEntity"] = [this](std::vector<std::string> args)
-    //    {
-    //        if (args.size() >= 4)
-    //            FadeEntity(args[0], std::stof(args[1]), std::stof(args[2]), std::stof(args[3]));
-    //    };
-
     // ScheduleFunction(3.0, "FadeEntity", "John", "0.0", "3.0")
     FunctionMap["FadeEntity"] = [this](std::vector<std::string> args)
     {
@@ -100,60 +93,60 @@ void Director::InitFunctionMap()
 
     // ScheduleFunction(1.5, "MoveEntity", "Door", "100", "150", "4.0")
     FunctionMap["MoveEntity"] = [this](std::vector<std::string> args)
-        {
-            if (args.size() >= 3)
-                MoveEntity(args[0], std::stof(args[1]), std::stof(args[2]),
-                    args.size() >= 4 ? std::stof(args[3]) : 3.0f);
-        };
+    {
+        if (args.size() >= 3)
+            MoveEntity(args[0], std::stof(args[1]), std::stof(args[2]),
+                args.size() >= 4 ? std::stof(args[3]) : 3.0f);
+    };
 
     // ScheduleFunction(5.0, "SetEntityVisible", "Dark", "false")
     FunctionMap["SetEntityVisible"] = [this](std::vector<std::string> args)
-        {
-            if (args.size() >= 2)
-                SetEntityVisible(args[0], args[1] == "true" || args[1] == "1");
-        };
+    {
+        if (args.size() >= 2)
+            SetEntityVisible(args[0], args[1] == "true" || args[1] == "1");
+    };
 
     // ScheduleFunction(5.0, "SetEntityAlpha", "Dark", "0.5")
     FunctionMap["SetEntityAlpha"] = [this](std::vector<std::string> args)
-        {
-            if (args.size() >= 2)
-                SetEntityAlpha(args[0], std::stof(args[1]));
-        };
+    {
+        if (args.size() >= 2)
+            SetEntityAlpha(args[0], std::stof(args[1]));
+    };
 
     // ScheduleFunction(5.0, "SetEntityActive", "Dark", "true")
     FunctionMap["SetEntityActive"] = [this](std::vector<std::string> args)
-        {
-            if (args.size() >= 2)
-                SetEntityActive(args[0], args[1] == "true" || args[1] == "1");
-        };
+    {
+        if (args.size() >= 2)
+            SetEntityActive(args[0], args[1] == "true" || args[1] == "1");
+    };
 
     // ScheduleFunction(5.0, "SetEntityClickable", "Dark", "false")
     FunctionMap["SetEntityClickable"] = [this](std::vector<std::string> args)
-        {
-            if (args.size() >= 2)
-                SetEntityClickable(args[0], args[1] == "true" || args[1] == "1");
-        };
+    {
+        if (args.size() >= 2)
+            SetEntityClickable(args[0], args[1] == "true" || args[1] == "1");
+    };
 
     // ScheduleFunction(5.0, "FunctionMap", "Dark", "100", "150")
     FunctionMap["SetEntityPosition"] = [this](std::vector<std::string> args)
-        {
-            if (args.size() >= 3)
-                SetEntityPosition(args[0], std::stof(args[1]), std::stof(args[2]));
-        };
+    {
+        if (args.size() >= 3)
+            SetEntityPosition(args[0], std::stof(args[1]), std::stof(args[2]));
+    };
 
     // ScheduleFunction(5.0, "StartSequence", "FirstDialog")
     FunctionMap["StartSequence"] = [this](std::vector<std::string> args)
-        {
-            if (args.size() == 1)
-                StartSequence(args[0]);
-        };
+    {
+        if (args.size() == 1)
+            StartSequence(args[0]);
+    };
 
     // ScheduleFunction(5.0, "SetEntityTexture", "Elder", "SadElder")
     FunctionMap["SetEntityTexture"] = [this](std::vector<std::string> args)
-        {
-            if (args.size() == 2)
-                SetEntityTexture(args[0], args[1]);
-        };
+    {
+        if (args.size() == 2)
+            SetEntityTexture(args[0], args[1]);
+    };
 }
 
 void Director::CallFunction(const std::string& name, const std::vector<std::string>& args)
@@ -341,25 +334,19 @@ void Director::RequestAction(const std::string& id, const std::function<void(Ent
 void Director::SetEntityTexture(const std::string& nameID, const std::string& textureID)
 {
     if (Entity* entity = Director::Get().GetEntity(nameID))
-    {
         entity->SetSprite(textureID);
-    }
 }
 
 void Director::SetEntityActive(const std::string& nameID, bool active)
 {
     if (Entity* entity = Director::Get().GetEntity(nameID))
-    {
         entity->SetIsActive(active);
-    }
 }
 
 float Director::GetEntityAlpha(const std::string& nameID)
 {
     if (Entity* entity = Director::Get().GetEntity(nameID))
-    {
         return entity->GetAlpha();
-    }
 
     return 0.0f;
 }
@@ -367,25 +354,19 @@ float Director::GetEntityAlpha(const std::string& nameID)
 void Director::SetEntityAlpha(const std::string& nameID, float alpha)
 {
     if (Entity* entity = Director::Get().GetEntity(nameID))
-    {
         entity->SetAlpha(alpha);
-    }
 }
 
 void Director::SetEntityVisible(const std::string& nameID, bool visible)
 {
     if (Entity* entity = Director::Get().GetEntity(nameID))
-    {
         entity->SetIsVisible(visible);
-    }
 }
 
 void Director::SetEntityClickable(const std::string& nameID, bool visible)
 {
     if (Entity* entity = Director::Get().GetEntity(nameID))
-    {
         entity->SetIsClickable(visible);
-    }
 }
 
 void Director::SetEntityPosition(const std::string& nameID, float x, float y)
@@ -409,34 +390,31 @@ void Director::MoveEntity(const std::string& nameID, float x, float y, float lap
 void Director::FadeEntity(const std::string& nameID, float startValue, float endValue, float totalTime)
 {
     if (Entity* entity = Director::Get().GetEntity(nameID))
-    {
         entity->GetTween().ActionFade(startValue, endValue, totalTime);;
-    }
 }
 
 void Director::ScaleEntity(const std::string& nameID, float factor, float totalTime)
 {
     if (Entity* entity = Director::Get().GetEntity(nameID))
-    {
         entity->GetTween().ActionScale(entity->GetScale(), factor, totalTime);
-    }
 }
 
 void Director::ShakeEntity(const std::string& nameID, float amount, float totalTime)
 {
     if (Entity* entity = Director::Get().GetEntity(nameID))
-    {
         entity->GetTween().ActionShake(amount, totalTime);
-    }
 }
 
+void Director::WobbleEntity(const std::string& nameID, float amount, float totalTime)
+{
+    if (Entity* entity = Director::Get().GetEntity(nameID))
+        entity->GetTween().ActionWobble(amount, totalTime);
+}
 
 void Director::StopEntity(const std::string& nameID)
 {
     if (Entity* entity = Director::Get().GetEntity(nameID))
-    {
         entity->GetTween().StopAll();
-    }
 }
 
 

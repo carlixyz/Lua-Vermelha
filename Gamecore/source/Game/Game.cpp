@@ -154,10 +154,10 @@ void Game::RenderCursor()
 
 	if (hovered)
 	{
-		if (hovered->GetCursor().empty())											// Use Default hover cursor
-			DrawTexture(GetTexture("MB"), (int)m.x, (int)m.y, WHITE);
-		else if (const Texture2D* mouseCursor = &GetTexture(hovered->GetCursor()))	// use Custom cursor
+		if (const Texture2D* mouseCursor = TryGetTexture(hovered->GetCursor()))
 			DrawTexture(*mouseCursor, (int)m.x, (int)m.y, WHITE);
+		else																		// Use Default hover cursor
+			DrawTexture(GetTexture("MB"), (int)m.x, (int)m.y, WHITE);
 	}
 	else
 		DrawTexture(GetTexture("MA"), (int)m.x, (int)m.y, WHITE);					// Use Default cursor

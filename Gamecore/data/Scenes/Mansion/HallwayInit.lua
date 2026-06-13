@@ -21,15 +21,23 @@ return {
             if self.State == 0 then
                 Move("HallwayStart", 0)
                 Move("LobbyAccessHallway", 1840)
+                --if GetVisible("Ada") and GetAlpha("Ada") then
+                --    Move("Ada", 1460)
+                --end
                     
             elseif self.State == 1 then
                 Move("HallwayStart", -1071)
                 Move("LobbyAccessHallway", 1240)
+                --if GetVisible("Ada") and GetAlpha("Ada") then
+                --    Move("Ada", 360)
+                --end
                     
             elseif self.State == 2 then
                 Move("HallwayStart", -1991)
                 Move("LobbyAccessHallway", 320)
-                    
+                --if GetVisible("Ada") and GetAlpha("Ada") then
+                --    Move("Ada", -340)
+                --end
             end
         end
 
@@ -51,12 +59,14 @@ return {
         end)()
     },
 
-    { Entity = "MansionView", Textures = { MansionView = "data/Scenes/Mansion/GeneralViewpointSeg.jpg"}, Visible = false },
+    --{ Entity = "MansionView", Textures = { MansionView = "data/Scenes/Mansion/GeneralViewpointSeg.jpg"}, Visible = false },
 
     { Quad = (function()
         local self = {}
 
         function self.OnConstruct()
+            Scale("MansionView", 3, 3)
+            
             return {
                 NameId = "HallInitLSide", NameView = "Left\nSide", Cursor = "MLeft",
                 Position = { x = 0, y = 80 }, Size = { Width = 60, Height = 436 }, Clickable = true
@@ -83,9 +93,8 @@ return {
         end
 
         function self.OnInteract() 
-        --Ada.StopTalk()
-        HallwayStart.GoRight() PlaySound("SwipeIn") end
-
+            --Ada.StopTalk()
+            HallwayStart.GoRight() PlaySound("SwipeIn") end
         return self end)()
     }, -- RIGHT SIDE
 
