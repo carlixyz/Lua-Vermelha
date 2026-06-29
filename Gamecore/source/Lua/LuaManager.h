@@ -14,10 +14,12 @@ struct ScriptedSequence
 {
     int SelectedIndex = 0;
     std::vector<std::string> CurrentOptions;
+
     float Duration = -1.0f;
     bool AutoStep = false;
     bool Wait = false;
     bool PanelShown = false;
+    bool Finished = false;
 
     ScriptedSequence(lua_State* mainL, const std::string& funcName)
     {
@@ -34,6 +36,8 @@ struct ScriptedSequence
     inline bool IsWaiting() const { return Wait; }
 
     inline bool IsPanelShown() const { return PanelShown; }
+
+    inline bool IsFinished() const { return Finished; }
 
     // ---- main step (for SAY) ----
     inline void Step() { ResumeCore(0); }
@@ -56,7 +60,14 @@ private:
         int status = lua_resume(Thread, nullptr, nargs, &nres);
 
         if (status == LUA_OK)
-            return;             // coroutine finished normally
+        {
+            Finished = true;
+            HasMultipleChoice = false;
+            Wait = false;
+            Duration = -1.0f;
+            return;
+        }
+            //return;             // coroutine finished normally
 
         if (status == LUA_YIELD && nres > 0 && lua_istable(Thread, -1))
         {
@@ -76,6 +87,7 @@ private:
     inline void ParseYield()
     {
         // Make sure CurrentOptions is clean and we won't accidentally keep duration
+        Finished = false;
         CurrentOptions.clear();
         HasMultipleChoice = false;
         Wait = false;
@@ -86,8 +98,6 @@ private:
         std::string type = lua_isstring(Thread, -1) ? lua_tostring(Thread, -1) : "";
         lua_pop(Thread, 1);
 
-        CurrentOptions.clear();
-        HasMultipleChoice = false;
 
         // ----- SAY -----
         if (type == "SAY")
@@ -206,6 +216,7 @@ public:
     lua_State* GetState() { return LuaContext; }
 
     bool IsSequenceRunning() const { return sequence && sequence->IsRunning(); }
+    bool IsInDialog() const;
     bool LoadScript(const std::string& path);
 
     void RegisterFunction(const std::string& funcName, lua_CFunction func);

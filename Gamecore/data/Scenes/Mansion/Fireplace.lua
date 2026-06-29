@@ -36,7 +36,7 @@ return {
 
     { Quad = { OnConstruct = function() return { NameId = "OldPhoto", NameView = "Old Photo", Clickable = true, 
         Pos = { x = 490, y = 225 }, Size = { Width = 142, Height = 92 }} end, 
-        OnInteract = function() StartSequence(function() Say("Classic familiar portrait", 3.0) Say() end) end,
+        OnInteract = function() BlendScene("FamilyPhoto", 1) end,
         OnLook = function() StartSequence(function() Say("Looks like a lovely family", 3.0) Say() end) end } 
     }, -- PICTURE
 

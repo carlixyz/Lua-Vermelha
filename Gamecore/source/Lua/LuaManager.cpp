@@ -178,6 +178,12 @@ void LuaManager::Render()
 {
     if (!sequence) return;
 
+    if (sequence && sequence->IsFinished())
+    {
+        RenderDialogueBackdrop(false);
+        return;
+    }
+
     if (sequence->IsWaiting())
     {
         RenderDialogueBackdrop(sequence->IsPanelShown());
@@ -234,12 +240,6 @@ void LuaManager::Render()
     const bool textVisible = charsToShow > 0;
     const bool speakerVisible = !speaker.empty();
 
-    //CurrentAlpha += (textVisible || speakerVisible) ? GetFrameTime()*2 : -GetFrameTime()*.25f;
-    //CurrentAlpha = Clamp(CurrentAlpha, 0.f, ShadeAlpha);
-    //DrawTexture(GetTexture("Shade"), 0, 316, ColorAlpha(WHITE, CurrentAlpha));
-
-    //DrawTexture(GetTexture(Emotion), 16, 290, ColorAlpha(WHITE, CurrentAlpha *2));
-
     RenderDialogueBackdrop((textVisible || speakerVisible));
 
 
@@ -290,6 +290,33 @@ void LuaManager::StopSequence()
         std::cout << "[LuaManager] Sequence manually ended.\n";
         sequence.reset();
     }
+}
+
+bool LuaManager::IsInDialog() const
+{
+    if (!sequence)
+        return false;
+
+    if (sequence->IsFinished())
+        return false;
+
+    if (sequence->IsWaiting())
+        return true;
+
+    if (sequence->IsMultiChoice())
+        return true;
+
+    if (sequence->CurrentOptions.empty())
+        return false;
+
+    const std::string& full = sequence->CurrentOptions[0];
+    size_t sepPos = full.find('#');
+
+    std::string line = (sepPos != std::string::npos)
+        ? full.substr(sepPos + 1)
+        : full;
+
+    return line.find_first_not_of(" \t\n\r") != std::string::npos;
 }
 
 bool LuaManager::LoadScript(const std::string& path)

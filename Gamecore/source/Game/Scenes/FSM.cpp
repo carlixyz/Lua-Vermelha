@@ -48,6 +48,7 @@ bool FSM::Init()
 	}
 	else std::cout << "[FSM] Inventory '" << InventoryScene << "' not found!\n";
 
+	int SceneArrayIndex = 0;
 	for (auto& sceneIt : ScenesMap)
 	{
 		if (CurrentScene && sceneIt.second == CurrentScene)
@@ -58,6 +59,10 @@ bool FSM::Init()
 			std::cout << "\t   Scene: " << sceneIt.first.c_str() << std::endl;
 
 		ScenesArray.push_back(sceneIt.second);
+
+		if (sceneIt.first == factory.GetStartSceneID())
+			SceneIndex = SceneArrayIndex;
+		SceneArrayIndex++;
 
 		for (Entity* entity : sceneIt.second->Entities)
 			std::cout << "\t\t - Entity: " << entity->GetInfo().NameId << std::endl;
@@ -105,12 +110,10 @@ void FSM::SwapDebugScenes()
 	DrawText(TextFormat("Scene: %d - %s", SceneIndex, SceneID.c_str()), 32, 32, 16, YELLOW);
 
 	if (IsKeyPressed(KEY_KP_ADD))
-		SceneIndex = (int)Wrap((float)(SceneIndex + 1),
-			0.0f, (float)ScenesArray.size());
+		SceneIndex = (int)Wrap((float)(SceneIndex + 1), 0.0f, (float)ScenesArray.size());
 
 	if (IsKeyPressed(KEY_KP_SUBTRACT))
-		SceneIndex = (int)Wrap((float)(SceneIndex - 1),
-			0.0f, (float)ScenesArray.size());
+		SceneIndex = (int)Wrap((float)(SceneIndex - 1), 0.0f, (float)ScenesArray.size());
 
 	if (GameScene* newScene = ScenesArray[SceneIndex])
 	{

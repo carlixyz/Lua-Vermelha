@@ -17,7 +17,7 @@ return {
             end 
         end
 
-        function self.OnInteractComment() Say("\nThe car is closed", 3.0) Say() end
+        function self.OnInteractComment() Say("\nThe car is locked", 3.0) Say() end
         function self.OnInteract() 
             if not self.Locked then 
                 SwipeScene("Trunk", "Down")
@@ -26,7 +26,7 @@ return {
             end
         end
 
-        function self.OnLookComment() Say("\nUsing my car keys on the car should be enough to open it", 5.0) Say() end
+        function self.OnLookComment() Say("Thiago","Damn, where're my car keys?", 5.0) Say() end
         function self.OnLook()
             StartSequence(self.OnLookComment) 
         end

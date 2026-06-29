@@ -188,17 +188,14 @@ void Assets::PreloadMansionIntroAnimation()
 	}
 }
 
+
 void Assets::UnloadAnimations()
 {
 	for (auto& item : NightDriveFrames)
-	{
 		UnloadTexture(item);
-	}
 
 	for (auto& item : MansionFrames)
-	{
 		UnloadTexture(item);
-	}
 
 	NightDriveFrames.clear();
 	MansionFrames.clear();

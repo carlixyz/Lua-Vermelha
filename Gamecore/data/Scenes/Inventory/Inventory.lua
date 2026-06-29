@@ -5,6 +5,19 @@ return {
     -- { Entity = "Knife", Position = { x = 256, y = 32 }, Textures = "data/Scenes/Inventory/Knife.png", Clickable = true},
 
     --[[
+    { CarKey = (function() local self = {}
+        function self.OnConstruct() return {NameView = "Car Keys", Textures = "data/Scenes/Inventory/CarKeys.png", Visible = false } end
+        function self.OnLookComment()
+            Say("\nMy car keys\nThe keyring is a Sunhouse gift", 4.0)
+            Say()
+        end
+        function self.OnLook() StartSequence(self.OnLookComment) end
+        return self
+        end)() 
+    }, -- Car Keys
+    ]]--
+
+    --[[
     { Bullets = 
         (function() 
             local self = { Painted = false }

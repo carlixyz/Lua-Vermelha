@@ -50,6 +50,9 @@ public:
 	inline Texture2D& GetSprite()			{ return CurrentSprite; }
 	inline Tween& GetTween()				{ return tween; }
 	inline const std::string& GetCursor()	{ return Info.CustomCursor; }
+	
+	inline const std::vector<std::string>& GetTextureIDs() const 
+											{ return Info.TexturesIDs; }
 
 	void SetSprite(const std::string& textureID);
 

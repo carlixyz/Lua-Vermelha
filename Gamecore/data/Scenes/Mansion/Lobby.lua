@@ -16,18 +16,15 @@ return {
         end
 
         function self.OnEnter()
-            --self.GoLeft()
             --[[
-            self.State = 0
-            SetClickable("LobbyInitLSide", false)
-            SetClickable("LobbyInitRSide", true)
-            SetPosition("LobbyInit", 0)
-            SetPosition("HallwayStartReturn", 650)
-            SetPosition("PianoStart", 520)
-            SetPosition("ClockStart", 1200)
-            SetPosition("PowerBoardStart", 1500)
-            SetPosition("FireplaceStart", 716)
             ]]--
+            if not IsEntityInScene("Ada","Lobby") then
+                LobbyInit.GoRight()
+                Schedule(1.0, "SetEntityScene", "Ada", "Lobby" )
+                SetClickable("Ada")
+                SetVisible("Ada")
+                Ada.StopTalk()
+            end
         end
 
         function self.Update()
@@ -44,7 +41,6 @@ return {
 
                 if IsEntityInScene("Ada", "Lobby") and GetVisible("Ada") and GetAlpha("Ada") then
                     Move("Ada", 1060)
-                    SetClickable("HouseExit", false)    -- Let's disable temporarely the exit
                 end
 
             elseif self.State == 1 then
@@ -98,7 +94,15 @@ return {
     }, -- HALLWAY RETURN
 
     { Quad = { OnConstruct = function() return { NameId = "HouseExit", Cursor = "MDown", Pos = { x = 215, y = 413 },
-            Size = { Width = 590, Height = 100 }, Clickable = true } end, OnInteract = function() SwipeScene("MansionFront", "Up") end } 
+        Size = { Width = 590, Height = 100 }, Clickable = true } end, 
+        OnInteract = function() 
+            if IsEntityInScene("MansionKey", "Inventory") then
+                SwipeScene("MansionSide", "Up") 
+            else
+                StartSequence( function() Say("Entry door is closed", 3.0) Say() end)
+            end
+        end,
+        OnLook = function() StartSequence(function() Say("Maybe I can ask Ada to open it", 4.0)  Say() end) end } 
     }, -- HOUSE EXIT
 
     { Quad = { OnConstruct = function() return { NameId = "PianoStart", NameView = "Piano", Clickable = true, 
@@ -126,6 +130,17 @@ return {
         OnInteract = function() StartSequence(function() Say("No way I'm touching that...", 3.0) Say() end) end,
         OnLook = function() StartSequence(function() Say("I've bad feelings about it...", 3.0) Say() end) end } 
     }, -- POWER BOARD
+
+    { MansionKey = (function() local self = {}
+        function self.OnConstruct() return {NameView = "Mansion Key", Textures = "data/Scenes/Inventory/MainKey.png", Visible = false } end
+        function self.OnLookComment()
+            Say("\nIt's the Mansion main Key", 4.0)
+            Say()
+        end
+        function self.OnLook() StartSequence(self.OnLookComment) end
+        return self
+        end)() 
+    }, -- MANSION MAIN DOOR KEY
 
 
 }

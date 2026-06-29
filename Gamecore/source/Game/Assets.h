@@ -62,10 +62,10 @@ public:
 
 	std::vector<Texture2D>& NightDriveIntro() { return NightDriveFrames; }
 
-
 	void PreloadMansionIntroAnimation();
 
 	void PreloadRoadIntroAnimation();
+
 
 private:
 	void PreloadTextures();

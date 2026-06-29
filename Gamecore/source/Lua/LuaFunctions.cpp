@@ -1011,12 +1011,45 @@ int Lua_ScheduleDirectorRepeat(lua_State* L)
     return 1;
 }
 
-
 int Lua_CancelScheduled(lua_State* L)
 {
     const char* id = luaL_checkstring(L, 1);
     Director::Get().CancelScheduledTask(id);
     return 0;
+}
+
+int Lua_GetEntityTexturesIDs(lua_State* L)
+{
+    const char* entityID = luaL_checkstring(L, 1);
+
+    lua_newtable(L);
+
+    if (Entity* entity = Director::Get().GetEntity(entityID))
+    {
+        const std::vector<std::string>& textureIDs = entity->GetTextureIDs();
+
+        int index = 1;
+        for (const std::string& textureID : textureIDs)
+        {
+            lua_pushstring(L, textureID.c_str());
+            lua_rawseti(L, -2, index++);
+        }
+    }
+
+    /*
+    local textures = GetEntityTexturesIDs("Elder")
+
+    for i = 1, #textures do
+        print(textures[i])
+    end
+
+    for i, textureID in ipairs(textures) do
+        SetEntityTexture("Elder", textureID)
+        Wait(0.1)
+    end
+    */
+
+    return 1; // returning one value: the table
 }
 
 
@@ -1117,6 +1150,8 @@ void RegisterLuaFunctions() // C++ Foo Register in Lua
     LuaManager::Get().RegisterFunction("Deinitialize", Lua_DeinitializeScene);
 
     LuaManager::Get().RegisterFunction("LoadTexture", Lua_LoadTexture);
+
+    LuaManager::Get().RegisterFunction("GetEntityTextureIDs", Lua_GetEntityTexturesIDs);
 
     // AUDIO BINDINGS
 

@@ -98,7 +98,6 @@ void Game::Update(float deltaTime)
 
 	Audio::Get().Update();
 
-
 }
 
 void Game::Render()
@@ -152,7 +151,7 @@ void Game::RenderCursor()
 			break;
 		}
 
-	if (hovered)
+	if (hovered && !LuaManager::Get().IsInDialog())
 	{
 		if (const Texture2D* mouseCursor = TryGetTexture(hovered->GetCursor()))
 			DrawTexture(*mouseCursor, (int)m.x, (int)m.y, WHITE);

@@ -1,4 +1,5 @@
 return {
+
     { Entity = "GuestRoom", Textures = { GuestRoom = "data/Scenes/Mansion/RoomGuest.jpg"} },
 
     --[[
@@ -17,29 +18,29 @@ return {
     { Wallet = (function() local self = {}
         function self.OnConstruct() return { Textures = "data/Scenes/Inventory/Wallet.png", Visible = false } end
         function self.OnLookComment()
-            Say("\nMy Wallet,\nInside is my ID and a few bucks", 4.0) 
-            Say("\nBesides that, it's empty as always", 3.0) 
+            Say("\nMy Wallet,\nInside is my ID and a few bucks", 4.0)
+            Say("\nBesides that, it's empty as always", 3.0)
             Say()
         end
         function self.OnLook() StartSequence(self.OnLookComment) end
         return self
-        end)() 
+        end)()
     }, -- Wallet
 
     { Phone = (function() local self = {}
         function self.OnConstruct() return { Textures = "data/Scenes/Inventory/BrokenPhone.png", Visible = false } end
         function self.OnBrokenComment()
-            Say("\nOh no... It's totally dead!", 3.0) 
-            Say("\nMy phone is broken and useless", 3.0) 
+            Say("\nOh no... It's totally dead!", 3.0)
+            Say("\nMy phone is broken and useless", 3.0)
             Say()
         end
         function self.OnLook() StartSequence(self.OnBrokenComment) end
         return self
-        end)() 
+        end)()
     }, -- Phone
 
     { IntroWakeup = (function()
-        local self = { TotalItems = 0 }
+        local self = { TotalItems = 0, FirstTime = true }
         function self.OnConstruct()
         return { 
             Clickable = false, 
@@ -57,7 +58,22 @@ return {
         end
 
         function self.OnEnter()
-            self.OnIntroStart()
+            SetEntityScene("Shade","GuestRoom")
+
+            if self.FirstTime then
+                selfFirstTime = false
+                self.OnIntroStart()
+            else
+                self.SetItemsInScene(true)
+                SetAlpha("IntroWakeup", 0)
+                SetNoise(false)
+                SetInventory(true)
+                SetShadeAlpha(0)
+                SetAlpha("Shade", 0.45)
+                SetVisible("Shade", true)
+                SetAlpha("Dark", 0)
+                SetVisible("Dark", true)
+            end
         end
 
         function self.OnIntroStart()
@@ -132,14 +148,14 @@ return {
         function self.OnDoorKnocking()
             SetEmotion()
             Say("\n\nOoouch!", 3.0)
-            SetShadeAlpha(.65)
+            SetShadeAlpha(.65)          -- Use global Shade
             Wait(1)
 
             Say("Damn my leg... it hurts", 3.0)
             Say("What happened yesterday?\ncan't think straight with this Noggin ache", 6.0)
             Say("I don't remember about anything at all", 4.0)
             Say("Well I guess is not that bad, I can walk fine...", 5.0)
-            Say("But I'll have to check it later", 4.0)
+            Say("But it'll need medical check later", 4.0)
 
             Wait(1.0)
             SetState("IntroWakeup", "IW4")
@@ -158,7 +174,7 @@ return {
             SetEmotion("TSurprise")
             Say( "Girl","Otherwise, we'll need to force the door down\nsince you might be unconscious, dead or something!", 9.0)
             SetEmotion("TNeutral")
-            Say("Hey, wait yes, I'm awake!", 4.0)
+            Say("Hey, wait yes, I'm here!", 4.0)
             SetState("Ada","ASmile") SetAlpha("Ada", 0.0) SetVisible("Ada")
  
             SetEmotion("T4Wall")
@@ -168,27 +184,25 @@ return {
             Say("Sure, just give me a sec", 3.0)
 
             Fade("Ada", 1.0, 3)
-            Say("Hello hello\nSorry for the rush but you slept all morning..", 6)
             Ada.StartTalk()
-            SetEmotion("TSurprise")
-            Say("Ada", "Well, I'm Ada\nDo you have a name?", 5)
-
+            Say("Hello hello, I'm Ada\nSorry for the rush but you were off all morning Sir..", 7)
             Ada.StopTalk()
             SetEmotion("TSmile")
-            Say("Thiago", "I'm Thiago Veira, Nice to meet you Ada", 5)
+
+            Say("Thiago", "Hi Ada, My name is Thiago Veira,\nPlease call me just Thiago", 5)
             Ada.StartTalk()
             SetEmotion("TNeutral")
-            Say("Ada", "You must feel quite confussed right now", 3)
+            Say("Ada", "Alright, You must feel quite confussed right now", 3)
             Say("Ada", "Let me help you with a bit of context", 4)
 
             MansionView.AnimatePan()
             Fade("MansionView", 1.0, 5)
-            Say("Ada", "We're in the Schwarz Fazenda, a huge agricultural company...", 5)
+            Say("Ada", "We're in the Schwarz Fazenda, part of a huge agricultural company...", 5)
             SetCurrentScene("HallwayInit")
             Say("Ada", "Located inside the capao seco woods", 4)
             SetVisible("Ilsa")
             Ada.StopTalk()
-            Say("Ada", "Somewhere between the mountains of espretador valley", 5)
+            Say("Ada", "Somewhere around the espretador's mountain", 5)
 
             Wait(4)
             Fade("MansionView", 0, 7)
@@ -207,54 +221,56 @@ return {
 
             Ilsa.StopTalk()
             SetEmotion("TNeutral")
-            Say("Thiago", "Yes Well, thanks for your care\nto be honest I don't remember anything at all", 7)
-            Say("Thiago", "Frankly, I was hoping you to explain me what really happened", 5)
+            Say("Thiago", "Well, I don't remember anything at all", 5)
+            SetEmotion("TWorry")
+            Say("Thiago", "Frankly, I was hoping you to explain me what really happened..", 6)
             Ilsa.StartTalk()
 
-            Say("Ilsa", "I guess you were so tired that just felt asleep", 4)
-            Say("Ilsa", "And how is your leg? I'm affraid You'll need to see a doctor", 5)
-            Say("Ilsa", "Ada, please guide our guest to the town's path\nso He can go to the hospital", 6)
-            Ilsa.StopTalk()
+            Say("Ilsa", "I guess you were so tired that just felt asleep", 5)
+            Say("Ilsa", "I'm affraid You'll need to see a doctor", 4)
+            SetEmotion("TSuspect")
+            Say("Ilsa", "Anyway, Please be our guest,\nfeel free to rest and stay as long as you need", 7)
+            Ilsa.StopTalk() 
+            Say("Thiago", "Well, Thanks for your hospitality", 4)
+            SetEmotion("TNeutral")
 
-            SetState("Ada","AAprove")
-            Say("Ada", "Yep sure", 3) Ada.StopTalk() Ilsa.StartTalk()
-            Say("Ilsa", "Mind you, I wish We could continue talking\nbut I've duties and urgencies to attend", 6)
-            Say("Ilsa", "Sorry, I've a meeting with a couple of officers'..", 4)
+            Ilsa.StartTalk()
+            Say("Ilsa", "Now Mind you, I'd like to continue our conversation\nbut there are some duties to attend", 7)
             Ilsa.StopTalk()
-
+            Say("Ilsa", "I've to receive a couple of officers..", 4)
             Ada.StartTalk()
             Say("Ada", "Ok, see you later mother", 4)
+            Ada.StopTalk()
             Fade("Ilsa", 0.0, 2)
             Move("Ilsa", -256)
-            Ada.StopTalk()
             Wait(2)
 
             Ada.StartTalk()
-            Say("Ada", "So, Let's continue with this onboarding...", 4)
-            Say("Ada", "We're in the main hallway\nAll rooms are connected to this gallery hub", 6)
-            Say("Ada", "Now follow me I'll take you to the Lobby", 5)
+            Say("Ada", "So, I should go to do my cleaning chores too", 6)
+            Say("Ada", "Take a look around and rest for a while", 5)
+            Say("Ada", "And when you're done,\nfind me in the lobby to continue.", 6)
             Ada.StopTalk()
 
-            LobbyInit.GoRight()
-            Fade("Dark", 1, 3)
-            Wait(false)
+            Wait(1)
+            SetState("Ada","AAprove")
+            Say("Thiago", "Alright, sounds good")
+            Ada.StopTalk()
+            Fade("Ada", 0.0, 1)
+            Move("Ada", 1000)
+
+            Wait(2, false)
             SetEntityScene("Ada", "Lobby")
-            SetCurrentScene("Lobby")
-            Wait(2.5, false)
-
-            Fade("Dark", 0, 3)
-            Wait(false, 3.5)
-            Ada.StartTalk()
-            Say("Ada", "So here is where we found you last night, no recalls yet?", 4)
-            Say("Ada", "Give it a look around\nand when you're done talk with me to continue", 6)
-            Ada.StopTalk()
-            Say("Thiago", "Alright")
-            Say()
+            SetPosition("Ada", 400)
+            SetAlpha("Ada", 1.0)
             SetClickable("Ada")
+
         end
 
         function self.OnExit()
-            Fade("Shade", 0.0, 0.3)
+            --Fade("Shade", 0.0, 0.3)
+            
+            --SetVisible("Shade", false)
+            --SetAlpha("Shade", 0.0)
             SetShadeAlpha( 0.65 )       -- Enable auto shade 0.35
         end
 
@@ -296,7 +312,8 @@ return {
         end)()
     },  -- DRESSER
 
-    { Quad = (function() local self = {}
+    { Quad = (function() 
+        local self = {}
         function self.OnConstruct() return { NameId = "LBedTable", NameView = "Left Bedside table", Pos = { x = 366, y = 276 }, 
             Size = { Width = 35, Height = 55 }, Clickable = false} end
         function self.OnCommentLook() Say("\nAn empty bedside table", 3.0) Say() end
@@ -311,7 +328,8 @@ return {
         end)()
     }, -- LBedTable
 
-    { Quad = (function() local self = {}
+    { Quad = (function() 
+        local self = {}
         function self.OnConstruct() return { NameId = "RBedTable", NameView = "Right Bedside table", Pos = { x = 562, y = 264 }, 
             Size = { Width = 40, Height = 65 }, Clickable = false} end
         function self.OnCommentEntry() Say("\nThe drawer is empty", 3.0) Say() end
@@ -341,7 +359,8 @@ return {
         end)()
     }, -- RBedTable
 
-    { Quad = (function() local self = {}
+    { Quad = (function() 
+        local self = {}
         function self.OnConstruct() return { NameId = "GuestBed",  NameView = "Bed", Pos = { x = 405, y = 226 }, Size = { Width = 158, Height = 143 }, Clickable = false} end
         function self.OnCommentEntry() Say("\nI don't want to go back there\nI've rested enough.", 5.0) Say() end
         function self.OnPhoneFound()
@@ -396,15 +415,10 @@ return {
         end)()
     }, -- SECRET DOOR
         
-    { Quad = (function() 
-        local self = {}
-        function self.OnConstruct() 
-            return { NameId = "GuestWindow",  NameView = "Window", Pos = { x = 425, y = 120 }, Size = { Width = 108, Height = 90 }, Clickable = false} end
-        function self.OnCommentEntry() Say("\nSo finally we have a sunny day.", 3.0) Say() end
-        function self.OnCommentLook() Say("\nOutside, there's a dense forest \nthat fades into the mountains in the distance.", 6.0) Say() end
-        function self.OnInteract() StartSequence(self.OnCommentEntry) end function self.OnLook() StartSequence(self.OnCommentLook) end 
-        return self
-        end)()
+    { Quad = { OnConstruct = function() return { NameId = "GuestWindow",  NameView = "Window", Clickable = false, 
+        Pos = { x = 425, y = 120 }, Size = { Width = 108, Height = 90 }} end, 
+        OnInteract = function() IntroWakeup.FirstTime = false SwipeScene("WindowTree", "Up") end,
+        OnLook = function() StartSequence( function() Say("The sun finally came out,\nI Wonder where I am?", 5.0) Say() end) end} 
     }, -- WINDOW
 
     --[[

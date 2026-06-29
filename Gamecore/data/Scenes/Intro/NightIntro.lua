@@ -11,30 +11,23 @@ end
 
 
 local function OnEnter()
-    print("called NightIntro.OnInit") print()
-
     SetThunder(true)
     SetNoise(true)
-    --SetVisible("Dark")
-
 
     SetAlpha( "Dark", 0.0)
     TriggerThunder( 2)
-    ---PlaySound("Rumble")
 
     Schedule( 6, "SetVisible", "Panel", true)
     Schedule( 7, "Fade", "Panel", 0.5, 3)
 
-
     Schedule( 2.0, "TriggerThunder", 1)
     Schedule( 4.0, "TriggerThunder", 3)
-    ---Schedule( 5.0, "PlaySound", "Thunderbolt")
 
     Schedule( 5, "SetVisible", "JumpScare")
-    Schedule( 5.2, "SetVisible", "JumpScare", false)
+    Schedule( 5.05, "SetVisible", "JumpScare", false)
 
     Schedule( 5.4, "SetVisible", "JumpScare")
-    Schedule( 5.6, "SetVisible", "JumpScare", false)
+    Schedule( 5.5, "SetVisible", "JumpScare", false)
 
     Schedule( 6.0, "TriggerThunder", 1)
     Schedule( 7, "Fade", "Black", 0.0, 5)

@@ -10,7 +10,10 @@ Scenes = {
         { Ilsa = "data/Actors/Ilsa/Ilsa.lua" },
         { Ada = "data/Actors/Ada/Ada.lua" },
         { MansionView = "data/Scenes/Mansion/GeneralViewpoint.lua" },
-        { Entity = "Dark", Textures = { Dark = "data/Images/Dark.png"}, Visible = false, Alpha = 1.0  }
+        { Entity = "Dark", Textures = { Dark = "data/Images/Dark.png"}, Visible = false, Alpha = 1.0  },
+        --{ NightRun = "data/Intro/NightRun/NightRun.lua" },
+        { Woods = "data/Intro/Woods/woods.lua" }
+        --{ Psycho = "data/Scenes/Global/Psycho.lua" }
 
         --{ Dark = { OnConstruct = function() return { NameId = "Dark", Visible = false, Active = false, Clickable = false,
         --          Alpha = 1.0, Textures = { { Dark = "data/Images/Dark.png" } }, CurrentImage = "Dark" } end } }
@@ -39,11 +42,21 @@ Scenes = {
     -----------------------------------------------------------------------------------------------------------------------------
     GuestRoom = "data/Scenes/Mansion/RoomGuest.lua",
 
+    WindowTree = "data/Scenes/Mansion/WindowTree.lua",
+
     HallwayInit = "data/Scenes/Mansion/HallwayInit.lua",
+
+    ViktorKnob = "data/Scenes/Mansion/ViktorDoor.lua",
+
+    Depot = "data/Scenes/Mansion/Depot.lua",
+
+    CorralExit = "data/Scenes/Mansion/CorralExit.lua",
 
     Lobby = "data/Scenes/Mansion/Lobby.lua",
 
     Fireplace = "data/Scenes/Mansion/Fireplace.lua",
+
+    FamilyPhoto = "data/Scenes/Mansion/FamilyPhoto.lua",
 
     -------------------------------------------------
 
@@ -94,14 +107,17 @@ Scenes = {
 
 
 
--- Set here the first scene to Initialize
+---| Set here the first scene to Initialize |---
 
 
-Scenes.StartScene = "HallwayInit"
+Scenes.StartScene = "GuestRoom"
+--Scenes.StartScene = "Fireplace"
+
+--Scenes.StartScene = "HallwayInit"
 --Scenes.StartScene = "Boot"
 --Scenes.StartScene = "Intro"
 --Scenes.StartScene = "Title"
---Scenes.StartScene = "GuestRoom"
+--Scenes.StartScene = "Lobby" -- REMOVE FORCED ADA
 --Scenes.StartScene = "MansionFront"
 --Scenes.StartScene = "TownPathDeep"
 

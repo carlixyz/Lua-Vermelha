@@ -6,8 +6,13 @@ return {
 
     { Entity = "MansionSideTop", Position = { x = 0, y = 0 }, Textures = "data/Scenes/Parking/ParkTop.jpg", Visible = false, Alpha = 0.0  },
 
-    { Quad = { OnConstruct = function() return { NameId = "Road Path",  Cursor = "MUp", Position = { x = 600, y = 100 },
-        Size = { Width = 200, Height = 280 }} end, OnInteract = function() SwipeScene("RoadPath", "Down") end } 
+    { Quad = { OnConstruct = function() return { NameId = "Road Path",  Cursor = "MUp", 
+        Position = { x = 600, y = 100 }, Size = { Width = 200, Height = 280 }} end, 
+        OnInteract = function() 
+            if not IsEntityInScene("Ada","MansionSide") then 
+                SwipeScene("RoadPath", "Down") 
+            end
+        end } 
     },
 
     { Quad = { OnConstruct = function() return { NameId = "Town Path & Car", Cursor = "MUp", Position = { x = 300, y = 100 },
