@@ -116,6 +116,7 @@ void Graphics::Render()
 	//	0.0f,
 	//	WHITE
 	//);
+
 }
 
 bool Graphics::GetCloseApplication()

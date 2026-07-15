@@ -5,6 +5,7 @@
 #include "../Game/Assets.h"
 #include "../Game/Director.h"
 #include "../Game/Game.h"
+#include "../Game/Scenes/Credits.h"
 #include "../Game/Scenes/Entity.h"
 #include "../Game/Scenes/FSM.h"
 #include "../Audio/Audio.h"
@@ -1052,6 +1053,55 @@ int Lua_GetEntityTexturesIDs(lua_State* L)
     return 1; // returning one value: the table
 }
 
+int Lua_PushCredit(lua_State* L)
+{
+    Credits* credits = (Credits*)Game::Get().Scenes.GetCredits();
+
+    if (!credits)
+        return 0;
+
+    int argc = lua_gettop(L);
+
+    if (argc == 0)
+    {
+        credits->PushEmpty(1);
+        return 0;
+    }
+
+    if (argc == 1)
+    {
+        if (lua_isnumber(L, 1))
+        {
+            credits->PushEmpty((int)luaL_checkinteger(L, 1));
+            return 0;
+        }
+
+        credits->PushSingle(luaL_checkstring(L, 1));
+        return 0;
+    }
+
+    credits->PushPair(
+        luaL_checkstring(L, 1),
+        luaL_checkstring(L, 2)
+    );
+
+    return 0;
+}
+
+int Lua_RollCredits(lua_State* L)
+{
+    Credits* credits = (Credits*)Game::Get().Scenes.GetCredits();
+
+    if (!credits)
+        return 0;
+
+    bool enabled = lua_isnoneornil(L, 1) ? true : lua_toboolean(L, 1);
+
+    credits->RollCredits(enabled);
+
+    return 0;
+}
+
 
 void RegisterLuaFunctions() // C++ Foo Register in Lua
 {
@@ -1152,6 +1202,10 @@ void RegisterLuaFunctions() // C++ Foo Register in Lua
     LuaManager::Get().RegisterFunction("LoadTexture", Lua_LoadTexture);
 
     LuaManager::Get().RegisterFunction("GetEntityTextureIDs", Lua_GetEntityTexturesIDs);
+
+    LuaManager::Get().RegisterFunction("PushCredit", Lua_PushCredit);
+
+    LuaManager::Get().RegisterFunction("RollCredits", Lua_RollCredits);
 
     // AUDIO BINDINGS
 

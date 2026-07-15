@@ -1,9 +1,9 @@
 return {
     { Entity = "Fountain", Textures = {
         {FountainDay = "data/Scenes/Town/PlazaFountainDay.jpg"}, 
-        {FountainDusk = "data/Scenes/Town/PlazaFountainSunset.jpg"}, 
-        {FountainSunset = "data/Scenes/Town/PlazaFountainNight.jpg"}, 
-        {FountainNight = "data/Scenes/Town/PlazaFountainLua.jpg" }} 
+        {FountainSunset = "data/Scenes/Town/PlazaFountainSunset.jpg"}, 
+        {FountainNight = "data/Scenes/Town/PlazaFountainNight.jpg"}, 
+        {FountainLua = "data/Scenes/Town/PlazaFountainLua.jpg" }} 
     },
 
 

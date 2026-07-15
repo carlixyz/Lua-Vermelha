@@ -175,6 +175,7 @@ class LuaManager : public Singleton<LuaManager>
     lua_State* LuaContext = nullptr;
     std::unique_ptr<ScriptedSequence> sequence;
 
+    bool IsResumingSequence = false;
     bool UseRootPathScripts = true;
     bool hoveredAny = false;
     bool messageComplete = true;

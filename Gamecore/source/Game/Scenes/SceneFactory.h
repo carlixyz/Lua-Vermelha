@@ -8,6 +8,7 @@
 #include "GameScene.h"
 #include "BootState.h"
 #include "TestScene.h"
+#include "Credits.h"
 #include "AnimeScene.h"
 #include "Inventory.h"
 
@@ -211,6 +212,8 @@ private:
             scene = new AnimeScene(&Assets::Get().MansionIntro(), []() { Assets::Get().PreloadMansionIntroAnimation(); });
         else if (name == "Inventory")
             scene = new Inventory();
+        else if (name == "Credits")
+            scene = new Credits();
 
         /// --- Otherwise fallback ---
         if (!scene)

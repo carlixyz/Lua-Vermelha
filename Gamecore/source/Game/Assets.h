@@ -44,9 +44,9 @@ public:
 
 	Image GetImage(const std::string& NameID) { return Images.at(NameID); }
 
-	Font GetFont(const std::string& NameID) { return Fonts.at(NameID); }
+	Font& GetFont(const std::string& NameID) { return Fonts.at(NameID); }
 
-	Sound GetSound(const std::string& NameID) { return Sounds.at(NameID); }
+	Sound& GetSound(const std::string& NameID) { return Sounds.at(NameID); }
 
 	bool HasSoundID(const std::string& soundID);
 

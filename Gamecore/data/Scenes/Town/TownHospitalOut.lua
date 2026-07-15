@@ -6,8 +6,18 @@ return {
         {Medic = "data/Scenes/Town/Medic.jpg" }} 
     },
 
-    { Quad = { OnConstruct = function() return { NameId = "EnterHospital", Cursor = "MUp", Pos = { x = 330, y = 203 }, 
-        Size = { Width = 365, Height = 143 }} end, OnInteract = function() SwipeScene("HospitalInside", "Down") end } 
+    { Quad = { OnConstruct = function() return { NameId = "Hospital Entry", Cursor = "MUp",
+            Pos = { x = 330, y = 203 }, Size = { Width = 365, Height = 143 }} end, 
+        OnLook = function() StartSequence( function() Say("So, that must be the Hosptial that Ada told me.") Say() end) end,
+        OnInteract = function()
+            if IsEntityInScene("Alcohol", "Inventory") then
+                StartSequence( function() 
+                    Say("Nah I've already been to the doctor", 4.0) Say("enough medicine for me today") Say() 
+                end )    
+            else
+                SwipeScene("HospitalInside", "Down") 
+            end
+        end } 
     },
 
     { Quad = { OnConstruct = function() return { NameId = "TurnToPlazaFountain", Cursor = "MDown", Pos = { x = 0, y = 370 }, 

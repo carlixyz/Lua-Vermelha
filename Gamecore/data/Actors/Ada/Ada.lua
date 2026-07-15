@@ -1,5 +1,4 @@
 
-
 return (function()
     local self = {
         Guidance = true,
@@ -111,9 +110,15 @@ return (function()
                 function()
                     if not self.LupusAware then
                         Say("Thiago","Hey I want to see a doctor", 3.0)
+                        
+                        --Ada.StartTalk()
+                        --Ada.StopTalk()
+                        --SetState("Ada", "AAprove")
+
                         Say("Ada","Yes, I'm affraid that You'll need to go to the town's Hospital", 5.0)
                         Say("Ada","You can take the town's path that's aside our house front", 5.0)
-                        Say("Thiago","I'm not sure about going alone, Maybe I'll get lost, can you guide me?", 6.0)
+                        Say("Thiago","I'm not sure about going alone", 5.0)
+                        Say("Thiago","I'll might get lost, can you guide me?", 6.0)
                         Say("Ada","Mhhh Well, I wish I could but..", 4.0)
                         Say("Thiago","What's up?", 3.0)
                         Say("Ada","My mother doesn't allow me to leave the Mannor", 4.0)
@@ -264,7 +269,7 @@ return (function()
         Say("Ada", "Basically my mother is colaborating with the Police", 5)
         Say("Thiago", "The police? what are they looking for?", 5)
         Say("Ada", "There were some incidents in the area near our farm limits", 5)
-        Say("Ada", "I think there's a woman missing...\nand the overlook was the last place where She was seen", 7)
+        Say("Ada", "I think there's a man missing...\nand the overlook was the last place where He was seen", 7)
         Say("Thiago", "Ohh Do you have an overlook?", 4)
         Say("Ada", "Well not really, there's an old path to the espretador overlook very close here", 6)
         Say("Ada", "But technically is not part of our lands", 5)

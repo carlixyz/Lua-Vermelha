@@ -13,7 +13,7 @@ Scenes = {
         { Entity = "Dark", Textures = { Dark = "data/Images/Dark.png"}, Visible = false, Alpha = 1.0  },
         --{ NightRun = "data/Intro/NightRun/NightRun.lua" },
         { Woods = "data/Intro/Woods/woods.lua" }
-        --{ Psycho = "data/Scenes/Global/Psycho.lua" }
+        --{ Psycho = "data/Scenes/Psycho/Psycho.lua" }
 
         --{ Dark = { OnConstruct = function() return { NameId = "Dark", Visible = false, Active = false, Clickable = false,
         --          Alpha = 1.0, Textures = { { Dark = "data/Images/Dark.png" } }, CurrentImage = "Dark" } end } }
@@ -35,11 +35,12 @@ Scenes = {
 
     Title = "data/Scenes/Intro/Title.lua",
 
-    "Credits",
+    Credits = "data/Scenes/Intro/Credits.lua",
 
     -----------------------------------------------------------------------------------------------------------------------------
     -- FIRST PATH -> SMALL TOWN BOY
     -----------------------------------------------------------------------------------------------------------------------------
+
     GuestRoom = "data/Scenes/Mansion/RoomGuest.lua",
 
     WindowTree = "data/Scenes/Mansion/WindowTree.lua",
@@ -65,6 +66,8 @@ Scenes = {
     MansionSide = "data/Scenes/Parking/MansionSide.lua",
 
     RoadPath = "data/Scenes/Parking/RoadPath.lua", --
+
+    CemeteryGate = "data/Scenes/Parking/CemeteryGate.lua", --
 
     Cemetery = "data/Scenes/Parking/Cemetery.lua", --
 
@@ -100,6 +103,8 @@ Scenes = {
 
     BarInside = "data/Scenes/Town/TownBarIn.lua",
 
+    BarDrunk = "data/Scenes/Town/TownBarDrunk.lua",
+
     -----------------------------------------------------------------------------------------------------------------------------
 
     End = false
@@ -110,7 +115,7 @@ Scenes = {
 ---| Set here the first scene to Initialize |---
 
 
-Scenes.StartScene = "GuestRoom"
+--Scenes.StartScene = "GuestRoom"
 --Scenes.StartScene = "Fireplace"
 
 --Scenes.StartScene = "HallwayInit"
@@ -118,7 +123,8 @@ Scenes.StartScene = "GuestRoom"
 --Scenes.StartScene = "Intro"
 --Scenes.StartScene = "Title"
 --Scenes.StartScene = "Lobby" -- REMOVE FORCED ADA
---Scenes.StartScene = "MansionFront"
+--Scenes.StartScene = "MansionSide"
+Scenes.StartScene = "BarInside"
 --Scenes.StartScene = "TownPathDeep"
 
 -- Set here a top access scene to have shared access

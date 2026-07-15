@@ -93,8 +93,8 @@ return {
         OnInteract = function() SwipeScene("HallwayInit", "Down") end } 
     }, -- HALLWAY RETURN
 
-    { Quad = { OnConstruct = function() return { NameId = "HouseExit", Cursor = "MDown", Pos = { x = 215, y = 413 },
-        Size = { Width = 590, Height = 100 }, Clickable = true } end, 
+    { Quad = { OnConstruct = function() return { NameId = "HouseExit", Cursor = "MDown", 
+        Pos = { x = 100, y = 413 }, Size = { Width = 700, Height = 100 }, Clickable = true } end, 
         OnInteract = function() 
             if IsEntityInScene("MansionKey", "Inventory") then
                 SwipeScene("MansionSide", "Up") 

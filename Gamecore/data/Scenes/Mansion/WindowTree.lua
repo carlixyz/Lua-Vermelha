@@ -10,9 +10,15 @@ return {
         { WinEmpty = "data/Scenes/Mansion/WindowClose.jpg" } }
     }, -- Window tree close
 
-    { Entity = "History", Textures = "data/Scenes/Global/Navajo.jpg", Visible = false},
+    { Entity = "History", Textures = "data/Scenes/Psycho/Navajo.jpg", Visible = false},
+
+    { Entity = "QuickPhotoEvil", Textures = "data/Scenes/Mansion/FamilyPhotoAll.jpg", Visible = false},
+
+    { Entity = "EvilSight", Textures = "data/Scenes/Ending/MorphC.jpg", Visible = false},
+
+    { Entity = "DarkPathComing", Textures = "data/Scenes/Parking/TownPathBNight.jpg", Visible = false},
     
-    { Entity = "BigEye", Textures = "data/Scenes/Global/EyeXL.jpg", Visible = false},
+    { Entity = "BigEye", Textures = "data/Scenes/Psycho/EyeXL.jpg", Visible = false},
     --{ Entity = "RoadRecall", Textures = "data/Scenes/Intro/JumpScare.jpg", Visible = false},
 
 
@@ -29,18 +35,30 @@ return {
 
         function self.OnCloseup()
             self.FoundAlready = true
+            
+            SetNoise(true)
             Scale("TreeCloseup", 1.3, 150)
             SetVisible("TreeCloseup", true)
             Wait(false)
 
             SetVisible("History")
-            Wait(0.5, false)
+            Wait(0.1, false)
+
+            SetVisible("QuickPhotoEvil")
+            Wait(0.1, false)
+
+            SetVisible("EvilSight")
+            Wait(0.1, false)
             
+            SetVisible("DarkPathComing")
+            Wait(0.1, false)
+
             Scale("BigEye", 1.2, 150)
             SetVisible("BigEye")
-            Wait(0.5, false)
-
+            Wait(0.1, false)
             Scale("WindowOutside", 1.2, 1)
+            SetNoise(false)
+
             SetVisible("TreeWind")
             TreeWind.StartAnimation()
             SetVisible("Birds")
@@ -58,7 +76,11 @@ return {
             Scale("TreeCloseup", 1, 0.1)
             SetVisible("Birds", false)
             SetVisible("TreeWind", false)
+
             SetVisible("History", false)
+            SetVisible("EvilSight", false)
+            SetVisible("QuickPhotoEvil", false)
+            SetVisible("DarkPathComing", false)
             SetVisible("BigEye", false)
             SetVisible("TreeCloseup", false)
 
@@ -93,7 +115,7 @@ return {
     },
 
     { Quad = { OnConstruct = function() return { NameId = "ExitWindowTree", Cursor = "MDown", Pos = { x = 0, y = 420 }, 
-        Size = { Width = 920, Height = 90 }} end, OnInteract = function() IntroWakeup.FirstTime = false SwipeScene("GuestRoom", "Down") end } 
+        Size = { Width = 920, Height = 90 }} end, OnInteract = function() IntroWakeup.FirstTime = false SwipeScene("GuestRoom", "Up") end } 
     },
 
     { TreeWind = (function()

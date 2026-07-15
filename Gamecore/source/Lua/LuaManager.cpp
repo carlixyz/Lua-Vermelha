@@ -76,7 +76,14 @@ bool LuaManager::Init()
 
 bool LuaManager::Deinit()
 {
-    lua_close(LuaContext);
+    sequence.reset();
+
+    if (LuaContext)
+    {
+        lua_close(LuaContext);
+        LuaContext = nullptr;
+    }
+
     return true;
 }
 
@@ -262,10 +269,14 @@ void LuaManager::Advance(int choiceIndex)
     if (!sequence || !sequence->IsRunning())
         return;
 
+    IsResumingSequence = true;
+
     if (choiceIndex >= 0)
         sequence->ResumeChoice(choiceIndex);
     else
         sequence->Step();
+
+    IsResumingSequence = false;
 
     if (sequence && sequence->IsMultiChoice())
     {
@@ -350,6 +361,13 @@ std::string LuaManager::AddDebugRootPath(const std::string& input)
 
 void LuaManager::StartSequence(const std::string& funcName)
 {
+    if (IsResumingSequence)
+    {
+        std::cout << "\n[LuaManager] WARNING: StartSequence(" << funcName << ") called while another sequence is resuming.\n"
+            "Use 'return " << funcName << "()' instead.\n";
+        return;
+    }
+
     lua_getglobal(LuaContext, funcName.c_str());
     if (!lua_isfunction(LuaContext, -1))
     {
@@ -371,6 +389,13 @@ void LuaManager::StartSequence(const std::string& funcName)
 
 void LuaManager::StartSequence(lua_State* L)
 {
+    if (IsResumingSequence)
+    {
+        std::cout << "\n[LuaManager] WARNING: StartSequence() called while another sequence is resuming. "
+            "Use 'return SomeFunction()' instead.\n";
+        return;
+    }
+
     if (!lua_isfunction(L, 1))
     {
         std::cout << "[Lua] StartSequence expects a function argument\n";

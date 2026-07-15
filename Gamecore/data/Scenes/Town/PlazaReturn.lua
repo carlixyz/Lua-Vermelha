@@ -1,9 +1,9 @@
 return {
     { Entity = "PlazaReturn", Textures = {
         {ReturnDay = "data/Scenes/Town/PlazaReturnDay.jpg"}, 
-        {ReturnDusk = "data/Scenes/Town/PlazaReturnSunset.jpg"}, 
-        {ReturnSunset = "data/Scenes/Town/PlazaReturnNight.jpg"}, 
-        {ReturnNight = "data/Scenes/Town/PlazaReturnLua.jpg" }}
+        {ReturnSunset = "data/Scenes/Town/PlazaReturnSunset.jpg"}, 
+        {ReturnNight = "data/Scenes/Town/PlazaReturnNight.jpg"}, 
+        {ReturnLua = "data/Scenes/Town/PlazaReturnLua.jpg" }}
     },
 
     

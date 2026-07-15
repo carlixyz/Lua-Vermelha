@@ -1,6 +1,7 @@
 return {
         
         { Entity = "7Moon", Position = { x = -100, y = -220 }, Textures = "data/Scenes/Intro/7thMoon.png", Visible = true, Alpha = 1.0  },
+        
         { TitleText = (function() 
                 local self = { MenuEnabled = false, StatusEnabled = true, DemoMode = false }
                 function self.OnConstruct() return 
@@ -8,8 +9,6 @@ return {
                 Textures = { TITLETEXT = "data/Scenes/Intro/7thText.png"}, --CurrentImage = "data/Scenes/Intro/7thTitle.png" 
         }
         end
-
-
 
         -- Main entry point
         function self.DoOptionsMenu()
@@ -34,15 +33,15 @@ return {
                         Say("Nothing to show here yet")
                         --SetThunder(false)
                         Say()
-                        self.DoOptionsMenu()
+                        return self.DoOptionsMenu()
                         --StartSequence(self.DoOptionsMenu)
                     end },
 
                 { "Credits", 
                     function() 
-                        Say("Made by Carlixyz", 3.5)
+                        RollCredits()
                         Say()
-                        StartSequence(self.DoOptionsMenu)
+                        --self.DoOptionsMenu()
                     end }
                 
                 --{ "Opt 4", function() Say("\n\n So We have Opt 4", 0.5) end }
@@ -71,7 +70,7 @@ return {
         end
 
         function self.OnEnter()
-        --SetAlpha("Dark", 0.0)
+            --SetAlpha("Dark", 0.0)
             SetEmotion("TDisabled")
             PlaySound("TitleFX")
             Fade("Dark", 0.0, 20)

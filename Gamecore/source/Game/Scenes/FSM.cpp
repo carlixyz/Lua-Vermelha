@@ -9,7 +9,6 @@
 #include "../../Graphics/Graphics.h"
 
 
-
 bool FSM::Init()
 {
 	SceneFactory factory;
@@ -20,7 +19,7 @@ bool FSM::Init()
 
 	if (ScenesMap.contains(factory.GetStartSceneID()))
 	{
-		if (GameScene* startScene = ScenesMap[factory.GetStartSceneID()])
+		if (GameScene* startScene = ScenesMap.at(factory.GetStartSceneID()))
 			if (CurrentScene = startScene)
 				CurrentScene->Initialize();
 	}
@@ -28,15 +27,23 @@ bool FSM::Init()
 
 	if (ScenesMap.contains(factory.GetSharedSceneID()))
 	{
-		if (GameScene* sharedScene = ScenesMap[factory.GetSharedSceneID()])
+		if (GameScene* sharedScene = ScenesMap.at(factory.GetSharedSceneID()))
 			if (SharedScene = sharedScene)
 				SharedScene->Initialize();
 	}
 	else std::cout << "[FSM] SharedScene '" << factory.GetSharedSceneID() << "' not found!\n";
 
+	if (ScenesMap.contains(SceneID::Credits))
+	{
+		if (GameScene* creditScene = ScenesMap.at(SceneID::Credits))
+			if (CreditsScene = creditScene)
+				CreditsScene->Initialize();
+	}
+	else std::cout << "[FSM] Credits scene not found!\n";
+
 	if (ScenesMap.contains(SceneID::Inventory))
 	{
-		if (InventoryScene = ScenesMap[SceneID::Inventory])
+		if (InventoryScene = ScenesMap.at(SceneID::Inventory))
 		{
 			if (Inventory* invScene = (Inventory*)InventoryScene)
 				invScene->BindWorldScene(&CurrentScene);
@@ -100,6 +107,9 @@ void FSM::Update(float deltaTime)
 
 	if (InventoryScene)
 		InventoryScene->OnUpdate(deltaTime);
+
+	if (CreditsScene)
+		CreditsScene->OnUpdate(deltaTime);
 }
 
 void FSM::SwapDebugScenes()
@@ -148,6 +158,9 @@ void FSM::Render()
 
 	if (InventoryScene)
 		InventoryScene->OnRender();
+
+	if (CreditsScene)
+		CreditsScene->OnRender();
 
 	if (IsKeyPressed(KEY_KP_MULTIPLY))
 		DebugScenes = !DebugScenes;

@@ -58,10 +58,12 @@ return {
         end
 
         function self.OnEnter()
-            SetEntityScene("Shade","GuestRoom")
+            if not IsEntityInScene("Shade", "GuestRoom") then
+                Schedule(0.0, "SetEntityScene", "Shade", "GuestRoom")
+            end
 
             if self.FirstTime then
-                selfFirstTime = false
+                self.FirstTime = false
                 self.OnIntroStart()
             else
                 self.SetItemsInScene(true)
@@ -124,11 +126,13 @@ return {
                 print("Called Injury event")
                         
                 SetAlpha("Shade", 0)
-                StartSequence(self.OnDoorKnocking)
+                --StartSequence(self.OnDoorKnocking)
+                --self.OnDoorKnocking()
                 SetState("IntroWakeup", "IW3")
                 SetVisible("IntroWakeup")
                 Shake("IntroWakeup", 32.0, 1.0)
                 Fade("IntroWakeup", 1.0, 1.0)
+                return self.OnDoorKnocking()
             end
 
             return self.TotalItems
@@ -240,12 +244,12 @@ return {
             Say("Ilsa", "I've to receive a couple of officers..", 4)
             Ada.StartTalk()
             Say("Ada", "Ok, see you later mother", 4)
-            Ada.StopTalk()
+            --Ada.StopTalk()
             Fade("Ilsa", 0.0, 2)
             Move("Ilsa", -256)
             Wait(2)
 
-            Ada.StartTalk()
+            --Ada.StartTalk()
             Say("Ada", "So, I should go to do my cleaning chores too", 6)
             Say("Ada", "Take a look around and rest for a while", 5)
             Say("Ada", "And when you're done,\nfind me in the lobby to continue.", 6)
@@ -253,8 +257,10 @@ return {
 
             Wait(1)
             SetState("Ada","AAprove")
+            SetEmotion("TSmile")
             Say("Thiago", "Alright, sounds good")
             Ada.StopTalk()
+            SetEmotion("TNeutral")
             Fade("Ada", 0.0, 1)
             Move("Ada", 1000)
 
@@ -414,24 +420,17 @@ return {
         return self
         end)()
     }, -- SECRET DOOR
-        
+
     { Quad = { OnConstruct = function() return { NameId = "GuestWindow",  NameView = "Window", Clickable = false, 
         Pos = { x = 425, y = 120 }, Size = { Width = 108, Height = 90 }} end, 
-        OnInteract = function() IntroWakeup.FirstTime = false SwipeScene("WindowTree", "Up") end,
+        OnInteract = function() IntroWakeup.FirstTime = false SwipeScene("WindowTree", "Down") end,
         OnLook = function() StartSequence( function() Say("The sun finally came out,\nI Wonder where I am?", 5.0) Say() end) end} 
     }, -- WINDOW
 
-    --[[
-    { Quad = (function() 
-        local self = {}
-        function self.OnConstruct() return { NameId = "GuestExit", NameView = "Exit",
-        Pos = { x = 200, y = 400 }, Size = { Width = 560, Height = 110 }} end
-        -- Pos = { x = 0, y = 445 }, Size = { Width = 920, Height = 70 }} end
-        function self.OnCommentLook() Say("\n\nBehind me there's the room exit", 3.0) Say() end
-        function self.OnInteract() BlendScene("Hallway") end function self.OnLook() StartSequence(self.OnCommentLook) end 
-        return self
-        end)() 
-    } -- EXIT DOOR
-    ]]
+    { Quad = { OnConstruct = function() return { NameId = "GuestRoomExitDoor",  NameView = "Room Exit", Cursor = "MDown", Clickable = false, 
+        Pos = { x = 200, y = 400 }, Size = { Width = 560, Height = 110 }} end, 
+        OnInteract = function() SwipeScene("HallwayInit", "Up") end,
+        OnLook = function() StartSequence( function() Say("\n\nBehind me there's the room exit", 3.0) Say() end) end } 
+    } --  EXIT DOOR
 
 }
