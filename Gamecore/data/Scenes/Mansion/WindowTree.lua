@@ -18,9 +18,9 @@ return {
 
     { Entity = "DarkPathComing", Textures = "data/Scenes/Parking/TownPathBNight.jpg", Visible = false},
     
-    { Entity = "BigEye", Textures = "data/Scenes/Psycho/EyeXL.jpg", Visible = false},
-    --{ Entity = "RoadRecall", Textures = "data/Scenes/Intro/JumpScare.jpg", Visible = false},
+    { Entity = "BrainEye", Textures = "data/Scenes/Psycho/EyeXL.jpg", Visible = false},
 
+    --{ Entity = "RoadRecall", Textures = "data/Scenes/Intro/JumpScare.jpg", Visible = false},
 
     { Quad = (function() local self = { FoundAlready = false }
         function self.OnConstruct() 
@@ -35,7 +35,7 @@ return {
 
         function self.OnCloseup()
             self.FoundAlready = true
-            
+
             SetNoise(true)
             Scale("TreeCloseup", 1.3, 150)
             SetVisible("TreeCloseup", true)
@@ -53,8 +53,8 @@ return {
             SetVisible("DarkPathComing")
             Wait(0.1, false)
 
-            Scale("BigEye", 1.2, 150)
-            SetVisible("BigEye")
+            Scale("BrainEye", 1.2, 150)
+            SetVisible("BrainEye")
             Wait(0.1, false)
             Scale("WindowOutside", 1.2, 1)
             SetNoise(false)
@@ -81,7 +81,7 @@ return {
             SetVisible("EvilSight", false)
             SetVisible("QuickPhotoEvil", false)
             SetVisible("DarkPathComing", false)
-            SetVisible("BigEye", false)
+            SetVisible("BrainEye", false)
             SetVisible("TreeCloseup", false)
 
             Fade("WindowOutside", 0.0)

@@ -8,7 +8,7 @@ return {
     { Quad = { OnConstruct = function() return { NameId = "EnterBar", Cursor = "MUp", 
         Pos = { x = 100, y = 150 }, Size = { Width = 240, Height = 150 }} end, 
         OnInteract = function() 
-            if IsEntityInScene("Alcohol", "Inventory") then
+            if IsEntityInScene("Alcohol", "Inventory") or IsEntityInScene("Molotov", "Inventory") then
                 SwipeScene("BarInside", "Down")
             else
                 StartSequence( function() Say("I must go to the Hospital first", 5.0) Say() end )

@@ -204,27 +204,15 @@ void Assets::UnloadAnimations()
 
 void Assets::PreloadFonts()
 {
-	std::vector<int> Codepoints;
-
-	for (int i = 32; i <= 126; i++)
-		Codepoints.push_back(i);
-
-	for (int i = 160; i <= 255; i++)
-		Codepoints.push_back(i);
-
-	const auto Load = [&](const std::string Name, const char* FileName, const int Size = 0)
+	const auto Load = [&](const std::string Name, const char* FileName, const int size = 0)
 		{
-			const Font Font = (Size == 0)
-				? LoadFont(FileName)
-				: LoadFontEx(FileName, Size, Codepoints.data(), (int)Codepoints.size());
-
+			const Font Font = (size == 0) ? LoadFont(FileName) : LoadFontEx(FileName, 64, 0, 0);
 			Fonts[Name] = Font;
 			SetTextureFilter(Font.texture, TEXTURE_FILTER_BILINEAR);
 		};
 
-
 	Load("Gothic", "data/Franklin-Gothic-Heavy-Italic.ttf", 64);
-	Load("Noto", "data/NotoSans-Regular.ttf");
+	Load("Noto", "data/NotoSansUI-Regular.ttf");
 
 	//Load("NotoBold", "Data/NotoSans-Bold.ttf");
 	//Load("NotoBoldItalic", "Data/NotoSans-BoldItalic.ttf");

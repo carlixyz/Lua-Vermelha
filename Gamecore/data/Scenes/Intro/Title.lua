@@ -1,6 +1,6 @@
 return {
         
-        { Entity = "7Moon", Position = { x = -100, y = -220 }, Textures = "data/Scenes/Intro/7thMoon.png", Visible = true, Alpha = 1.0  },
+        { Entity = "7Moon", Position = { x = -100, y = -220 }, Textures = "data/Scenes/Intro/7thMoon.jpg", Visible = true, Alpha = 1.0  },
         
         { TitleText = (function() 
                 local self = { MenuEnabled = false, StatusEnabled = true, DemoMode = false }

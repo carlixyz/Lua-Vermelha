@@ -2,6 +2,7 @@ return {
     { Entity = "LupertaStatueBG", Textures = {
         {LupertaDayClosed = "data/Scenes/Town/LupertaDayClosed.jpg"},
         {LupertaDayOpen = "data/Scenes/Town/LupertaDayOpen.jpg"},
+        {LupertaNight = "data/Scenes/Town/LupertaNightClosed.jpg"},
         {LupertaSunOff = "data/Scenes/Town/LupertaSunsetOff.jpg"},
         {LupertaSunOn = "data/Scenes/Town/LupertaSunsetOn.jpg" },
         {LupertaCloseUp = "data/Scenes/Town/LupertaSunsetCloseUp.jpg" }} 

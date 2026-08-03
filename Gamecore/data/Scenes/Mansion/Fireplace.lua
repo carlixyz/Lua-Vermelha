@@ -56,7 +56,7 @@ return {
 
     { Matches = (function() local self = {}
         function self.OnConstruct() return {NameView = "Matches", Textures = "data/Scenes/Inventory/Matches.png", Visible = false } end
-        function self.OnLookComment() Say("A set of matches to make fire", 4.0) Say() end
+        function self.OnLookComment() Say("A set of matches to make fire\nTheme is about a Red moon or something", 4.0) Say() end
         function self.OnLook() StartSequence(self.OnLookComment) end
         return self
         end)() 

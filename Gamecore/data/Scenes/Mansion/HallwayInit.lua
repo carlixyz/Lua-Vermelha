@@ -3,11 +3,14 @@ return {
     { HallwayStart = (function() 
         local self = { State = 1 } -- State: 0 left, 1 center, 2 right
         function self.OnConstruct() return { Clickable = false, Pos = { x = -1071, y = 0 }, 
-            Textures = {    {HallwayDay = "data/Scenes/Mansion/HallwayDay.jpg"}, 
-                            {HallwaySunset = "data/Scenes/Mansion/HallwaySunset.jpg"}, 
-                            {HallwayDusk = "data/Scenes/Mansion/HallwayDusk.jpg"}, 
-                            {HallwayNight = "data/Scenes/Mansion/HallwayNight.jpg" }} } end
-
+            Textures = {    
+                {HallwayDay = "data/Scenes/Mansion/HallwayDay.jpg"}, 
+                {HallwaySunset = "data/Scenes/Mansion/HallwaySunset.jpg"}, 
+                {HallwayDusk = "data/Scenes/Mansion/HallwayDusk.jpg"}, 
+                {HallwayNight = "data/Scenes/Mansion/HallwayNight.jpg" }
+            } 
+        } 
+        end
 
         function self.OnInit()
             --SetInventory(true)
@@ -151,7 +154,7 @@ return {
         Pos = { x = 710, y = 290 }, Size = { Width = 30, Height = 80 }} end,  
         OnInteract = function() StartSequence( function() Say("I'll not try going there", 5.0) Say() end) end, 
         OnLook = function() StartSequence( function() Say("I think that's Lukas Room", 5.0) Say() end) end} 
-    }, -- LUKA's'ROOM
+    }, -- LUKA's ROOM
 
     { Quad = { OnConstruct = function() return { NameId = "IlsaRoomDoor", NameView = "Ilsa's Room",
         Pos = { x = 810, y = 260 }, Size = { Width = 26, Height = 130 }} end, 
@@ -182,7 +185,6 @@ return {
         OnInteract = function() StartSequence( function() Say("I don't want to go there right now", 5.0) Say() end) end, 
         OnLook = function() StartSequence( function() Say("I think that's Ada's Room", 5.0) Say() end) end} 
     }, -- ADA's ROOM
-
 
     { Quad = { OnConstruct = function() return { NameId = "LobbyAccessHallway", NameView = "Lobby entry", Cursor = "MUp",
         Position = { x = 1240, y = 280 }, Size = { Width = 120, Height = 80 }} end, 

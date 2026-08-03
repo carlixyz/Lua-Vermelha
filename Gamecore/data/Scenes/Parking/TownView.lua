@@ -3,7 +3,8 @@ return {
 
     { Quad = (function()
         local self = {}
-        function self.OnConstruct() return { NameId = "Town View", Pos = { x = 196, y = 55 }, Size = { Width = 364, Height = 188 }} end
+        function self.OnConstruct() return { NameId = "Town View", Scale = 1.5,
+            Pos = { x = 196, y = 55 }, Size = { Width = 364, Height = 188 }} end
         function self.OnCommentEntry() Say("Such a nice view,\n There's a river between the town and here", 6.0) Say() end
         function self.OnCommentLook() Say("This town is pretty small,\njust six squares and a center plaza", 63.0) Say() end
         function self.OnInteract() StartSequence(self.OnCommentEntry) end function self.OnLook() StartSequence(self.OnCommentLook) end 

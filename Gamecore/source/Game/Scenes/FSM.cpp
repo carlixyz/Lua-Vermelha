@@ -99,6 +99,8 @@ bool FSM::Deinit()
 
 void FSM::Update(float deltaTime)
 {
+	ProcessMarkedEntities();
+
 	if (CurrentScene)
 		CurrentScene->OnUpdate(deltaTime);
 
@@ -110,6 +112,35 @@ void FSM::Update(float deltaTime)
 
 	if (CreditsScene)
 		CreditsScene->OnUpdate(deltaTime);
+}
+
+void FSM::ProcessMarkedEntities()
+{
+	for (const PendingEntityOperation& operation : PendingEntityOperations)
+	{
+		if (!operation.Source || !operation.Pointer)
+			continue;
+
+		auto& entities = operation.Source->Entities;
+		auto it = std::find(entities.begin(), entities.end(), operation.Pointer);
+
+		if (it == entities.end())
+			continue;
+
+		if (operation.MarkedForRemoval)
+		{
+			operation.Pointer->OnDeinit();
+			delete operation.Pointer;
+		}
+		else if (operation.Target)
+		{
+			operation.Target->Entities.push_back(operation.Pointer);
+		}
+
+		entities.erase(it);
+	}
+
+	PendingEntityOperations.clear();
 }
 
 void FSM::SwapDebugScenes()
@@ -255,72 +286,60 @@ void FSM::DisableEntity(const std::string& id)
 
 void FSM::RemoveEntity(const std::string& entityId)
 {
-	auto match = [&](Entity* e)
-		{
-			return e && e->GetInfo().NameId == entityId;
-		};
-
 	for (auto& [sceneName, scene] : ScenesMap)
 	{
-		if (!scene) continue;
+		if (!scene)
+			continue;
 
 		auto& entities = scene->Entities;
 
-		auto it = std::find_if(entities.begin(), entities.end(), match);
-		if (it != entities.end())
-		{
-			Entity* victim = *it;
+		auto it = std::find_if(entities.begin(), entities.end(),
+			[&](Entity* entity) { return entity && entity->GetID() == entityId; });
 
-			std::cout << "[FSM] Removing Entity '" << entityId
-				<< "' from Scene '" << sceneName << "'\n";
+		if (it == entities.end())
+			continue;
 
-			// Proper lifecycle cleanup
-			victim->OnDeinit();
-
-			delete victim;              // Destroy the entity
-			entities.erase(it);         // Remove pointer from scene
-
-			return;                     // Done. Entity is gone from reality.
-		}
-	}
-
-	std::cout << "[FSM] RemoveEntityFromScene: Entity '"
-		<< entityId << "' not found in any scene.\n";
-}
-
-void FSM::ChangeEntityScene(const std::string& EntityId, const std::string& newSceneId)
-{
-	if (newSceneId.empty() || !ScenesMap.contains(newSceneId))
-	{
-		std::cout << "\n [ERROR] Invalid sceneId: " << newSceneId << std::endl;
-		throw std::runtime_error("Error: invalid sceneId");
+		PendingEntityOperations.push_back({ scene, nullptr, *it, true });
 		return;
 	}
 
-	auto match = [&](Entity* e) { return e->Info.NameId == EntityId; }; // Find Id match
+	std::cout << "[FSM] Entity '" << entityId << "' not found for removal\n";
+}
 
-	for (auto& [key, prevScene] : ScenesMap)
+void FSM::ChangeEntityScene(const std::string& entityId, const std::string& newSceneId)
+{
+	if (newSceneId.empty() || !ScenesMap.contains(newSceneId))
 	{
-		std::vector<Entity*>& entities = prevScene->Entities;
-		auto it = std::find_if(prevScene->Entities.begin(), prevScene->Entities.end(), match);
+		std::cout << "\n[ERROR] Invalid sceneId: " << newSceneId << std::endl;
+		return;
+	}
 
-		if (it != entities.end())
+	GameScene* nextScene = ScenesMap.at(newSceneId);
+
+	for (auto& [sceneName, previousScene] : ScenesMap)
+	{
+		if (!previousScene)
+			continue;
+
+		auto& entities = previousScene->Entities;
+
+		auto it = std::find_if(entities.begin(), entities.end(),
+			[&](Entity* entity) { return entity && entity->GetID() == entityId; });
+
+		if (it == entities.end())
+			continue;
+
+		if (previousScene == nextScene)
 		{
-			if (GameScene* nextScene = ScenesMap[newSceneId])
-			{
-				if (prevScene == nextScene)
-				{
-					std::cout << "\n [ERROR] Entity :" << EntityId << " is already in sceneId : " << newSceneId << std::endl;
-					return;
-				}
-
-				nextScene->Entities.push_back(*it);				// if valid push into new Scene
-				entities.erase(it);								// erase from old one using iterator
-			}
-
+			std::cout << "\n[ERROR] Entity: " << entityId << " is already in sceneId: " << newSceneId << std::endl;
 			return;
 		}
+
+		PendingEntityOperations.push_back({ previousScene, nextScene, *it, false });
+		return;
 	}
+
+	std::cout << "[FSM] Entity '" << entityId << "' not found for Scene move\n";
 }
 
 void FSM::ChangeEntityToFront(const std::string& EntityId, int offset)

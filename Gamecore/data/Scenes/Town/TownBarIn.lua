@@ -4,27 +4,38 @@ return {
         {BarInNight = "data/Scenes/Town/BarInNight.jpg"}}
     },
     
-    { Quad = { OnConstruct = function() return { NameId = "ReturnToBarOut", Cursor = "MUp", Pos = { x = 620, y = 70 }, 
-        Size = { Width = 130, Height = 170 }} end, OnInteract = function() SwipeScene("BarOutside", "Down") end } 
+    { Quad = { OnConstruct = function() return { NameId = "ReturnToBarOut", Cursor = "MUp", Pos = { x = 620, y = 70 },
+        Size = { Width = 130, Height = 170 }} end, OnInteract = function() SwipeScene("BarOutside", "Down") end }
     },
 
-
-    { Lighter = { OnConstruct = function() return { Pos = { x = 820, y = 335 }, NameView = "Lighter", Textures = { 
-            {LighterMini = "data/Scenes/Inventory/LighterMini.png"}, 
-            {Lighter = "data/Scenes/Inventory/Lighter.png"} }, CurrentID = "LighterMini" } end, 
+    { Lighter = { OnConstruct = function() return { Pos = { x = 820, y = 335 }, NameView = "Lighter", 
+        Textures = { {LighterMini = "data/Scenes/Inventory/LighterMini.png"}, 
+            {Lighter = "data/Scenes/Inventory/Lighter.png"} }, CurrentID = "LighterMini" } end,
+        --OnEnter = function() if IsEntityInScene("Matches", "Inventory") then RemoveEntity("Lighter") end end, 
+        OnInit = function() 
+            if IsEntityInScene("Matches", "Inventory") then RemoveEntity("Lighter") end 
+        end, 
         OnInteract = function() PickUp("Lighter", 2) SetState("Lighter", "Lighter") end,
-        OnLook = function() StartSequence( function() 
-            if not IsEntityInScene("Lighter", "Inventory") then 
-                Say("Someone left an old lighter", 3.0) 
-            else
-                Say("An old lighter", 3.0) Say() 
-            end
-            Say() 
-            end) 
+        OnLook = function() 
+            StartSequence( 
+                function() 
+                    if not IsEntityInScene("Lighter", "Inventory") then 
+                        Say("Someone left an old lighter", 3.0) 
+                    else
+                        Say("An old lighter", 3.0) Say() 
+                    end
+                    Say() 
+                end
+            ) 
         end} 
     },  -- LIGHTER
 
     { Quad = { OnConstruct = function() return { NameId = "Drunk guy", Pos = { x = 780, y = 130 }, Size = { Width = 140, Height = 165 }} end,
+        OnInit = function() 
+            if not IsEntityInScene("Wallet", "Inventory") then 
+                Schedule(1.0, "PickUp", "Wallet")  -- ATTENTION HERE - ONLY FOR TESTING - REMOVE AFTER USE
+            end 
+        end, 
         OnInteract = function() SwipeScene("BarDrunk", "Down") end,
         OnLook = function() StartSequence( function() Say("A middle-aged man who appears to be drinking alone.", 5.0) Say() end) end}
     },
@@ -35,12 +46,22 @@ return {
         OnLook = function() StartSequence( function() Say("She's talking with the bartender", 5.0) Say() end) end} 
     },
 
+    { Entity = "Beer", Position = { x = 920, y = 0 }, Textures = "data/Scenes/Inventory/BeerPint.png", Clickable = true},
+
     { Quad = { OnConstruct = function() return { NameId = "Bartender", 
-        Pos = { x = 270, y = 101 }, Size = { Width = 51, Height = 72 }} end, 
+        Pos = { x = 270, y = 101 }, Size = { Width = 51, Height = 72 }} end,
         OnInteract = function() StartSequence( function()
             Say("Bartender","Hello sir, The pint of beer costs 5 bucks", 5.0) Say() end) 
         end, 
-        OnLook = function() StartSequence( function() Say("He's working while talks with the woman", 5.0) Say() end) end} 
+        OnLook = function() StartSequence( function() Say("He's working while talks with the woman", 5.0) Say() end) end,
+        OnCombine = function(itemId) 
+            if itemId == "Wallet" and not IsEntityInScene("Beer", "Inventory") and not DrunkMan.Invited then 
+                print("Found Beer")
+                StartSequence( function() Say("Here's you pint sir, keep the change") end)
+                PickUp("Beer",1)
+            end
+        end
+        }
     },
 
     { Quad = { OnConstruct = function() return { NameId = "DudeRight", NameView = "Bunch of dudes",

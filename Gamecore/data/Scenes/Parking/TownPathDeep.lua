@@ -13,11 +13,11 @@ return {
 
     { Entity = "DevilSight", Textures = "data/Scenes/Ending/MorphD.jpg", Visible = false},
 
-    { Entity = "Navajo", Textures = "data/Scenes/Psycho/Navajo.jpg", Visible = false},
+    { Entity = "Navaja", Textures = "data/Scenes/Psycho/Navaja.jpg", Visible = false},
 
-    { Entity = "TheEye", Textures = "data/Scenes/Psycho/EyeXL.jpg", Visible = false},
+    { Entity = "AnotherEye", Textures = "data/Scenes/Psycho/EyeXL.jpg", Visible = false},
 
-    { Entity = "Christophoro", Textures = "data/Scenes/Psycho/SaintChristopher.jpg", Visible = false},
+    { Entity = "Christoph", Textures = "data/Scenes/Psycho/SaintChristopher.jpg", Visible = false},
 
     { Entity = "RoadRecall", Textures = "data/Scenes/Intro/JumpScare.jpg", Visible = false},
 
@@ -32,9 +32,6 @@ return {
             Pos = { x = 440, y = 140 }, Size = { Width = 160, Height = 180 }} 
         end
 
-        function self.OnDone()
-            SwipeScene("TownView", "Up")
-        end
 
         function self.OnSequence()
             self.SawCinematic = true
@@ -57,34 +54,35 @@ return {
             SetVisible("DevilSight")
             Wait(0.1, false)
 
-            SetVisible("Navajo")
+            SetVisible("Navaja")
             Wait(0.1, false)
 
-            SetVisible("TheEye")
+            SetVisible("AnotherEye")
             Wait(0.1, false)
 
-            SetVisible("Christophoro")
+            SetVisible("Christoph")
             Wait(0.1, false)
 
             SetVisible("RoadRecall")
             Wait(0.1, false)
 
-
             --SetNoise(false)
-
-
             --Wait(false)
-
             --SetState("TreeFar", "WinFarEmpty")
 
+            Scale("TownPathDeepBG", 1.3, 0)
+            SetCurrentScene("TownView")
+            Scale("TownViewBG", 1.3, 0)
+            Schedule(0.2,"Scale","TownViewBG", "1.0", "50")
+            
             SetVisible("Goyete", false)
             SetVisible("Bitten", false)
             SetVisible("QuickPhotoDevil", false)
             SetVisible("Luna", false)
             SetVisible("DevilSight", false)
-            SetVisible("Navajo", false)
-            SetVisible("TheEye", false)
-            SetVisible("Christophoro", false)
+            SetVisible("Navaja", false)
+            SetVisible("AnotherEye", false)
+            SetVisible("Christoph", false)
             SetVisible("RoadRecall", false)
             Scale("TownPathDeepBG", 1.0, 50)
 
@@ -93,9 +91,9 @@ return {
 
         function self.OnInteract()
             if not self.SawCinematic then
-                StartSequence(self.OnSequence) 
+                StartSequence(self.OnSequence)
             else
-                StartSequence(self.OnDone) 
+                SwipeScene("TownView", "Up")
             end
         end 
                 

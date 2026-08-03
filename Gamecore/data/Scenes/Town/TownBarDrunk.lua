@@ -2,6 +2,7 @@
 function StopDrunkTalk()
     DrunkMan.StopTalk()
 end
+
 return {
 
     { Quad = (function()
@@ -29,7 +30,7 @@ return {
             SchwarzUnlocked = false,
             Finished = false,
             CheckedAlive = false
-    }
+        }
 
     function self.OnConstruct()
         return {
@@ -40,9 +41,17 @@ return {
         }
     end
 
+    function self.OnEnter() SetEmotion("TDisabled") end
+
+    function self.OnInit() self.OnEnter() end
+
     function self.OnCombine(itemId)
         if itemId == "Beer" and not self.Invite then
+            --SetVisible("Beer", false)
+            --SetEntityScene("Beer", "BarDrunk")
+            RemoveEntity("Beer")
             self.Invite = true
+            DrunkMan.Invited = true
             SetState("DrunkMan","DrunkHappy")
             StartSequence(self.OnOpenTalk)
         end
@@ -198,7 +207,7 @@ return {
                 Say("BB Torres", "Wish I could visit him more often", 4.0)
                 Say("BB Torres", "But the cemetery is near the Schwarz land", 4.0)
                 Schedule(3.0, "StopDrunkTalk" )
-                Say("BB Torres", "And that place is cursed", 4.0)
+                Say("BB Torres", "And that place is the Serpent's Egg", 4.0)
 
                 self.Talk()
             end },
@@ -326,13 +335,13 @@ return {
             Say("Thiago", "You think that carnival is a cult?", 4.0)
 
             DrunkMan.StartTalk()
-            Say("BB Torres", "Long time ago, We used to heard noises in the valley", 4.0)
+            Say("BB Torres", "Long time ago, We used to feel noises in the valley", 4.0)
             Say("BB Torres", "and shadows dancing under the red moon", 5.0)
         end
 
         DrunkMan.StartTalk()
         Say("BB Torres", "Now people are starting to wear masks and dance with them", 4.0)
-        Say("BB Torres", "We should be careful with unknown symbols", 5.0)
+        Say("BB Torres", "We should be careful with unknown rituals", 5.0)
         DrunkMan.StopTalk()
 
         self.Talk()
@@ -414,34 +423,36 @@ return {
         Say("BB Torres", "Different question", 3.0)
         DrunkMan.StopTalk()
 
-        Say("Thiago", "I'm staying at their fazenda", 4.0)
+        Say("Thiago", "I'm staying at their residence", 4.0)
         SetState("DrunkMan", "DrunkTalk")
-        Shake("DrunkMan", 20.0, 1.5)
+        --Wobble("DrunkMan", 20.0, 1.0)
+        Shake("DrunkMan", 20.0, 1.0)
         Say("BB Torres", "What...", 3.0)
         DrunkMan.StartTalk()
 
         Say("BB Torres", "How many nights?", 3.0)
+        Scale("DrunkMan", 1.3, 150)
         Say("Thiago", "Why? Does it matter?", 3.0)
         DrunkMan.StartTalk()
         Schedule(1.5, "StopDrunkTalk" )
         Schedule(2.0, "SetState", "DrunkMan", "DrunkIdle")
         Schedule(3.0, "SetState", "DrunkMan", "DrunkShut")
 
-        Say("BB Torres", "Such a lucky strike", 3.0)
+        Say("BB Torres", "Oh, such a lucky strike", 3.0)
         DrunkMan.StartTalk()
         Say("BB Torres", "There's an old story here in Capao seco", 3.0)
-        Say("BB Torres", "It's the valley's family", 3.0)
+        Say("BB Torres", "About the family this valley belongs to", 3.0)
         Schedule(1.5, "StopDrunkTalk" )
         Schedule(2.0, "SetState", "DrunkMan", "DrunkIdle")
-        Say("BB Torres", "Here before the roads\nBefore the church", 4.0)
+        Say("BB Torres", "They were here before the roads\nBefore the civilization", 5.0)
 
         Say("Thiago", "That doesn't make sense", 3.0)
         
         DrunkMan.StartTalk()
         Say("BB Torres", "The horror can't be understood", 4.0)
-        Say("BB Torres", "Everything wrong here has a harmless name", 5.0)
-        Say("BB Torres", "Madness, suicide, missing", 3.0)
-        Say("BB Torres", "Animal attacks, festival", 3.0)
+        Say("BB Torres", "Madness, biker gangs, suicide", 3.0)
+        Say("BB Torres", "Smugglers, natural abomination, Dopplegangers", 3.0)
+        Say("BB Torres", "Things nobody has names for", 5.0)
         DrunkMan.StopTalk()
 
         Say("Thiago", "What are you trying to tell me?", 4.0)
@@ -473,15 +484,18 @@ return {
 
         DrunkMan.StartTalk()
         Say("BB Torres", "The red moon is coming", 3.0)
-        Schedule(2.0, "StopDrunkTalk" )
+        Schedule(0.5, "StopDrunkTalk" )
+        Schedule(2.5, "SetState", "DrunkMan", "DrunkDrinks" )
         Say("BB Torres", "Drink with me", 3.0)
+        --SetState("DrunkMan","DrunkDrinks")
 
-        SetState("DrunkMan","DrunkDrinks")
+        Scale("DrunkMan", 1.0, 50)
         Say("BB Torres", "To roads", 2.0)
-        Shake("DrunkMan", 5.0, 6)
+        --Shake("DrunkMan", 5.0, 5)
         Say("Thiago", "To roads", 2.0)
+        Wait(2.0)
+        Say("BB Torres", "May yours remember..\nwhich way is out", 4.0)
         SetState("DrunkMan","DrunkSleept")
-        Say("BB Torres", "May yours remember..\nwhich way is out", 5.0)
         Say("BB Torres", "...", 3.0)
         self.NightComing()
 
@@ -493,12 +507,22 @@ return {
         SetState("Bar","BarOutNight")
         SetState("HospitalOutBG","HospitalNight")
         SetState("Tunnel","TunnelNight")
-
         SetState("Fountain","FountainNight")
+
         SetState("PlazaReturn","ReturnNight")
         SetState("PlazaPan","PlazaPanThug")
         SetState("PlazaExit","PlazaExitNight")
-        --SetState("LupertaStatueBG","FountainNight")
+        SetState("LupertaStatueBG","LupertaNight")
+        SetState("MapBoardBG","MapBNight")
+
+        SetClickable("DudeLeft", false)
+        SetClickable("DudeRight", false)
+
+        DrunkMan.Sleeping = true
+        RemoveEntity("Clown")
+        --SetVisible("Clown", false)
+        --SetActive("Clown", false)
+
     end
 
     -- FINISHED
@@ -521,6 +545,7 @@ return {
     -- ENTITY CALLBACKS
     function self.OnOpenTalk()
         self.TalkOpened = true
+        SetEmotion("TDisabled")
         Say("Old Drunk", "Hey, that was unexpected, thanks!", 4.0)
         Say("Old Drunk", "You're not from here, are you?", 4.0)
         SetState("DrunkMan", "DrunkIdle")
@@ -546,7 +571,7 @@ return {
         if self.Finished then
             Say("\nBB is completely unconscious", 4.0)
         elseif not self.Invite then
-            Say("\nHe doesn't look open to talk", 4.0)
+            Say("\nHe doesn't look very open to talk", 4.0)
             Say("\nMaybe something to drink can loosen him up a bit", 5.0)
         else
             Say("\nHe seems friendlier now", 3.0)
@@ -566,13 +591,14 @@ return {
 
 
 
-    { Quad = { OnConstruct = function() return { NameId = "ReturnToBarInside", Cursor = "MDown", Pos = { x = 0, y = 370 }, 
-        Size = { Width = 920, Height = 140 }} end, OnInteract = function() SwipeScene("BarInside", "Up") end } 
+    { Quad = { OnConstruct = function() return { NameId = "ReturnToBarInside", Cursor = "MDown", 
+        Pos = { x = 0, y = 370 }, Size = { Width = 920, Height = 140 }} end, 
+        OnInteract = function() SwipeScene("BarInside", "Up") SetEmotion("TNeutral") end } 
     }, -- Return to bar
 
     { DrunkMan = (function() 
         local self = { 
-            Invite = false, 
+            Invited = false, 
             Sleeping = false, 
             TalkAnimID = 0,
             TalkFrame = 0,
@@ -638,7 +664,5 @@ return {
         return self
         end)()
     } -- DRUNK MAN BACKGROUND
-    
-
 
 }

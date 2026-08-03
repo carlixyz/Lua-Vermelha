@@ -23,11 +23,13 @@ return {
                 Move("PlazaPan", 0)
                 Move("TunnelShortcut", 160, -220)
                 Move("LupertaStatue", 450, -220)
+                Move("Thugs", 580, -220)
                     
             elseif self.State == 1 then
                 Move("PlazaPan", -600)
                 Move("TunnelShortcut", 160, 220)
                 Move("LupertaStatue", 450, 220)
+                Move("Thugs", 580, 220)
 
             end
         end
@@ -51,13 +53,15 @@ return {
                 self.State = self.State +1 
                 self.Update()
             else
-                SwipeScene("TownView", "Left")
+                if not DrunkMan.Sleeping then
+                    SwipeScene("TownView", "Left")
+                end
             end
         end
 
         return self
         end)()
-    },
+    }, -- PLAZA PAN 
 
     { Quad = (function() local self = {}
 
@@ -88,16 +92,30 @@ return {
     }, -- RIGHT SIDE
 
 
+    { Quad = { OnConstruct = function() return { NameId = "Thugs", Clickable = false, -- Cursor = "MUp",
+        Pos = { x = 580, y = 200 }, Size = { Width = 320, Height = 235 }} end,
+        OnEnter = function() if DrunkMan.Sleeping then SetClickable("Thugs") else SetClickable("Thugs", false) end end,
+        OnLook = function() StartSequence( function() Say("Who're those people? Something's happening there..", 5.0) Say() end) end,
+        OnInteract = function() BlendScene("PlazaThugs", 1.0)  end } -- for testing only
+    }, -- THUGS
 
-    { Entity = "Thugs", Visible = false, Textures = {
-        {ThugsFar = "data/Scenes/Town/ThugsFar.jpg"}, {ThugsNear = "data/Scenes/Town/ThugsFar.jpg"} }
-    },
+    { Quad = { OnConstruct = function() return { NameId = "TunnelShortcut", Cursor = "MUp",
+        Pos = { x = 160, y = 220 }, Size = { Width = 240, Height = 100 }} end, OnInteract = function()
+            if DrunkMan.Sleeping then
+                StartSequence( function() Say("I should return back to Schwarz Residence", 5.0) Say() end)
+            else
+                SwipeScene("PlazaExit", "Down")
+            end
+        end } 
+    }, -- PLAZA EXIT SHORTCUT
 
-    { Quad = { OnConstruct = function() return { NameId = "TunnelShortcut", Cursor = "MUp", Pos = { x = 160, y = 220 }, 
-        Size = { Width = 240, Height = 100 }} end, OnInteract = function() SwipeScene("PlazaExit", "Down") end } 
-    },
-
-    { Quad = { OnConstruct = function() return { NameId = "LupertaStatue", Pos = { x = 450, y = 220 }, 
-        Size = { Width = 110, Height = 120 }} end, OnInteract = function() SwipeScene("Luperta", "Down") end } 
-    }
+    { Quad = { OnConstruct = function() return { NameId = "LupertaStatue", 
+        Pos = { x = 450, y = 220 }, Size = { Width = 110, Height = 120 }} end, OnInteract = function() 
+            if DrunkMan.Sleeping then
+                StartSequence( function() Say("I should return back to Schwarz Residence", 5.0) Say() end)
+            else
+                SwipeScene("Luperta", "Down")
+            end
+        end } 
+    } -- LUPERTA STATUE
 }

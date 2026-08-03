@@ -17,6 +17,7 @@ return {
     { Entity = "Navajo", Textures = "data/Scenes/Psycho/Navajo.jpg", Visible = false},
 
 
+
     { Entity = "SaintChris", Textures = "data/Scenes/Psycho/SaintChristopher.jpg", Visible = false},
 
     { Entity = "SkinWalker", Textures = "data/Scenes/Psycho/SkinWalker.jpg", Visible = false},
@@ -40,6 +41,8 @@ return {
     { Entity = "Lagart", Textures = "data/Scenes/Psycho/Lagart.jpg", Visible = false},
 
     { Entity = "LegInjury", Textures = "data/Scenes/Psycho/LegInjury.jpg", Visible = false},
+
+    { Entity = "Skull.jpg", Textures = "data/Scenes/Psycho/Skull.jpg", Visible = false},
 
     { Entity = "SmallEye", Textures = "data/Scenes/Psycho/EyeS.jpg", Visible = false},
     

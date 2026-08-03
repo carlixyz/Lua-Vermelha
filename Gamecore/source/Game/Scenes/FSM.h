@@ -47,7 +47,20 @@ class FSM	/// Finite Scene Manager ftw!
 
 	friend SceneFactory;
 
+	struct PendingEntityOperation
+	{
+		GameScene* Source = nullptr;
+		GameScene* Target = nullptr;
+		Entity* Pointer = nullptr;
+		bool MarkedForRemoval = false;
+	};
+
+	std::vector<PendingEntityOperation> PendingEntityOperations;
+
+	void ProcessMarkedEntities();
+
 public:
+
 	bool Init();
 	bool Deinit();
 

@@ -56,8 +56,6 @@ bool Game::Deinit()
 }
 
 
-
-
 void Game::Update(float deltaTime)
 {
 	finish = (finish || Graphics::Get().GetCloseApplication());
@@ -117,6 +115,8 @@ void Game::Render()
 	RenderCursor();	// Can be Done inside Scenes.Render() to avoid Inventory overlap
 
 	EndDrawing();
+
+	//Scenes.RemoveMarkedPointers();
 }
 
 

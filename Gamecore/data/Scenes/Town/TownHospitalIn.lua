@@ -1,41 +1,55 @@
 return {
 
-    { Bandage = { OnConstruct = function() return { Clickable = true, Textures = "data/Scenes/Inventory/Bandage.png" } end, 
-        OnInteract = function() StartSequence(function() Say("I'm ok", 3.0) Say() end) end,
+    { Bandage = { OnConstruct = function() return { Textures = "data/Scenes/Inventory/Bandage.png" } end, 
+        OnCombine = function(itemId) 
+            if itemId == "Alcohol" then
+                PickUp("Molotov", 2) 
+                RemoveEntity("Bandage") 
+                RemoveEntity("Alcohol")
+            end 
+        end,
         OnLook = function() StartSequence(function() Say("A bandage for injuries", 3.0) Say() end) end } 
     }, -- BANDAGES
 
-    { Alcohol = (function() 
-        local self = { Combined = false, Ignited = false }
-        function self.OnConstruct() return { NameId = "Alcohol", Clickable = true, Textures = {
-            {Alco = "data/Scenes/Inventory/Alcohol.png"},
-            {Molotov = "data/Scenes/Inventory/Molotov.png"},
-            {MoloFire = "data/Scenes/Inventory/MolotovFire.png"} }, --CurrentImage = "BCopper" 
-            }
-        end
-
-        function self.OnLookComment() Say("a bottle of ethyl alcohol", 3.0) Say() end
-        function self.OnCombine(itemId)
-            if itemId == "wick" then
-            else
-            end
-        end
-
-        function self.OnLook() 
-            StartSequence(self.OnLookComment) 
-        end
-
-        return self
-    end)()
+    { Alcohol = { OnConstruct = function() return { Textures = "data/Scenes/Inventory/Alcohol.png" } end, 
+        OnCombine = function(itemId) 
+            if itemId == "Bandage" then
+                PickUp("Molotov", 2) 
+                RemoveEntity("Alcohol") 
+                RemoveEntity("Bandage") 
+            end 
+        end,
+        OnLook = function() StartSequence(function() Say("a bottle of ethyl alcohol", 3.0) Say() end) end } 
     }, -- ALCOHOL
 
-    -- { Entity = "Med", Textures = "data/Scenes/Inventory/Medication.png", Clickable = true},
+    { Molotov = { OnConstruct = function() return { Textures = "data/Scenes/Inventory/Molotov.png" } end,
+        OnLook = function() StartSequence( function() Say("It need some fire for ignition", 5.0) Say() end) end,
+        OnCombine = function(itemId)
+            if not DrunkMan.Invited then
+                StartSequence( function() Say("Thiago", "I won't do that without reason", 4.0) end)
+            elseif itemId == "Matches" or itemId == "Lighter" then 
+                StartSequence( function() Say("Thiago", "Let's hope our country never gives us a reason to use one of these", 6.0) end)
+                RemoveEntity("Molotov")
+                PickUp("MolotovFire", 2)
+            end
+        end
+        }
+    }, -- MOLOTOV
 
+    { MolotovFire = { OnConstruct = function() return { Textures = "data/Scenes/Inventory/MolotovFire.png",
+        NameView = "Molotov on fire" } end,
+        OnLook = function() StartSequence( function() Say("It's ready to sow chaos", 3.0) Say() end) end
+        }
+    }, -- MOLOTOV ON FIRE
+
+
+    -- { Entity = "Med", Textures = "data/Scenes/Inventory/Medication.png", Clickable = true},
 
     { Doctor = { OnConstruct = function() return { NameView = "Doctor Eustaquio", Textures = "data/Scenes/Town/Medic.jpg"} end,
         OnInit = function() 
         
-            StartSequence( function() 
+            StartSequence( function()
+                SetEmotion("TDisabled")
                 Wait(1.0)
 
                 Say("Doctor", "Well well Mr Vera...")
@@ -60,6 +74,7 @@ return {
 
                 Wait(1.0, false)
                 BlendScene("HospitalOutside", 3.0)
+                SetEmotion("TNeutral")
             end )
 
         end } 

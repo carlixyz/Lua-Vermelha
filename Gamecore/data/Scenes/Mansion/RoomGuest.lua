@@ -27,17 +27,78 @@ return {
         end)()
     }, -- Wallet
 
-    { Phone = (function() local self = {}
-        function self.OnConstruct() return { Textures = "data/Scenes/Inventory/BrokenPhone.png", Visible = false } end
+    { Hanger = (function() local self = {}
+        function self.OnConstruct() return { Textures = "data/Scenes/Inventory/Hanger.png", Visible = false } end
+        function self.OnLookComment()
+            Say("\nIt's just a clothes hanger", 3.0)
+            Say("\nMaybe I can use it as pinch bar to jack something", 4.0)
+            Say()
+        end
+        function self.OnLook() StartSequence(self.OnLookComment) end
+        return self
+        end)()
+    }, -- Hanger
+
+    { Battery = (function() local self = {}
+        function self.OnConstruct() return { Textures = "data/Scenes/Inventory/Battery.png", Visible = false } end
+
+        function self.OnLookComment()
+            Say("\nMy cellhpone battery", 3.0)
+            Say("I need to attach it to the phone again")
+            Say()
+        end
+
+        function self.OnLook() StartSequence(self.OnLookComment) end
+
+        function self.OnCombine(itemId)
+            if itemId == "Phone" then
+                StartSequence(function() Say("\nOk, let's see if it can reboot now") Say() end) 
+                PickUp("CellPhone", 2)
+                RemoveEntity("Battery")
+                RemoveEntity("Phone")
+            else
+                StartSequence(function() Say("\nIt doesn't work") Say() end) 
+            end
+        end
+
+        return self
+        end)()
+    }, -- Battery
+
+    { Phone = (function() local self = { }
+        function self.OnConstruct() return { NameView = "Dead phone", Textures = "data/Scenes/Inventory/BrokenPhone.png", Visible = false } end
         function self.OnBrokenComment()
-            Say("\nOh no... It's totally dead!", 3.0)
-            Say("\nMy phone is broken and useless", 3.0)
+            Say("it's out of power...")
             Say()
         end
         function self.OnLook() StartSequence(self.OnBrokenComment) end
+        function self.OnCombine(itemId)
+            if itemId == "Battery" then
+                StartSequence(function() Say("\nOk, let's see if it can reboot now") Say() end) 
+                PickUp("CellPhone", 2)
+                RemoveEntity("Battery")
+                RemoveEntity("Phone")
+            else
+                StartSequence(self.OnBrokenComment) 
+            end
+        end
         return self
         end)()
     }, -- Phone
+
+    { CellPhone = (function() local self = { StillAlive = true }
+        function self.OnConstruct() return { Textures = "data/Scenes/Inventory/BrokenPhone.png", Visible = false } end
+        function self.OnLook()
+            if self.StillAlive then
+                self.StillAlive = false
+                BlendScene("Mobile", 1)
+            else
+                StartSequence( function() Say("it's dead...") Say() end) 
+            end
+        end
+        return self
+        end)()
+    }, -- CellPhone
 
     { IntroWakeup = (function()
         local self = { TotalItems = 0, FirstTime = true }
@@ -269,7 +330,6 @@ return {
             SetPosition("Ada", 400)
             SetAlpha("Ada", 1.0)
             SetClickable("Ada")
-
         end
 
         function self.OnExit()
@@ -284,8 +344,6 @@ return {
         end)()
     },
 
-
-    
     { Quad = (function() 
         local self = {}
         function self.OnConstruct() return { NameId = "Tapiz", NameView = "Tapestry", Pos = { x = 45, y = 80 }, Size = { Width = 160, Height = 280 }, Clickable = false} end
@@ -310,9 +368,16 @@ return {
     { Quad = (function() 
         local self = {}
         function self.OnConstruct() return { NameId = "vestidor", NameView = "Dresser", Pos = { x = 284, y = 232 }, Size = { Width = 70, Height = 105 }, Clickable = false} end
-        function self.OnCommentEntry() Say("\nThere's just a bunch of old socks and sheets", 4.0) Say() end
-        function self.OnCommentLook() Say("\nA big dresser with a bunch of drawers, nothing important inside", 4.0) Say() end
-        function self.OnInteract() StartSequence(self.OnCommentEntry) end
+        function self.OnCommentEntry() Say("\nThere's a Clothes hanger here\nMight be handy later", 4.0) Say() end
+        function self.OnCommentLook() Say("\nA big dresser with a bunch of old socks and sheets,\nnothing important inside", 4.0) Say() end
+        function self.OnInteract()
+            if not IsEntityInScene("Hanger", "Inventory") then
+                PickUp("Hanger", 2)
+                StartSequence(self.OnCommentEntry) 
+            else
+                StartSequence(self.OnCommentLook)
+            end
+        end
         function self.OnLook() StartSequence(self.OnCommentLook) end 
         return self
         end)()
@@ -335,10 +400,10 @@ return {
     }, -- LBedTable
 
     { Quad = (function() 
-        local self = {}
+        local self = { Jammed = true}
         function self.OnConstruct() return { NameId = "RBedTable", NameView = "Right Bedside table", Pos = { x = 562, y = 264 }, 
             Size = { Width = 40, Height = 65 }, Clickable = false} end
-        function self.OnCommentEntry() Say("\nThe drawer is empty", 3.0) Say() end
+        function self.OnCommentEntry() Say("\nNow the drawer is empty", 3.0) Say() end
         function self.OnWalletFound() 
             PickUp("Wallet", 2)
             Say("\nHey here's my wallet...\ngood to know I haven't lost it", 5.0) 
@@ -346,21 +411,41 @@ return {
             IntroWakeup.CountItem()
         end
             
-        function self.OnCommentLook() Say("\nA bedside table with one small drawer", 4.0) Say() end
-        function self.OnInteract()
-
-            if not IsEntityInScene("Wallet", "Inventory") then
-                StartSequence(self.OnWalletFound)
-                --PickUp("Wallet")
-                --if IntroWakeup.CountItem() == 2 then return end
-                --ShowInventory(2)
-                
+        function self.OnCommentLook()
+            if self.Jammed then
+                Say("\nSomething is blocking the drawer from within", 4)
+                Say("\nThere's a small gap... if I had a thin lever or something", 4) 
             else
-                StartSequence(self.OnCommentEntry)
+                Say("\nA bedside table with an old small drawer", 4) 
+            end
+            Say()
+        end
+        
+        function self.OnLook() StartSequence(self.OnCommentLook) end 
+
+        function self.OnCombine(itemId)
+            if itemId == "Hanger" then
+                self.Jammed = false
+                RemoveEntity("Hanger")
+                StartSequence(function() Say("Alright, now it's unjammed..") Say() end)
+            else
+                StartSequence(function() Say("Doesn't work... it needs something like a thin lever") Say() end)
             end
         end
 
-        function self.OnLook() StartSequence(self.OnCommentLook) end 
+        function self.OnInteract()
+            if self.Jammed then
+                PlaySound("LockedDoor")
+                StartSequence(function() Say("the drawer is stuck") Say() end)
+            else
+                if not IsEntityInScene("Wallet", "Inventory") then
+                    StartSequence(self.OnWalletFound)
+                else
+                    StartSequence(self.OnCommentEntry)
+                end
+            end
+        end
+
         return self
         end)()
     }, -- RBedTable
@@ -370,17 +455,21 @@ return {
         function self.OnConstruct() return { NameId = "GuestBed",  NameView = "Bed", Pos = { x = 405, y = 226 }, Size = { Width = 158, Height = 143 }, Clickable = false} end
         function self.OnCommentEntry() Say("\nI don't want to go back there\nI've rested enough.", 5.0) Say() end
         function self.OnPhoneFound()
-            Say("\nLet me bend down to see what's underneath the bed...", 5.0) 
-            PickUp("Phone", 2)
-            Say("\nHey my phone is here!", 3.0)
+            PickUp("Phone")
+            PickUp("Battery", 2)
+            Say("\nOh my phone pieces are down here!", 3.0)
             Say("",0.5)
-            IntroWakeup.CountItem()
+            --IntroWakeup.CountItem()
         end
-        function self.OnCommentLook() Say("\njust a normal bed, nothing more", 3.0) Say() end
         function self.OnInteract()
-            StartSequence(self.OnCommentEntry) 
-        end 
-                
+            if not IsEntityInScene("Phone", "Inventory") then
+                StartSequence(self.OnPhoneFound)
+            else
+                StartSequence(self.OnCommentEntry)
+            end
+        end
+
+        function self.OnCommentLook() Say("\njust a normal bed, nothing more", 3.0) Say() end
         function self.OnLook()
             if not IsEntityInScene("Phone", "Inventory") then
                 StartSequence(self.OnPhoneFound)

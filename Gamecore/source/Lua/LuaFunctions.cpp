@@ -45,6 +45,7 @@ int Lua_Wait(lua_State* L)
 
     if (lua_isnumber(L, 1))
     {
+        // Wait(duration [, panel])
         duration = (float)lua_tonumber(L, 1);
 
         if (lua_isboolean(L, 2))
@@ -52,7 +53,11 @@ int Lua_Wait(lua_State* L)
     }
     else if (lua_isboolean(L, 1))
     {
+        // Wait(panel [, duration])
         panel = lua_toboolean(L, 1) != 0;
+
+        if (lua_isnumber(L, 2))
+            duration = (float)lua_tonumber(L, 2);
     }
 
     lua_newtable(L);
@@ -489,7 +494,7 @@ int Lua_SetEntityCursor(lua_State* L)
     return 0;
 }
 
-int Lua_SetEntityScene(lua_State* L) 
+int Lua_SetEntityScene(lua_State* L)
 {
     // Expecting: (string entityID, string sceneID)
     const std::string& nameID = luaL_checkstring(L, 1);
@@ -562,8 +567,7 @@ int Lua_SetCurrentScene(lua_State* L)
     // Expecting: (string sceneID)
     const std::string& sceneID = luaL_checkstring(L, 1);
 
-	Graphics::Get().GetWiper().Start(WIPE_DOWN);
-
+	//Graphics::Get().GetWiper().Start(WIPE_DOWN); // Just change it
     Game::Get().Scenes.ChangeCurrent(sceneID);
 
     return 0;

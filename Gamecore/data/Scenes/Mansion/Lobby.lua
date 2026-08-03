@@ -34,6 +34,7 @@ return {
                 Move("HallwayStartReturn", 650)
                 SetClickable("LobbyInitRSide", true)
 
+                Move("Small Table", 160)
                 Move("PianoStart", 520)
                 Move("ClockStart", 1200)
                 Move("PowerBoardStart", 1500)
@@ -49,6 +50,7 @@ return {
                 Move("HallwayStartReturn", 55)
                 SetClickable("LobbyInitRSide", false)
 
+                Move("Small Table", -800)
                 Move("PianoStart", -120)
                 Move("ClockStart", 280)
                 Move("PowerBoardStart", 820)
@@ -88,6 +90,13 @@ return {
         OnInteract = function() LobbyInit.GoRight() PlaySound("SwipeIn") end } 
     }, -- RIGHT SIDE
 
+    { Quad = { OnConstruct = function() return { NameId = "Small Table",
+        Clickable = true, Pos = { x = 160, y = 265 }, Size = { Width = 150, Height = 60 }} end, 
+        OnInteract = function() BlendScene("LobbyTable", 1)  end,
+        OnLook = function() StartSequence(function() Say("There's something on the table", 3.0) Say() end) end } 
+    }, -- TABLE
+
+
     { Quad = { OnConstruct = function() return { NameId = "HallwayStartReturn", NameView = "Hallway return", Cursor = "MUp", 
         Clickable = true, Pos = { x = 650, y = 123 }, Size = { Width = 55, Height = 120 }} end, 
         OnInteract = function() SwipeScene("HallwayInit", "Down") end } 
@@ -96,7 +105,7 @@ return {
     { Quad = { OnConstruct = function() return { NameId = "HouseExit", Cursor = "MDown", 
         Pos = { x = 100, y = 413 }, Size = { Width = 700, Height = 100 }, Clickable = true } end, 
         OnInteract = function() 
-            if IsEntityInScene("MansionKey", "Inventory") then
+            if IsEntityInScene("MainKey", "Inventory") then
                 SwipeScene("MansionSide", "Up") 
             else
                 StartSequence( function() Say("Entry door is closed", 3.0) Say() end)

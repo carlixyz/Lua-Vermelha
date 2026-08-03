@@ -1,14 +1,19 @@
 return {
     { Entity = "PlazaExit", Textures = {
-        {PlazaExitDay = "data/Scenes/Town/PlazaExitDay.jpg"}, 
-        {PlazaExitSunset = "data/Scenes/Town/PlazaExitSunset.jpg"}, 
-        {PlazaExitNight = "data/Scenes/Town/PlazaExitNight.jpg"}, 
-        {PlazaExitLua = "data/Scenes/Town/PlazaExitLua.jpg" }} 
+            {PlazaExitDay = "data/Scenes/Town/PlazaExitDay.jpg"},
+            {PlazaExitSunset = "data/Scenes/Town/PlazaExitSunset.jpg"},
+            {PlazaExitNight = "data/Scenes/Town/PlazaExitNight.jpg"},
+            {PlazaExitLua = "data/Scenes/Town/PlazaExitLua.jpg" }
+        }
     },
 
 
     { Quad = { OnConstruct = function() return { NameId = "Tunnel entry", Cursor = "MUp", Pos = { x = 5, y = 170 }, 
         Size = { Width = 120, Height = 145 }} end, OnInteract = function() SwipeScene("Tunnel", "Down") end } 
+    },
+
+    { Quad = { OnConstruct = function() return { NameId = "Wood board", Pos = { x = 130, y = 180 }, 
+        Size = { Width = 90, Height = 115 }} end, OnInteract = function() SwipeScene("PlazaBoard", "Down") end } 
     },
 
     { Quad = { OnConstruct = function() return { NameId = "ToTheHospital", Cursor = "MDown", Pos = { x = 0, y = 400 }, 
@@ -21,7 +26,7 @@ return {
 
     { Quad = { OnConstruct = function() return { NameId = "PlazaEntryShortcut", Cursor = "MRight", Position = { x = 850, y = 160 },
         Size = { Width = 100, Height = 120 }} end, OnInteract = function() SwipeScene("PlazaPan", "Left") 
-        if PlazaPan.State == 0 then PlazaPan.GoRight() end
+            if PlazaPan.State == 0 then PlazaPan.GoRight() end
         end } 
     }
 
