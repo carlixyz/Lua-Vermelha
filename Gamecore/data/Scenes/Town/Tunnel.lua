@@ -9,7 +9,7 @@ return {
 
     { Clown = (function()
         local self = { FirstTimeTalk = true }
-        function self.OnConstruct() return { Visible = false, Clickable = false, Textures = {
+        function self.OnConstruct() return { Visible = false, Clickable = false, NameView = "Tapioca", Textures = {
                 { ClownFriendly =   "data/Actors/Clown/ClownFriendly.png"   },
                 { ClownClose    =   "data/Actors/Clown/ClownClose.png"      },
                 { ClownNeutral  =   "data/Actors/Clown/ClownNeutral.png"    },

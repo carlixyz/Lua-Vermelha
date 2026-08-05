@@ -14,7 +14,7 @@ return {
         function self.OnConstruct() return { NameId = "WheelAxis", 
         Pos = { x = 273, y = 252 }, Size = { Width = 207, Height = 215 }} end
         function self.OnCommentEntry() Say("Damn, I have a flat tire.", 3.0) Say() end
-        function self.OnCommentLook() Say("I need the tools from the trunk to fix it.", 5.0) Say() end
+        function self.OnCommentLook() Say("I'll need to fix it later.", 5.0) Say() end
         function self.OnInteract() StartSequence(self.OnCommentEntry) end function self.OnLook() StartSequence(self.OnCommentLook) end 
         return self
         end)()

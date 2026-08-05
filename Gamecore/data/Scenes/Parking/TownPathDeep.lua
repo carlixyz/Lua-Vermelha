@@ -3,7 +3,7 @@ return {
         {TownPathDeep = "data/Scenes/Parking/TownPathDeep.jpg"}}
     },
 
-    { Entity = "Goyete", Textures = "data/Scenes/Psycho/Goya.jpg", Visible = false},
+    { Entity = "PicuNicu", Textures = "data/Scenes/Psycho/Picnic.jpg", Visible = false},
 
     { Entity = "Bitten", Textures = "data/Scenes/Psycho/LegInjury.jpg", Visible = false},
 
@@ -39,7 +39,7 @@ return {
             Scale("TownPathDeepBG", 1.3, 0.2)
             Wait(0.2, false)
 
-            SetVisible("Goyete")
+            SetVisible("PicuNicu")
             Wait(0.1, false)
 
             SetVisible("Bitten")
@@ -75,7 +75,7 @@ return {
             Scale("TownViewBG", 1.3, 0)
             Schedule(0.2,"Scale","TownViewBG", "1.0", "50")
             
-            SetVisible("Goyete", false)
+            SetVisible("PicuNicu", false)
             SetVisible("Bitten", false)
             SetVisible("QuickPhotoDevil", false)
             SetVisible("Luna", false)

@@ -101,7 +101,7 @@ return {
     }, -- CellPhone
 
     { IntroWakeup = (function()
-        local self = { TotalItems = 0, FirstTime = true }
+        local self = { TotalItems = 0, FirstTime = true, TooltipDisplayed = true }
         function self.OnConstruct()
         return { 
             Clickable = false, 
@@ -184,7 +184,7 @@ return {
 
             if self.TotalItems == 2 then
                 self.SetItemsInScene(false)
-                print("Called Injury event")
+                --print("Called Injury event")
                         
                 SetAlpha("Shade", 0)
                 --StartSequence(self.OnDoorKnocking)
@@ -220,7 +220,7 @@ return {
             Say("What happened yesterday?\ncan't think straight with this Noggin ache", 6.0)
             Say("I don't remember about anything at all", 4.0)
             Say("Well I guess is not that bad, I can walk fine...", 5.0)
-            Say("But it'll need medical check later", 4.0)
+            Say("But I'll need a clean up to disinfect it", 4.0)
 
             Wait(1.0)
             SetState("IntroWakeup", "IW4")
@@ -262,7 +262,7 @@ return {
 
             MansionView.AnimatePan()
             Fade("MansionView", 1.0, 5)
-            Say("Ada", "We're in the Schwarz Fazenda, part of a huge agricultural company...", 5)
+            Say("Ada", "We're in the Schwarz Residence, part of a huge agricultural farm...", 5)
             SetCurrentScene("HallwayInit")
             Say("Ada", "Located inside the capao seco woods", 4)
             SetVisible("Ilsa")
@@ -368,8 +368,15 @@ return {
     { Quad = (function() 
         local self = {}
         function self.OnConstruct() return { NameId = "vestidor", NameView = "Dresser", Pos = { x = 284, y = 232 }, Size = { Width = 70, Height = 105 }, Clickable = false} end
-        function self.OnCommentEntry() Say("\nThere's a Clothes hanger here\nMight be handy later", 4.0) Say() end
-        function self.OnCommentLook() Say("\nA big dresser with a bunch of old socks and sheets,\nnothing important inside", 4.0) Say() end
+        function self.OnCommentEntry() 
+            Say("\nThere's a Clothes hanger here\nMight be handy later", 4.0)
+            if IntroWakeup.TooltipDisplayed then
+                IntroWakeup.TooltipDisplayed = false
+                Say("\nDrag & drop items onto other items\nor anything that looks useful")
+                Say("",0.2)
+            end
+        end
+        function self.OnCommentLook() Say("\nJust a bunch of socks and sheets,\nnothing important inside", 4.0) Say() end
         function self.OnInteract()
             if not IsEntityInScene("Hanger", "Inventory") then
                 PickUp("Hanger", 2)
@@ -418,7 +425,6 @@ return {
             else
                 Say("\nA bedside table with an old small drawer", 4) 
             end
-            Say()
         end
         
         function self.OnLook() StartSequence(self.OnCommentLook) end 
@@ -427,6 +433,7 @@ return {
             if itemId == "Hanger" then
                 self.Jammed = false
                 RemoveEntity("Hanger")
+                PlaySound("LockedDoor")
                 StartSequence(function() Say("Alright, now it's unjammed..") Say() end)
             else
                 StartSequence(function() Say("Doesn't work... it needs something like a thin lever") Say() end)
@@ -458,24 +465,28 @@ return {
             PickUp("Phone")
             PickUp("Battery", 2)
             Say("\nOh my phone pieces are down here!", 3.0)
-            Say("",0.5)
-            --IntroWakeup.CountItem()
-        end
-        function self.OnInteract()
-            if not IsEntityInScene("Phone", "Inventory") then
-                StartSequence(self.OnPhoneFound)
-            else
-                StartSequence(self.OnCommentEntry)
+            if IntroWakeup.TooltipDisplayed then
+                IntroWakeup.TooltipDisplayed = false
+                Say("\nDrag & drop items onto other items\nor anything that looks useful")
             end
+            Say("",0.2)
         end
-
         function self.OnCommentLook() Say("\njust a normal bed, nothing more", 3.0) Say() end
-        function self.OnLook()
-            if not IsEntityInScene("Phone", "Inventory") then
+
+        function self.OnCheckUnderBed()
+            if not IsEntityInScene("Phone", "Inventory") and not IsEntityInScene("CellPhone", "Inventory") then
                 StartSequence(self.OnPhoneFound)
             else
                 StartSequence(self.OnCommentLook) 
             end
+        end
+
+        function self.OnInteract()
+            self.OnCheckUnderBed()
+        end
+
+        function self.OnLook()
+            self.OnCheckUnderBed()
         end 
         return self
         end)()

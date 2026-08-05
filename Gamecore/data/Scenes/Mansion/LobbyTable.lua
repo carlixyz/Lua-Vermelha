@@ -1,7 +1,5 @@
 return {
 
-
-
     { Quad = (function() local self = { }
         function self.OnConstruct() return { Clickable = true, NameId = "NewsExit", Cursor = "MDown",
             --Pos = { x = 0, y = 410 }, Size = { Width = 920, Height = 100 }} end
@@ -52,7 +50,7 @@ return {
             StartSequence( 
                 function() 
                     Say("It's an old sensasionalist news paper", 3.0) 
-                    Say("I can't see anything important here..", 3.0) 
+                    Say("I can't see anything important in this page..", 3.0) 
                     Say()
                 end
             ) 
@@ -63,7 +61,11 @@ return {
     { Quad = (function() local self = {}
         function self.OnConstruct() return { NameId = "Headline", Clickable = false,
             Pos = { x = 262, y = 119 }, Size = { Width = 320, Height = 235 }} end
-        function self.OnCommentLook() Say("Mhh the headline talks about a missing man", 3.0) Say() end
+        function self.OnCommentLook() 
+            Say("Mhh the headline talks about a missing man", 3.0) 
+            Say("And it sounds like part of a series of homicides", 3.0) 
+            Say() 
+        end
         function self.OnInteract() StartSequence(self.OnCommentLook) end 
         function self.OnLook() StartSequence(self.OnCommentLook) end 
         return self
@@ -84,7 +86,7 @@ return {
     { Quad = (function() local self = {}
         function self.OnConstruct() return { NameId = "Low Row", Clickable = false,
             Pos = { x = 246, y = 355 }, Size = { Width = 473, Height = 87 }} end
-        function self.OnCommentLook() Say("Hidden Nazis, Stolen Brains..\njust a bunch of written nonsense", 5.0) Say() end
+        function self.OnCommentLook() Say("Hidden Nazis, UFOs, A stolen Brain..\nit's just a bunch of written nonsense", 5.0) Say() end
         function self.OnInteract() StartSequence(self.OnCommentLook) end 
         function self.OnLook() StartSequence(self.OnCommentLook) end 
         return self

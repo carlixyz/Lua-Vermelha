@@ -42,7 +42,7 @@ return {
 
     { Entity = "LegInjury", Textures = "data/Scenes/Psycho/LegInjury.jpg", Visible = false},
 
-    { Entity = "Skull.jpg", Textures = "data/Scenes/Psycho/Skull.jpg", Visible = false},
+    { Entity = "Skull", Textures = "data/Scenes/Psycho/Skull.jpg", Visible = true},
 
     { Entity = "SmallEye", Textures = "data/Scenes/Psycho/EyeS.jpg", Visible = false},
     

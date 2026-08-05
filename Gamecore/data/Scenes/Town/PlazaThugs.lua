@@ -172,21 +172,21 @@ return {
 
             Schedule(20, "SetVisible", "LegInjury" )
             Schedule(20.05, "SetVisible", "LegInjury",false)
-            Schedule(20.1, "SetVisible", "LegInjury" )
-            Schedule(20.15, "SetVisible", "LegInjury",false)
-            Schedule(20.2, "SetVisible", "LegInjury" )
-            Schedule(20.25, "SetVisible", "LegInjury",false)
+            Schedule(20.15, "SetVisible", "LegInjury" )
+            Schedule(20.2, "SetVisible", "LegInjury",false)
+            Schedule(20.3, "SetVisible", "LegInjury" )
+            Schedule(20.35, "SetVisible", "LegInjury",false)
 
-            Schedule(25.1, "SetVisible", "Skull" )
-            Schedule(25.15, "SetVisible", "Skull",false)
-            Schedule(25.2, "SetVisible", "Skull" )
-            Schedule(25.25, "SetVisible", "Skull",false)
+            Schedule(25.1, "SetVisible", "Lua" )
+            Schedule(25.15, "SetVisible", "Lua",false)
+            Schedule(25.25, "SetVisible", "Lua" )
+            Schedule(25.3, "SetVisible", "Lua",false)
 
             Schedule(30, "SetVisible", "Goya" )
             Schedule(30.05, "SetVisible", "Goya",false)
 
-            Schedule(35.1, "SetVisible", "Lua" )
-            Schedule(35.15, "SetVisible", "Lua",false)
+            Schedule(35.1, "SetVisible", "Skull" )
+            Schedule(35.15, "SetVisible", "Skull",false)
 
             Wait(40, false)
             Flame.OnStopAnimation()

@@ -26,7 +26,11 @@ return {
             end
         end
 
-        function self.OnLookComment() Say("Thiago","Damn, where're my car keys?", 5.0) Say() end
+        function self.OnLookComment() 
+            Say("Thiago","Damn, where're my car keys?", 3.0)
+            Say("Thiago","I'll need to look for them later", 4.0) 
+            Say() 
+        end
         function self.OnLook()
             StartSequence(self.OnLookComment) 
         end

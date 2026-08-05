@@ -25,12 +25,14 @@ return {
     { Molotov = { OnConstruct = function() return { Textures = "data/Scenes/Inventory/Molotov.png" } end,
         OnLook = function() StartSequence( function() Say("It need some fire for ignition", 5.0) Say() end) end,
         OnCombine = function(itemId)
-            if not DrunkMan.Invited then
-                StartSequence( function() Say("Thiago", "I won't do that without reason", 4.0) end)
-            elseif itemId == "Matches" or itemId == "Lighter" then 
-                StartSequence( function() Say("Thiago", "Let's hope our country never gives us a reason to use one of these", 6.0) end)
-                RemoveEntity("Molotov")
-                PickUp("MolotovFire", 2)
+            if itemId == "Matches" or itemId == "Lighter" then 
+                if DrunkMan.Invited then
+                    StartSequence( function() Say("Thiago", "Let's hope our country never gives us a reason to use one of these", 6.0) end)
+                    RemoveEntity("Molotov")
+                    PickUp("MolotovFire", 2)
+                else
+                    StartSequence( function() Say("Thiago", "I won't do that without a reason", 4.0) end)
+                end
             end
         end
         }

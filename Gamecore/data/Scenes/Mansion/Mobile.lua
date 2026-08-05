@@ -1,7 +1,7 @@
 return {
 
     { Quad = (function() 
-        local self = { AnimID = 0, AnimFrame = 0, FramesCount = 7, Viewed = false }
+        local self = { AnimID = 0, AnimFrame = 0, FramesCount = 12, Viewed = false }
         function self.OnConstruct() return { Clickable = true, NameId = "CellPhone Exit", Cursor = "MDown",
             Pos = { x = 0, y = 350 }, Size = { Width = 920, Height = 160 }} end
 
@@ -24,7 +24,7 @@ return {
 
         function self.OnEnter()
             if self.AnimID == 0 then
-                self.AnimID = ScheduleRepeat(0.75, "AnimateMobile", "CancelMobileAnim")
+                self.AnimID = ScheduleRepeat(0.5, "AnimateMobile", "CancelMobileAnim")
             end
         end
 

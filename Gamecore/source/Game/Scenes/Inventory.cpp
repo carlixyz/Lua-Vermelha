@@ -64,6 +64,9 @@ void Inventory::LayoutSlots()
 void Inventory::OnDrag(int index)
 {
     DragIndex = index;
+    DragTargetIndex = -1;
+    DragWorldTarget = nullptr;
+
     SlotInfo& slot = Slots[index];
     slot.Dragging = true;
     slot.Returning = false;
@@ -89,41 +92,37 @@ void Inventory::StartReturn(int index)
 //--------------------------------
 void Inventory::OnDrop(int index)
 {
-    const Vector2 mouse = GetMousePosition();
     Entity* sourceItem = Entities[index];
 
     if (!sourceItem)
     {
         StartReturn(index);
         DragIndex = -1;
+        DragTargetIndex = -1;
+        DragWorldTarget = nullptr;
         return;
     }
 
-    // 1) First priority: dropped onto another item inside inventory
-    int targetIndex = FindItemAtPoint(mouse, index);
-    if (targetIndex != -1)
+    if (!LuaManager::Get().IsSequenceRunning())
     {
-        if (!LuaManager::Get().IsSequenceRunning())
-            if (Entity* targetItem = Entities[targetIndex])
-                targetItem->OnCombine(sourceItem->GetID());
-
-        StartReturn(index);
-        DragIndex = -1;
-        return;
-    }
-
-    // 2) Otherwise try world target in current scene
-    if (WorldHitTest)
-    {
-        if (Entity* worldTarget = WorldHitTest())
+        // Dropped onto another inventory item
+        if (DragTargetIndex != -1)
         {
-            worldTarget->OnCombine(sourceItem->GetID());
+            if (Entity* targetItem = Entities[DragTargetIndex])
+                targetItem->OnCombine(sourceItem->GetID());
+        }
+        // Otherwise, dropped onto a world entity
+        else if (DragWorldTarget)
+        {
+            DragWorldTarget->OnCombine(sourceItem->GetID());
         }
     }
 
-    // 3) In all cases, animate back to slot
     StartReturn(index);
+
     DragIndex = -1;
+    DragTargetIndex = -1;
+    DragWorldTarget = nullptr;
 }
 
 
@@ -189,10 +188,25 @@ void Inventory::OnUpdate(float dt)
     if (DragIndex != -1)
     {
         SlotInfo& slot = Slots[DragIndex];
+
         if (slot.Dragging)
         {
             slot.DragPos.x = mouse.x - slot.DragOffset.x;
             slot.DragPos.y = mouse.y - slot.DragOffset.y;
+
+            // Reset previous-frame targets
+            DragTargetIndex = -1;
+            DragWorldTarget = nullptr;
+
+            if (!LuaManager::Get().IsSequenceRunning())
+            {
+                // First check for another inventory item
+                DragTargetIndex = FindItemAtPoint(mouse, DragIndex);
+
+                // If there is no inventory item, check the current world scene
+                if (DragTargetIndex == -1 && WorldHitTest)
+                    DragWorldTarget = WorldHitTest();
+            }
 
             if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON))
                 OnDrop(DragIndex);
@@ -284,10 +298,22 @@ void Inventory::OnRender()
         const Rectangle src = { 0.0f, 0.0f, (float)tex.width, (float)tex.height };
 
         // Dragged or returning icons ignore ItemsAlpha and stay fully visible.
-        float iconAlphaFactor = 1.0f;
+        float iconAlphaFactor = ItemsAlpha;
 
-        if (i != DragIndex && !slot.Returning)
-            iconAlphaFactor = ItemsAlpha;
+        if (slot.Returning)
+        {
+            // Returning items remain fully visible.
+            iconAlphaFactor = 1.0f;
+        }
+        else if (i == DragIndex)
+        {
+            const bool hasValidTarget =
+                DragTargetIndex != -1 ||
+                DragWorldTarget != nullptr;
+
+            // Semi-transparent while freely dragging, fully opaque over a possible interaction.
+            iconAlphaFactor = hasValidTarget ? 1.0f : 0.5f;
+        }
 
         if (iconAlphaFactor <= 0.01f)
             continue; // completely invisible, skip
@@ -300,30 +326,25 @@ void Inventory::OnRender()
     }
 
     // -------------------------------
-    // Cursor & label for inventory zone only
+    // Cursor & label
     // -------------------------------
-    const float panelTop = 0.0f;
-    const float panelBottom = (float)PanelHeight;
+    Entity* labelTarget = nullptr;
 
-    int labelIndex = -1;
-    if (DragIndex != -1)       labelIndex = DragIndex;
-    else if (HoverIndex != -1) labelIndex = HoverIndex;
+    if (DragTargetIndex != -1)
+        labelTarget = Entities[DragTargetIndex];
+    else if (DragIndex == -1 && HoverIndex != -1)
+        labelTarget = Entities[HoverIndex];
 
-    const bool mouseInPanel = (mouseY >= panelTop && mouseY <= panelBottom);
-    const bool uiVisible = (PanelAlpha > 0.05f || ItemsAlpha > 0.05f || DragIndex != -1 || anyReturning);
+    const bool inventoryVisible = PanelAlpha > 0.05f || ItemsAlpha > 0.05f;
 
-    if (uiVisible && mouseInPanel)
-        if (labelIndex >= 0 && labelIndex < entityCount && Entities[labelIndex])
-        {
-            DrawTexture(GetTexture("MB"), (int)mouse.x, (int)mouse.y, WHITE);
+    if (!inventoryVisible || mouseY > (float)PanelHeight)
+        return;
 
-            DrawTextEx( GetFont("Noto"), Entities[labelIndex]->GetInfo().NameId.c_str(),
-                { mouse.x + 12.0f, mouse.y + 24.0f }, 16.0f, 1.0f, WHITE );
-        }
-        else
-            DrawTexture(GetTexture("MA"), (int)mouse.x, (int)mouse.y, WHITE);
+    DrawTexture( GetTexture(labelTarget ? "MB" : "MA"), (int)mouse.x, (int)mouse.y, WHITE );
 
-    // Outside panel, Inventory draws nothing; world cursor logic stays in charge.
+    if (labelTarget)
+        DrawTextEx( GetFont("Noto"), labelTarget->GetID().c_str(),
+            { mouse.x + 12.0f, mouse.y + 24.0f }, 16.0f, 1.0f, WHITE );
 }
 
 void Inventory::BindWorldScene(GameScene** currentScenePtr)

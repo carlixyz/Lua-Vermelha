@@ -94,6 +94,7 @@ return {
 
     { Quad = { OnConstruct = function() return { NameId = "Thugs", Clickable = false, -- Cursor = "MUp",
         Pos = { x = 580, y = 200 }, Size = { Width = 320, Height = 235 }} end,
+        --OnEnter = function() SetClickable("Thugs") end,
         OnEnter = function() if DrunkMan.Sleeping then SetClickable("Thugs") else SetClickable("Thugs", false) end end,
         OnLook = function() StartSequence( function() Say("Who're those people? Something's happening there..", 5.0) Say() end) end,
         OnInteract = function() BlendScene("PlazaThugs", 1.0)  end } -- for testing only

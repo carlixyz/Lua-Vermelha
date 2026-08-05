@@ -72,6 +72,9 @@ private:
     int   HoverIndex                = -1;
     int   DragIndex                 = -1;
 
+    int DragTargetIndex = -1;
+    Entity* DragWorldTarget = nullptr;
+
     bool  Enabled                   = false;
 
     WorldHitTestFn WorldHitTest;

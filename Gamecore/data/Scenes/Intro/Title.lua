@@ -21,7 +21,7 @@ return {
                             Say("Come back later")
                             self.DoOptionsMenu()
                         else
-                            Say("So let's jump to the first chapter ", 1.0)
+                            Say("So let's jump to the first chapter ", 1.1)
                             --SetThunder(false)
                             SetAlpha("Dark", 1)
                             BlendScene("GuestRoom")

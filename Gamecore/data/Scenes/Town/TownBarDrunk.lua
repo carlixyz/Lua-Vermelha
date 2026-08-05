@@ -4,7 +4,6 @@ function StopDrunkTalk()
 end
 
 return {
-
     { Quad = (function()
         local self = {
             Invite = false,
@@ -36,8 +35,8 @@ return {
         return {
             NameId = "DrunkConversation",
             NameView = "BB Torres",
-            Pos = { x = 225, y = 0 },
-            Size = { Width = 600, Height = 370 }
+            Pos = { x = 240, y = 80 }, 
+            Size = { Width = 500, Height = 290 }
         }
     end
 
@@ -51,6 +50,7 @@ return {
             --SetEntityScene("Beer", "BarDrunk")
             RemoveEntity("Beer")
             self.Invite = true
+            print("DrunkMan.Invited")
             DrunkMan.Invited = true
             SetState("DrunkMan","DrunkHappy")
             StartSequence(self.OnOpenTalk)
@@ -239,8 +239,9 @@ return {
 
     -- ABOUT THIS PLACE
     function self.TalkPlace()
+
         Choice(
-            { "Tell me about the Capao Seco Valley", function() self.TalkValley() end },
+            { "Tell me more about the Capao Seco Valley", function() self.TalkValley() end },
 
             { self.FestivalUnlocked, "What's wrong with Lua Vermelha?", function() self.TalkFestival() end },
 
@@ -427,7 +428,7 @@ return {
         SetState("DrunkMan", "DrunkTalk")
         --Wobble("DrunkMan", 20.0, 1.0)
         Shake("DrunkMan", 20.0, 1.0)
-        Say("BB Torres", "What...", 3.0)
+        Say("BB Torres", "What..", 3.0)
         DrunkMan.StartTalk()
 
         Say("BB Torres", "How many nights?", 3.0)
@@ -440,8 +441,8 @@ return {
 
         Say("BB Torres", "Oh, such a lucky strike", 3.0)
         DrunkMan.StartTalk()
-        Say("BB Torres", "There's an old story here in Capao seco", 3.0)
-        Say("BB Torres", "About the family this valley belongs to", 3.0)
+        Say("BB Torres", "There're things we shouldn't talk about", 3.0)
+        Say("BB Torres", "Like the family this valley belongs to", 3.0)
         Schedule(1.5, "StopDrunkTalk" )
         Schedule(2.0, "SetState", "DrunkMan", "DrunkIdle")
         Say("BB Torres", "They were here before the roads\nBefore the civilization", 5.0)
@@ -451,7 +452,7 @@ return {
         DrunkMan.StartTalk()
         Say("BB Torres", "The horror can't be understood", 4.0)
         Say("BB Torres", "Madness, biker gangs, suicide", 3.0)
-        Say("BB Torres", "Smugglers, natural abomination, Dopplegangers", 3.0)
+        Say("BB Torres", "Smugglers, natural abomination, doppleganger", 3.0)
         Say("BB Torres", "Things nobody has names for", 5.0)
         DrunkMan.StopTalk()
 
@@ -485,7 +486,7 @@ return {
         DrunkMan.StartTalk()
         Say("BB Torres", "The red moon is coming", 3.0)
         Schedule(0.5, "StopDrunkTalk" )
-        Schedule(2.5, "SetState", "DrunkMan", "DrunkDrinks" )
+        Schedule(2, "SetState", "DrunkMan", "DrunkDrinks" )
         Say("BB Torres", "Drink with me", 3.0)
         --SetState("DrunkMan","DrunkDrinks")
 
@@ -561,7 +562,7 @@ return {
 
     function self.OnInteract()
         if not self.Invite then
-            StartSequence( function() Say("\n...", 3.0) Say() end )
+            StartSequence( function() Say("\nSorry I can't talk, my throat is too dry..", 3.0) Say("",0.1) end )
         elseif self.Finished then
             StartSequence(self.TalkFinished)
         end
@@ -614,7 +615,7 @@ return {
         }
 
         function self.OnConstruct() 
-            return { Textures = {
+            return { Clickable = false, Textures = {
                 {DrunkStart = "data/Scenes/Town/BBThinkingEmpty.jpg"},
                 {DrunkIdle = "data/Scenes/Town/BBThinking.jpg"},
                 {DrunkHappy = "data/Scenes/Town/BBHappy.jpg"}, 
