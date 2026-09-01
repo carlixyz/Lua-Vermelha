@@ -12,6 +12,8 @@ return {
         function self.OnCommentLook() Say("That place looks like a small spot for praying", 5.0) Say() end
         function self.OnInteract() SwipeScene("CemeteryGate", "Right") end 
         function self.OnLook() StartSequence(self.OnCommentLook) end 
+        function self.OnInit() self.OnEnter() end
+        function self.OnEnter() PlaySound("Birds") end 
         return self
         end)()
     },

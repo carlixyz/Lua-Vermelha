@@ -39,6 +39,7 @@ public:
 	void PlayMusic(const Music& soundTrack, bool isLooping = true);
 
 	void StopMusic();
+	void FadeMusic(float targetVolume);
 	void FadeMusicIn();
 	void FadeMusicOut();
 	void SetMusicVol(float volume);

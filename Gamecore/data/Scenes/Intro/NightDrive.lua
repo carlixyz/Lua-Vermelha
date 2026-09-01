@@ -32,6 +32,11 @@ local function OnEnter()
 end
 
 function OnNightDriveReady()
+    
+    if not IsThreadStarted("Intro") then
+        StartThread("Intro")
+    end
+
     Fade("Panel", 0.6, 5)
     StartSequence(OnNightDriveTalk) --StartSequence("OnNightDriveTalk") --StartSequence(Drive.OnNightDriveTalk)
 end
@@ -43,31 +48,6 @@ function AlternateIndicator()
 end
 
 
-
-local function OnScreenInput()
-    --print("called NightDrive.OnScreenInput")
-
-    --Drive.Clicks = Drive.Clicks + 1
-   
-    --if Drive.Initialized == true then
-    --  return
-    --end
-
-    -- simplest: text + position
-    --Toast("Door is locked", 80, 420)
-
-    -- specify duration
-    --Toast("Objective updated", 80, 420, 3.0)
-
-    -- full control: duration, size, RGBA
-    --Toast("Quest complete!", 80, 420, 3.0, 28, 255, 255, 100, 255)
-
-    -- simplest (uses default position: centered)
-    --Title("The Mansion")
-
-    -- full control (duration, size, position, RGBA)
-    -- Title("The Mansion", 3.5, 64.0, 0, 0, 255, 128, 128, 255)
-end
 
 function OnNightDriveTalk()
 

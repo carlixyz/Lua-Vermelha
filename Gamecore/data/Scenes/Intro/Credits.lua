@@ -21,9 +21,17 @@ return {
             PushCredit("General code support", "Chat-GPT")
             PushCredit(4)
 
+            PushCredit("Soundtrack music")
+            PushCredit("We, the remnants of a dream", "Takeaki Watanabe (Watson from MusMus)")
+            PushCredit("Wood note", "Takeaki Watanabe ")
+            PushCredit("MusMus-BGM-005", "Takeaki Watanabe")
+            PushCredit(4)
+
             PushCredit("Sound effects")
             PushCredit("Dark Crime Piano Drama (30s)", "Universfield")
-            PushCredit("banging-on-door.mp3", "Universfield")
+            PushCredit("banging-on-door", "Universfield")
+            PushCredit("Rustling Bushes Dried Leaves", "floraphonic")
+
             PushCredit("#Fade('7Title', 0.2, 10)")
             PushCredit(4)
             PushCredit("Thank you for playing")

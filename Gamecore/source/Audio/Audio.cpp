@@ -94,9 +94,8 @@ void Audio::PlayMusic(const Music& soundTrack, bool isLooping)
 
     if (IsMusicValid(SoundTrack))
     {
+        SetMusicVolume(SoundTrack, MusicVolumeNow);
         PlayMusicStream(SoundTrack);
-        if (IsMusicFading || MusicVolumeNow <= 0.0f)
-            FadeMusicIn();
     }
 }
 
@@ -106,6 +105,22 @@ void Audio::StopMusic()
         return;
 
     StopMusicStream(SoundTrack);
+}
+
+void Audio::FadeMusic(float targetVolume)
+{
+    if (Game::Get().IsAudioDisabled())
+        return;
+
+    targetVolume = Clamp(targetVolume, 0.0f, 1.0f);
+
+    if (targetVolume > 0.0f && !IsMusicStreamPlaying(SoundTrack))
+        PlayMusicStream(SoundTrack);
+
+    MusicVolumeStart = MusicVolumeNow;
+    MusicVolumeEnd = targetVolume;
+    CurrentTime = 0.0f;
+    IsMusicFading = true;
 }
 
 void Audio::FadeMusicIn()
@@ -162,16 +177,20 @@ void Audio::Update()
     if (IsMusicFading)
     {
         CurrentTime += GetFrameTime();
-        MusicVolumeNow = EaseCubicOut(CurrentTime, MusicVolumeStart, MusicVolumeEnd - MusicVolumeStart, TotalTime);
-        //MusicVolumeNow = EaseLinearNone(CurrentTime, MusicVolumeNow, MusicVolumeEnd - MusicVolumeNow, TotalTime);
-        IsMusicFading = CurrentTime > TotalTime ? false : true;
+
+        MusicVolumeNow = EaseCubicOut( CurrentTime, MusicVolumeStart, MusicVolumeEnd - MusicVolumeStart, TotalTime);
+
+        if (CurrentTime >= TotalTime)
+        {
+            MusicVolumeNow = MusicVolumeEnd;
+            IsMusicFading = false;
+
+            if (MusicVolumeEnd <= 0.0f)
+                StopMusicStream(SoundTrack);
+        }
 
         SetMusicVolume(SoundTrack, MusicVolumeNow);
-
-        if (!IsMusicFading && MusicVolumeNow < 0.0f)
-            StopMusicStream(SoundTrack);
     }
-
 
     UpdateMusicStream(SoundTrack);
 }

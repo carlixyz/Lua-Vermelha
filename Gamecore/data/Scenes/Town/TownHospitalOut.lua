@@ -10,11 +10,12 @@ return {
             Pos = { x = 330, y = 203 }, Size = { Width = 365, Height = 143 }} end, 
         OnLook = function() StartSequence( function() Say("So, that must be the Hosptial that Ada told me.") Say() end) end,
         OnInteract = function()
-            if IsEntityInScene("Alcohol", "Inventory") then
-                StartSequence( function() 
+            if IsEntityInScene("Alcohol", "Inventory") or GetFlag("VisitedMedic") then
+                StartSequence( function()
                     Say("Nah I've already been to the doctor", 4.0) Say("enough medicine for me today") Say() 
                 end )    
             else
+                SetFlag("VisitedMedic", true)
                 SwipeScene("HospitalInside", "Down") 
             end
         end } 

@@ -9,7 +9,7 @@ return {
 
     { Quad = { OnConstruct = function() return { NameId = "GoToTunnelExit", Cursor = "MUp", Pos = { x = 0, y = 70 },
         Size = { Width = 165, Height = 300 }} end, OnInteract = function()
-            if DrunkMan.Sleeping then
+            if GetFlag("DrunkSlept") then
                 StartSequence( function() Say("It's late, I'll should return back to Schwarz Residence", 5.0) Say() end)
             else
                 SwipeScene("PlazaExit", "Down")

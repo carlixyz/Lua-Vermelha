@@ -92,6 +92,13 @@ function PickUp(item, inventoryDelay)
     end
 end
 
+function CheckAndCloseThread(id) 
+    if GetCurrentThread() == id and not IsCurrentThreadCompleted() then
+        SetCurrentThreadCompleted()
+    end
+end
+
+
 -- Core executor
 local function run_action(a)
     if type(a) == "function" then

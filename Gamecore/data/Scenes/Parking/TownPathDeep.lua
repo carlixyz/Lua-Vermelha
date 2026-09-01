@@ -35,6 +35,8 @@ return {
 
         function self.OnSequence()
             self.SawCinematic = true
+
+            PlaySound("Resonance")
             
             Scale("TownPathDeepBG", 1.3, 0.2)
             Wait(0.2, false)
@@ -103,6 +105,22 @@ return {
             else
                 Say("So this looks like the town path that Ada told me", 5.0) Say()
             end
+        end
+
+        function self.OnInit() 
+            StopBirds()
+            StartSequence(function()
+                Wait(false)
+                PlaySound("Bushes")
+                Say("...", 1)
+                Say("Thiago", "What was that?", 3)
+                Say("Thiago", "Sounds like an animal or something running..")
+                PlayBirds() 
+            end)
+        end
+
+        function self.OnEnter()
+            PlayBirds()
         end
 
         function self.OnLook() StartSequence(self.OnCommentLook) 

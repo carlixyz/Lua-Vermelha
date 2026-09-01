@@ -37,16 +37,19 @@ return {
 
         return self
         end)()
-    },
+    }, -- CAR BACK
 
 
     { Quad = { OnConstruct = function() return { NameId = "Car front", Pos = { x = 610, y = 300 }, 
         Size = { Width = 160, Height = 170 }} end, OnInteract = function() SwipeScene("Car", "Down") end } 
-    },
+    }, -- CAR WHEEL
 
     { Quad = { OnConstruct = function() return { NameId = "TownPathLeft", NameView = "Left\nSide", Cursor = "MLeft",
         Clickable = true, Pos = { x = 0, y = 80 }, Size = { Width = 60, Height = 436 }} end, 
-        OnInteract = function() SwipeScene("MansionSide", "Right") PlaySound("SwipeOut") end } 
+        OnInteract = function() 
+            SwipeScene("MansionSide", "Right") 
+            PlaySound("SwipeOut") 
+        end } 
     }, -- LEFT SIDE
 
     { Quad = { OnConstruct = function() return { NameId = "TownPathRight", NameView = "Right\nSide", Cursor = "MRight",
@@ -55,7 +58,7 @@ return {
     }, -- RIGHT SIDE
 
     { Quad = { OnConstruct = function() return { NameId = "Woods Path", Pos = { x = 215, y = 55 },  Cursor = "MUp",
-        Size = { Width = 175, Height = 315 }} end, OnInteract = function() SwipeScene("TownPathDeep", "Down") end } 
+        Size = { Width = 175, Height = 315 }} end, OnInteract = function() StopBirds() SwipeScene("TownPathDeep", "Down") end } 
     }
 
 }

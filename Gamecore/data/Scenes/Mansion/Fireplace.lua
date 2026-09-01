@@ -49,7 +49,7 @@ return {
     { MatchesHotspot = { OnConstruct = function()  return { NameView = "Matches", Clickable = true, 
         Pos = { x = 230, y = 230 }, Textures = "data/Scenes/Mansion/LobbyMatches.png"} end, 
         OnInteract = function()
-            StartSequence(function() Say("These might be useful later", 3.0) PickUp("Matches", 2)
+            StartSequence(function() Say("These might be useful later", 3.0) PlaySound("Great") PickUp("Matches", 2)
             SetVisible("MatchesHotspot", false) SetClickable("MatchesHotspot", false) Say() end) end,
         OnLook = function()  StartSequence(function() Say("A set of matches to make fire", 3.0) Say() end) end } 
     }, -- MATCHES HOTSPOT

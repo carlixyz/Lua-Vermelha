@@ -212,6 +212,8 @@ private:
             scene = new AnimeScene(&Assets::Get().MansionIntro(), []() { Assets::Get().PreloadMansionIntroAnimation(); });
         else if (name == "Inventory")
             scene = new Inventory();
+        else if (name == "Status")
+            scene = new Status();
         else if (name == "Credits")
             scene = new Credits();
 

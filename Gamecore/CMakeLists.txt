@@ -12,7 +12,7 @@ file(GLOB_RECURSE SOURCES
    source/*.cpp
 )
 
-add_executable(${PROJECT_NAME} ${SOURCES} )
+add_executable(${PROJECT_NAME} ${SOURCES})
 
 if (MSVC)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /STACK:8388608 /NODEFAULTLIB:MSVCRT")
@@ -55,8 +55,8 @@ if(EMSCRIPTEN)
       "--preload-file data/NotoSansUI-Regular.ttf"
       "-s EXPORTED_FUNCTIONS=['_main']"
       "-s EXPORTED_RUNTIME_METHODS=['ccall','cwrap','HEAPF32']"
-      "--shell-file minshell.html"
-      #"--shell-file shell.html"
+      #"--shell-file minshell.html"
+      "--shell-file shell.html"
       "-DPLATFORM_WEB"
     )
 

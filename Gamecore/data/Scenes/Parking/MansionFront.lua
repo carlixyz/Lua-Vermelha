@@ -17,7 +17,7 @@ return {
     },
 
     { Quad = { OnConstruct = function() return { NameId = "Mansion Entry", Cursor = "MUp",
-        Pos = { x = 600, y = 100 },Size = { Width = 200, Height = 280 }} end, 
-        OnInteract = function() SwipeScene("Lobby", "Down") end } 
+        Pos = { x = 600, y = 100 }, Size = { Width = 200, Height = 280 }} end, 
+        OnInteract = function() PlaySound("DoorOpen") SwipeScene("Lobby", "Down") FadeMusic(1) end } 
     }
 }

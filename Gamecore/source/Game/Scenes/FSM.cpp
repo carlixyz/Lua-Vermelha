@@ -17,29 +17,22 @@ bool FSM::Init()
 	if (ScenesMap.empty())
 		return false;
 
-	if (ScenesMap.contains(factory.GetStartSceneID()))
+	auto InitScene = [&](const std::string& id, GameScene*& target)
 	{
-		if (GameScene* startScene = ScenesMap.at(factory.GetStartSceneID()))
-			if (CurrentScene = startScene)
-				CurrentScene->Initialize();
-	}
-	else std::cout << "[FSM] StartScene '" << factory.GetStartSceneID() << "' not found. Falling back.\n";
+		if (ScenesMap.contains(id))
+			if (target = ScenesMap.at(id))
+				target->Initialize();
+		else
+			std::cout << "[FSM] " << id << " scene not found!\n";
+	};
 
-	if (ScenesMap.contains(factory.GetSharedSceneID()))
-	{
-		if (GameScene* sharedScene = ScenesMap.at(factory.GetSharedSceneID()))
-			if (SharedScene = sharedScene)
-				SharedScene->Initialize();
-	}
-	else std::cout << "[FSM] SharedScene '" << factory.GetSharedSceneID() << "' not found!\n";
+	InitScene(factory.GetStartSceneID(), CurrentScene);
 
-	if (ScenesMap.contains(SceneID::Credits))
-	{
-		if (GameScene* creditScene = ScenesMap.at(SceneID::Credits))
-			if (CreditsScene = creditScene)
-				CreditsScene->Initialize();
-	}
-	else std::cout << "[FSM] Credits scene not found!\n";
+	InitScene(factory.GetSharedSceneID(), SharedScene);
+
+	InitScene(SceneID::Status, StatusScene);
+
+	InitScene(SceneID::Credits, CreditsScene);
 
 	if (ScenesMap.contains(SceneID::Inventory))
 	{
@@ -93,6 +86,12 @@ bool FSM::Deinit()
 	ScenesMap.clear();
 
 	ScenesArray.clear();
+
+	CurrentScene = nullptr;
+	SharedScene = nullptr;
+	InventoryScene = nullptr;
+	CreditsScene = nullptr;
+	StatusScene = nullptr;
 
 	return ScenesMap.empty();
 }
@@ -216,25 +215,30 @@ void FSM::ChangeCurrent(const std::string& sceneId)
 
 	GameScene* nextScene = ScenesMap[sceneId];
 
-	if (nextScene == nullptr)
+	if (!nextScene || nextScene == CurrentScene)
 		return;
 
-	if (nextScene == CurrentScene)
-		return;
+	//GameScene* previousScene = CurrentScene;
+	//CurrentScene = nextScene;
+	//SceneID = sceneId;
 
 	if (!nextScene->IsInitialized())	// So if We had initialized this scene then just return to it
 		nextScene->Initialize();
 	else
 		nextScene->OnEnter();
 
-	if (CurrentScene)
-		CurrentScene->OnExit();
+	if (CurrentScene)			//if (previousScene)
+		CurrentScene->OnExit();		//	previousScene->OnExit();
+
 	
 	for (int i = 0; i < ScenesArray.size(); i++)
-		if (ScenesArray[i] == nextScene) { SceneIndex = i; break; }
+		if (ScenesArray[i] == nextScene) 
+		{ 
+			SceneIndex = i; 
+			break; 
+		}
 
 	SceneID = sceneId;
-
 	CurrentScene = nextScene;
 }
 

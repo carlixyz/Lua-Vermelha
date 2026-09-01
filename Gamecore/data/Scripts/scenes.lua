@@ -65,8 +65,10 @@ Scenes = {
 
     Credits = "data/Scenes/Intro/Credits.lua",
 
+    Status = "data/Scenes/Intro/Status.lua",
+
     -----------------------------------------------------------------------------------------------------------------------------
-    -- FIRST PATH -> SMALL TOWN BOY
+    -- FIRST PATH -> MAD WORLD
     -----------------------------------------------------------------------------------------------------------------------------
 
     GuestRoom = "data/Scenes/Mansion/RoomGuest.lua",
@@ -100,8 +102,6 @@ Scenes = {
     RoadPath = "data/Scenes/Parking/RoadPath.lua", --
 
     CemeteryGate = "data/Scenes/Parking/CemeteryGate.lua", --
-
-    Cemetery = "data/Scenes/Parking/Cemetery.lua", --
 
     Car = "data/Scenes/Parking/Car.lua",
 
@@ -142,6 +142,102 @@ Scenes = {
     BarDrunk = "data/Scenes/Town/TownBarDrunk.lua",
 
     -----------------------------------------------------------------------------------------------------------------------------
+    -- EXTRA PATH -> BLINDING LIGHTS
+    -----------------------------------------------------------------------------------------------------------------------------
+
+    BlindingLight = "data/Scenes/Mansion/BlindingLight.lua",
+
+    --HallwayNight = "data/Scenes/Mansion/HallwayNight.lua", -- enables Ilsa talk in Lobby (too late no uncle)
+
+    --FinalMorph = "data/Scenes/Mansion/FinalMorph.lua",
+
+
+    -----------------------------------------------------------------------------------------------------------------------------
+    -- LEFT PATH -> CRIME WAVE
+    -----------------------------------------------------------------------------------------------------------------------------
+
+    Jail = "data/Scenes/Town/Jail.lua", -- <<<<
+
+    --JailVent = "data/Scenes/Town/JailVent.lua",
+
+    --JailTile = "data/Scenes/Town/JailTile.lua",
+
+    --Apologies = "data/Scenes/Town/Apologies.lua",
+
+    --OverlookShortcut = "data/Scenes/Town/OverlookShortcut.lua",
+    
+    --ViktorRoom = "data/Scenes/Mansion/ViktorRoom.lua",
+
+    --TownCarnival = "data/Scenes/Town/TownCarnival.lua",
+    
+    -----------------------------------------------------------------------------------------------------------------------------
+    -- RIGHT PATH -> WOOD MORNING
+    -----------------------------------------------------------------------------------------------------------------------------
+
+    WoodMorningIntro = "data/Scenes/OverWatch/WoodMorningIntro.lua",
+
+    --WoodMorning = "data/Scenes/OverWatch/WoodMorning.lua",
+    
+    --CorralOutside = "data/Scenes/OverWatch/CorralOutside.lua",
+
+    --CorralInside = "data/Scenes/OverWatch/CorralInside.lua",
+
+    --OverlookPath = "data/Scenes/OverWatch/OverlookPath.lua",
+
+    --Overlook = "data/Scenes/OverWatch/Overlook.lua",
+
+    -----------------------------------------------------------------------------------------------------------------------------
+    -- DREAM SEQ PATH -> GHOSTS AGAIN
+    -----------------------------------------------------------------------------------------------------------------------------
+
+    --Dreamscape = "data/Scenes/Parking/Dreamscape.lua",
+
+    --DreamCar = "data/Scenes/Parking/DreamCar.lua",
+
+    --DreamGate = "data/Scenes/Parking/DreamGate.lua",
+
+    --DreamHouse = "data/Scenes/Parking/DreamHouse.lua",
+
+    --DreamRest = "data/Scenes/Parking/DreamRest.lua",
+
+    --BarbequeWake = "data/Scenes/Mansion/BarbequeWake.lua", -- Talk with Ada, Ilsa, William (Play darts?) uncle EVENT
+
+    --UncleRemo = "data/Scenes/Mansion/UncleRemo.lua", -- dialog puzzle to achieve key
+
+    Cemetery = "data/Scenes/Parking/Cemetery.lua", --
+
+    --FinalReveal = "data/Scenes/Parking/FinalReveal.lua",
+
+
+    -----------------------------------------------------------------------------------------------------------------------------
+    -- ANOTHER BEDROOM PATH -> MANEATER
+    -----------------------------------------------------------------------------------------------------------------------------
+
+    RoomRegina = "data/Scenes/Mansion/RoomRegina.lua", -- INTROA, INTROB, Dialog, Exit  
+
+    --DressRoom = "data/Scenes/Mansion/DressRoom.lua", -- small dialog sentences, Whip, photos, secret door 2 GuestRoom
+
+    -- HallwayInit SPECIAL EVENT COP QUESTIONS. & operation start -> Depot pool door unlocked
+
+    --Barbeque = "data/Scenes/Mansion/Barbeque.lua", -- Talk with Ada, Ilsa, William, Viktor & Luka (Play darts?)
+
+    --Pool = "data/Scenes/Mansion/Pool.lua", -- Talk with Regina & friends until they get drunk & distracted
+
+    --PoolExit = "data/Scenes/Mansion/PoolExit.lua",
+
+    --BarnOutside = "data/Scenes/Mansion/BarnOutside.lua",
+
+    --BarnInside = "data/Scenes/Mansion/BarnInside.lua",
+
+    --FallenCop = "data/Scenes/Mansion/FallenCop.lua",
+
+    --Workshop = "data/Scenes/Mansion/Workshop.lua",
+
+    --BarnExit = "data/Scenes/Mansion/BarnExit.lua",
+
+    --FinalCharade = "data/Scenes/Mansion/FinalCharade.lua",
+
+    -----------------------------------------------------------------------------------------------------------------------------
 
     End = false
 }
@@ -153,17 +249,19 @@ Scenes = {
 
 --Scenes.StartScene = "GuestRoom"
 --Scenes.StartScene = "Fireplace"
-
 --Scenes.StartScene = "HallwayInit"
---Scenes.StartScene = "Boot"
+Scenes.StartScene = "Boot"
 --Scenes.StartScene = "Intro"
 --Scenes.StartScene = "Title"
 --Scenes.StartScene = "Lobby" -- REMOVE FORCED ADA
 --Scenes.StartScene = "MansionSide"
 --Scenes.StartScene = "BarInside"
-Scenes.StartScene = "TownPathDeep"
+--Scenes.StartScene = "TownPathDeep"
 --Scenes.StartScene = "PlazaThugs"
 --Scenes.StartScene = "PlazaPan"
+--Scenes.StartScene = "Title"
+
+
 
 -- Set here a top access scene to have shared access
 Scenes.SharedScene = "Global"

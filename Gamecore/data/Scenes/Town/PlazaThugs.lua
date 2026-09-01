@@ -1,3 +1,23 @@
+FlamesID = nil
+
+function FlamesWaving()
+    PlaySound("Flames")
+end
+
+function PlayFlames()
+    if FlamesID then return end
+
+    FlamesWaving()
+    FlamesID = ScheduleRepeat(6, "FlamesWaving", "FlamesCancelID")
+end
+
+function StopFlames()
+    if not FlamesID then return end
+
+    CancelScheduled(FlamesID)
+    FlamesID = nil
+end
+
 return {
 
     { Entity = "ThugsFar", Textures = "data/Scenes/Town/ThugsFar.jpg", Visible = true},
@@ -27,6 +47,8 @@ return {
         end
 
         function self.OnIntroLamp()
+            PlayMusic("Ambient")
+            SetMusicVolume(0.5)
             SetNoise(true)
             Scale("PlazaLamp", 1.3, 0)
             Wait(false, 0.1)
@@ -68,23 +90,29 @@ return {
         end
 
         function self.OnCinematic()
-            SetClickable("Suspicious violence", false) -- 
+            SetClickable("Suspicious violence", false) --
+            PlaySound("Slap")
             Shake("ThugsNear", 20.0, 5)
             Fade("ThugsNear", 1.0)
             Say("Ahhh please stop, I can't breathhh...", 3)
+            PlaySound("Slap")
             Scale("ThugsNear", 1.4, 350)     --
 
             Say("You should know your boundaries scumbag...", 3)
             Say("Your tongue loosens with alcohol\nand you end up saying too much bullshit..", 5)
             Say("Next time you'll think twice before opening the mouth", 4)
+            PlaySound("Slap")
             Shake("ThugsNear", 12.0, 5)
 
+            PlaySound("Smash")
             Say("Thiago","Jeez, this is brutal", 3)
             Say("Thiago","I've to stop it", 2)
             Say("Thiago","But can't fight with them, I'm outnumbered", 4)
 
             Say("...", 1)
+            PlaySound("Slap")
             Shake("ThugsNear", 6.0, 5)
+            PlaySound("Ragdoll")
             Say("Viktor hold on, I'm affraid there won't be a next time..", 4)
             Say("Viktor","Oh really? sue me, I don't give a fuck haha!", 4)
             Say("Come on, let's go, the police is roaming around..", 4)
@@ -95,10 +123,13 @@ return {
             Schedule(5, "SetClickable", "Suspicious violence", true)
             Scale("ThugsFar", 1.0, 100)     --
             Fade("ThugsNear", 0.0)
+            PlaySound("Smash")
 
+            FadeMusic(0.1)
             Say("Thiago","Must do something right now", 3)
             Say("Thiago","Maybe I can create a firework or diversion", 4)
             Say("Thiago","Something to distract them..", 5)
+
         end
 
         return self
@@ -112,7 +143,7 @@ return {
             Pos = { x = 365, y = 275 }, Size = { Width = 80, Height = 128 }} end
         
         function self.OnInit()                      -- JUST FOR TESTING DISABLE AFTER USE
-            if not DrunkMan.Sleeping and not IsEntityInScene("Alcohol", "Inventory") then
+            if not GetFlag("DrunkSlept") and not IsEntityInScene("Alcohol", "Inventory") then
                 PickUp("MolotovFire") 
             end 
         end                       
@@ -132,23 +163,29 @@ return {
             Wait(.05, false)
             SetVisible("MolotovSequence", true)
 
+            PlaySound("Molotov")
+            Schedule(0.85, "PlayFlames")
+
             Wait(.5, false)
             SetState("MolotovSequence","MolotovB")
             SetAlpha("Dark", 0.0)
             SetVisible("Dark", true)
             Scale("ThugsRunning", 1.5, 1)     --
-            Wait(.5, false)
 
+            Wait(.5, false)
             SetState("MolotovSequence","MolotovC")
             Shake("MolotovSequence", 20.0, 3)
             Fade("Dark", 1.0, 1)
             Flame.PlayAnimation()
             Wait(2, false)
 
+            Say("Viktor", "Damn it, let's fuck off here!", 1.5)
             Scale("ThugsRunning", 1.0, 20)     --
             SetAlpha("ThugsRunning", 1.0)
             Fade("Dark", 0.0, 2)
+            FadeMusic(0.2)
             Wait(3, false)
+            FadeMusic(0.0)
 
             Fade("Flame", 1.0, 20)
             Scale("Flame", 1.5, 100)     --
@@ -165,6 +202,8 @@ return {
             Schedule(10.2, "SetVisible", "SkinWalker" )
             Schedule(10.25, "SetVisible", "SkinWalker",false)
 
+            Schedule(12, "PlayMusic", "Abysmal", false )
+            Schedule(12, "FadeMusic", 1.0 )
             Schedule(15, "SetVisible", "BigEye" )
             Schedule(15.05, "SetVisible", "BigEye",false)
             Schedule(15.1, "SetVisible", "BigEye" )
@@ -188,11 +227,22 @@ return {
             Schedule(35.1, "SetVisible", "Skull" )
             Schedule(35.15, "SetVisible", "Skull",false)
 
+            Schedule( 36, "ShowTitle", "To be continued", 4.0, 48.0)
+            
             Wait(40, false)
             Flame.OnStopAnimation()
             SetNoise(false)
+            StopFlames()
 
+            if GetCurrentThread() == "MadWorld" and not IsCurrentThreadCompleted() then
+                SetCurrentThreadCompleted()
+                -- Call back Title screen? or let's jump to next thread
+                SetFlag("StatusEnabled", true)
+                BlendScene("Title")
+                TitleText.DoOptionsMenu()
+            end
         end
+
         function self.OnCombine(itemId)
             if itemId == "MolotovFire" then
                 StartSequence(self.OnEndSequence)

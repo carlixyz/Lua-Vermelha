@@ -3,10 +3,15 @@ return {
     { Bandage = { OnConstruct = function() return { Textures = "data/Scenes/Inventory/Bandage.png" } end, 
         OnCombine = function(itemId) 
             if itemId == "Alcohol" then
-                PickUp("Molotov", 2) 
+                PickUp("Molotov", 2)
+                PlaySound("Great")
                 RemoveEntity("Bandage") 
                 RemoveEntity("Alcohol")
             end 
+        end,
+        OnInit = function()
+            if GetFlag("DrunkSlept") then PlayMusic("CityNight") else PlayMusic("City") end
+            SetMusicVolume(0.5)
         end,
         OnLook = function() StartSequence(function() Say("A bandage for injuries", 3.0) Say() end) end } 
     }, -- BANDAGES
@@ -14,7 +19,8 @@ return {
     { Alcohol = { OnConstruct = function() return { Textures = "data/Scenes/Inventory/Alcohol.png" } end, 
         OnCombine = function(itemId) 
             if itemId == "Bandage" then
-                PickUp("Molotov", 2) 
+                PickUp("Molotov", 2)
+                PlaySound("Great")
                 RemoveEntity("Alcohol") 
                 RemoveEntity("Bandage") 
             end 
@@ -26,9 +32,10 @@ return {
         OnLook = function() StartSequence( function() Say("It need some fire for ignition", 5.0) Say() end) end,
         OnCombine = function(itemId)
             if itemId == "Matches" or itemId == "Lighter" then 
-                if DrunkMan.Invited then
+                if GetFlag("DrunkInvited") then
                     StartSequence( function() Say("Thiago", "Let's hope our country never gives us a reason to use one of these", 6.0) end)
                     RemoveEntity("Molotov")
+                    PlaySound("Great")
                     PickUp("MolotovFire", 2)
                 else
                     StartSequence( function() Say("Thiago", "I won't do that without a reason", 4.0) end)

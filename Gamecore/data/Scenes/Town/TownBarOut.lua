@@ -8,12 +8,22 @@ return {
     { Quad = { OnConstruct = function() return { NameId = "EnterBar", Cursor = "MUp", 
         Pos = { x = 100, y = 150 }, Size = { Width = 240, Height = 150 }} end, 
         OnInteract = function() 
-            if IsEntityInScene("Alcohol", "Inventory") or IsEntityInScene("Molotov", "Inventory") then
+            if GetFlag("VisitedMedic") or IsEntityInScene("Alcohol", "Inventory") or IsEntityInScene("Molotov", "Inventory") then
                 SwipeScene("BarInside", "Down")
             else
-                StartSequence( function() Say("I must go to the Hospital first", 5.0) Say() end )
+                StartSequence( function() 
+                    Say("To soon for that, I must go to the Hospital first", 5.0) Say() 
+                end )
             end 
         
+        end,
+        OnInit = function()
+            if GetFlag("DrunkSlept") then PlayMusic("Crickets") else PlayMusic("City") end
+            SetMusicVolume(0.5)
+        end,
+        OnEnter = function()
+            if GetFlag("DrunkSlept") then PlayMusic("Crickets") else PlayMusic("City") end
+            SetMusicVolume(0.5)
         end,
         OnLook = function() 
             StartSequence( function() Say("It's your typical village bar", 5.0) Say() end )

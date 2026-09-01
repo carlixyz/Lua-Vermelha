@@ -364,6 +364,10 @@ return {
                 Schedule(6.0, "SetVisible", "IntroWolf", false)
                 StopMusic()
 
+                if GetCurrentThread() == "Intro" and not IsCurrentThreadCompleted() then
+                    SetCurrentThreadCompleted()
+                end
+
                 Schedule(8.0, "Fade", "Dark", 1.0, 0.5)
                 Schedule(8.8, "BlendScene", "Title")
             end

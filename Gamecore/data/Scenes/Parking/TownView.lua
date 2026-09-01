@@ -23,7 +23,9 @@ return {
     },
 
     { Quad = { OnConstruct = function() return { NameId = "Town Entry", Cursor = "MLeft", Pos = { x = 0, y = 161 }, 
-        Size = { Width = 195, Height = 340 }} end, OnInteract = function() SwipeScene("PlazaPan", "Right") end, 
+        Size = { Width = 195, Height = 340 }} end, OnInteract = function()
+            SwipeScene("PlazaPan", "Right") 
+        end, 
         OnLook = function() StartSequence( function() Say("This way takes to the town", 3.0) Say() end) end} 
     },
 }

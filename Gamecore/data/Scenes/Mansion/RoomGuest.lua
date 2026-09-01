@@ -52,6 +52,7 @@ return {
 
         function self.OnCombine(itemId)
             if itemId == "Phone" then
+                PlaySound("Plasma")                
                 StartSequence(function() Say("\nOk, let's see if it can reboot now") Say() end) 
                 PickUp("CellPhone", 2)
                 RemoveEntity("Battery")
@@ -74,12 +75,21 @@ return {
         function self.OnLook() StartSequence(self.OnBrokenComment) end
         function self.OnCombine(itemId)
             if itemId == "Battery" then
+                PlaySound("Plasma")
                 StartSequence(function() Say("\nOk, let's see if it can reboot now") Say() end) 
                 PickUp("CellPhone", 2)
                 RemoveEntity("Battery")
                 RemoveEntity("Phone")
+                PlaySound("Great")
+                Schedule(15, "WaitAndCheckCellphone")
             else
                 StartSequence(self.OnBrokenComment) 
+            end
+        end
+        function WaitAndCheckCellphone()
+            if CellPhone.StillAlive then
+                CellPhone.StillAlive = false
+                BlendScene("Mobile", 1)
             end
         end
         return self
@@ -101,7 +111,7 @@ return {
     }, -- CellPhone
 
     { IntroWakeup = (function()
-        local self = { TotalItems = 0, FirstTime = true, TooltipDisplayed = true }
+        local self = { TotalItems = 0, TooltipDisplayed = true }
         function self.OnConstruct()
         return { 
             Clickable = false, 
@@ -123,8 +133,8 @@ return {
                 Schedule(0.0, "SetEntityScene", "Shade", "GuestRoom")
             end
 
-            if self.FirstTime then
-                self.FirstTime = false
+            if not GetFlag("WakeupFirstTime") then
+                SetFlag("WakeupFirstTime", true)
                 self.OnIntroStart()
             else
                 self.SetItemsInScene(true)
@@ -140,6 +150,11 @@ return {
         end
 
         function self.OnIntroStart()
+
+            if GetCurrentThread() ~= "MadWorld" and not IsThreadStarted("MadWorld") then
+                StartThread("MadWorld")
+            end
+
             SetThunder(true)
             SetNoise(false)
 
@@ -175,9 +190,14 @@ return {
             Say("\n And where's all my stuff?")
 
             self.SetItemsInScene(true)
+            PlayMusic("RoomGuest", false)
+            SetMusicVolume(0.5)
+
+
         end
 
         function self.CountItem()
+
             if self.TotalItems <= 2 then
                 self.TotalItems = self.TotalItems + 1
             end
@@ -212,10 +232,14 @@ return {
 
         function self.OnDoorKnocking()
             SetEmotion()
+            PlaySound("Ouch")
             Say("\n\nOoouch!", 3.0)
             SetShadeAlpha(.65)          -- Use global Shade
             Wait(1)
-
+                        
+            PlayMusic("RoomGuest", false)
+            SetMusicVolume(0.35)
+            PlaySound("BoneCrack")
             Say("Damn my leg... it hurts", 3.0)
             Say("What happened yesterday?\ncan't think straight with this Noggin ache", 6.0)
             Say("I don't remember about anything at all", 4.0)
@@ -224,6 +248,7 @@ return {
 
             Wait(1.0)
             SetState("IntroWakeup", "IW4")
+            PlaySound("DoorKnock")
             Say("'Knock Knock'", 3.0)
             SetEmotion("TWorry")
             Say("...Now what?", 3.0)
@@ -234,6 +259,7 @@ return {
             Say("Girl","Hello sir, are you awake!?", 4.0)
             SetEmotion("TSuspect")
             Say("It's a young woman...", 3.0)
+            PlaySound("DoorKnock")
             Say("Girl","Please answer me, are you awake??", 4.0)
 
             SetEmotion("TSurprise")
@@ -247,10 +273,13 @@ return {
             SetEmotion("TNeutral")
             Say("Girl","Alright Sir, Do you want to open the door?\nSo We can properly introduce ourselves..", 7.0)
             Say("Sure, just give me a sec", 3.0)
+            PlaySound("DoorOpen")
 
             Fade("Ada", 1.0, 3)
             Ada.StartTalk()
-            Say("Hello hello, I'm Ada\nSorry for the rush but you were off all morning Sir..", 7)
+            Say("Hello hello, I'm Ada")
+            PlayMusic("Romance")
+            Say("Sorry for the rush but you were off all morning Sir..", 5)
             Ada.StopTalk()
             SetEmotion("TSmile")
 
@@ -284,6 +313,7 @@ return {
             SetEmotion("TSuspect")
             Say("Ilsa", "We found you yesterday laying unconscious in the floor\n you really scared us", 7)
 
+            SetMusicVolume(0.6)
             Ilsa.StopTalk()
             SetEmotion("TNeutral")
             Say("Thiago", "Well, I don't remember anything at all", 5)
@@ -295,7 +325,8 @@ return {
             Say("Ilsa", "I'm affraid You'll need to see a doctor", 4)
             SetEmotion("TSuspect")
             Say("Ilsa", "Anyway, Please be our guest,\nfeel free to rest and stay as long as you need", 7)
-            Ilsa.StopTalk() 
+            Ilsa.StopTalk()
+            SetMusicVolume(0.35)
             Say("Thiago", "Well, Thanks for your hospitality", 4)
             SetEmotion("TNeutral")
 
@@ -320,12 +351,16 @@ return {
             SetState("Ada","AAprove")
             SetEmotion("TSmile")
             Say("Thiago", "Alright, sounds good")
+            FadeMusic(false)
+
             Ada.StopTalk()
             SetEmotion("TNeutral")
             Fade("Ada", 0.0, 1)
             Move("Ada", 1000)
 
             Wait(2, false)
+            Schedule(2, "PlayMusic", "WoodNote")
+
             SetEntityScene("Ada", "Lobby")
             SetPosition("Ada", 400)
             SetAlpha("Ada", 1.0)
@@ -378,6 +413,8 @@ return {
         end
         function self.OnCommentLook() Say("\nJust a bunch of socks and sheets,\nnothing important inside", 4.0) Say() end
         function self.OnInteract()
+            PlaySound("Track")
+
             if not IsEntityInScene("Hanger", "Inventory") then
                 PickUp("Hanger", 2)
                 StartSequence(self.OnCommentEntry) 
@@ -396,6 +433,8 @@ return {
             Size = { Width = 35, Height = 55 }, Clickable = false} end
         function self.OnCommentLook() Say("\nAn empty bedside table", 3.0) Say() end
         function self.OnInteract() 
+            PlaySound("Track")
+
             StartSequence(self.OnCommentLook) 
 
         end      
@@ -411,7 +450,7 @@ return {
         function self.OnConstruct() return { NameId = "RBedTable", NameView = "Right Bedside table", Pos = { x = 562, y = 264 }, 
             Size = { Width = 40, Height = 65 }, Clickable = false} end
         function self.OnCommentEntry() Say("\nNow the drawer is empty", 3.0) Say() end
-        function self.OnWalletFound() 
+        function self.OnWalletFound()
             PickUp("Wallet", 2)
             Say("\nHey here's my wallet...\ngood to know I haven't lost it", 5.0) 
             Say("",0.5)
@@ -421,7 +460,8 @@ return {
         function self.OnCommentLook()
             if self.Jammed then
                 Say("\nSomething is blocking the drawer from within", 4)
-                Say("\nThere's a small gap... if I had a thin lever or something", 4) 
+                Say("\nThere's a small gap... if I had a thin lever or something", 4)
+                Say()
             else
                 Say("\nA bedside table with an old small drawer", 4) 
             end
@@ -432,8 +472,9 @@ return {
         function self.OnCombine(itemId)
             if itemId == "Hanger" then
                 self.Jammed = false
+                PlaySound("Track")
                 RemoveEntity("Hanger")
-                PlaySound("LockedDoor")
+                PlaySound("Great")
                 StartSequence(function() Say("Alright, now it's unjammed..") Say() end)
             else
                 StartSequence(function() Say("Doesn't work... it needs something like a thin lever") Say() end)
@@ -441,11 +482,14 @@ return {
         end
 
         function self.OnInteract()
+            PlaySound("Unload")
+
             if self.Jammed then
                 PlaySound("LockedDoor")
                 StartSequence(function() Say("the drawer is stuck") Say() end)
             else
                 if not IsEntityInScene("Wallet", "Inventory") then
+                    PlaySound("Unload")
                     StartSequence(self.OnWalletFound)
                 else
                     StartSequence(self.OnCommentEntry)
@@ -482,6 +526,7 @@ return {
         end
 
         function self.OnInteract()
+            PlaySound("SwipeOut")
             self.OnCheckUnderBed()
         end
 
@@ -523,7 +568,7 @@ return {
 
     { Quad = { OnConstruct = function() return { NameId = "GuestWindow",  NameView = "Window", Clickable = false, 
         Pos = { x = 425, y = 120 }, Size = { Width = 108, Height = 90 }} end, 
-        OnInteract = function() IntroWakeup.FirstTime = false SwipeScene("WindowTree", "Down") end,
+        OnInteract = function() SetFlag("WakeupFirstTime", true) SwipeScene("WindowTree", "Down") end,
         OnLook = function() StartSequence( function() Say("The sun finally came out,\nI Wonder where I am?", 5.0) Say() end) end} 
     }, -- WINDOW
 

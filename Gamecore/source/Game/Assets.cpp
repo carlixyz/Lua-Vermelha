@@ -236,7 +236,7 @@ void Assets::PreloadSounds()
 		};
 
 	Load("Crime", "data/Sound/dark-crime-piano-drama.ogg");
-	Load("Viola", "data/Sound/trumpet-piano-viola.ogg");
+	//Load("Viola", "data/Sound/trumpet-piano-viola.ogg");
 	Load("CarWarning", "data/Sound/CarWarning.ogg");
 	Load("CarDoor", "data/Sound/CarDoor.ogg");
 	Load("SeatbeltClick", "data/Sound/SeatbeltClick.ogg");
@@ -254,7 +254,6 @@ void Assets::PreloadSounds()
 	Load("Suspense", "data/Sound/car-drive-soundfx.ogg");
 	Load("TitleFX", "data/Sound/IntroTitle.ogg");
 
-
 	Load("Bang", "data/Sound/Sonorous_Bang.ogg");
 	Load("Storm", "data/Sound/Storm_Roar.ogg");
 	Load("Sky", "data/Sound/Sky_Rumble.ogg");
@@ -268,6 +267,31 @@ void Assets::PreloadSounds()
 	Load("Roar", "data/Sound/Heavenly_Roar.ogg");
 	Load("Loud", "data/Sound/ThunderLoud.ogg");
 	Load("Universal", "data/Sound/ThunderUniversity.ogg");
+
+	Load("Chick", "data/Sound/Sound_button-16.wav");
+	Load("Track", "data/Sound/Sound_button-21.wav");
+	Load("Unload", "data/Sound/Sound_button-30.wav");
+	Load("Plasma", "data/Sound/WeaponReloadPlasma06.wav");
+	Load("Reload", "data/Sound/WeaponReload03.wav");
+
+	Load("Great", "data/Sound/Music/btn13.mp3");
+	Load("Awesome", "data/Sound/Music/btn16.mp3");
+	Load("DoorKnock", "data/Sound/knock-on-the-door.mp3");
+	Load("Ouch", "data/Sound/ouch.mp3");
+	Load("BoneCrack", "data/Sound/bone-crack-meme.mp3");
+	Load("DoorOpen", "data/Sound/door-open.mp3");
+
+	Load("Bushes", "data/Sound/bushes.mp3");
+	Load("Birds", "data/Sound/bird-noises.mp3");
+	Load("Resonance", "data/Sound/Transcendent_Night_Resonance.mp3");
+	Load("Dismal", "data/Sound/Dismal_Ambience.mp3");
+	Load("Slap", "data/Sound/slap.mp3");
+	Load("Ragdoll", "data/Sound/ragdol-hit.mp3");
+	Load("Smash", "data/Sound/rock-smashing.mp3");
+	Load("Molotov", "data/Sound/Music/Molotov.mp3");
+	Load("Flames", "data/Sound/Music/Flames.mp3");
+	Load("CricketsFX", "data/Sound/crickets_blender.mp3");
+
 }
 
 void Assets::UnloadSounds()
@@ -286,9 +310,20 @@ void Assets::PreloadMusic()
 			const Music Music = LoadMusicStream(FileName);
 			Musics[Name] = Music;
 		};
-	
-	Load("RainDrive", "data/Sound/NightDriveRain.ogg");
-	Load("WetAsphalt", "data/Sound/WetAsphaltSymphony.ogg");
+
+	Load("RainDrive", "data/Sound/Music/NightDriveRain.ogg");
+	Load("WetAsphalt", "data/Sound/Music/WetAsphaltSymphony.ogg");
+	Load("Abysmal", "data/Sound/Music/MusMus-AMB-001.mp3");
+	Load("Ambient", "data/Sound/Music/MusMus-AMB-005.mp3");
+	Load("Creepy", "data/Sound/Music/MusMus-AMB-014.mp3");
+	Load("Romance", "data/Sound/Music/MusMus-BGM-008.mp3");
+	Load("WoodNote", "data/Sound/Music/MusMus-BGM-003.mp3");
+	Load("RoomGuest", "data/Sound/Music/MusMus-BGM-005.mp3");
+	Load("Eerie", "data/Sound/Music/MusMus-BGM-031.mp3");
+	Load("City", "data/Sound/Music/MusMus-BGM-101.mp3");
+	Load("Bar", "data/Sound/Music/MusMus-BGM-099.mp3");
+	Load("CityNight", "data/Sound/Music/MusMus-BGM-098.mp3");
+	Load("Crickets", "data/Sound/Music/crickets.mp3");
 
 
 	//Load("FireLoop", "data/Sound/stg_st003_88pro-loop.ogg", false);

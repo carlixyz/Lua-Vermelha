@@ -13,6 +13,7 @@ return {
         } end
 
         function self.OnInit()
+            if not GetFlag("DrunkSlept") then PlayBirds() end
             Schedule( 1.0, "SetInventory", true)
             SetThunder(false)
             SetNoise(false)
@@ -53,8 +54,14 @@ return {
                 self.State = self.State +1 
                 self.Update()
             else
-                if not DrunkMan.Sleeping then
-                    SwipeScene("TownView", "Left")
+                if not GetFlag("DrunkSlept") then
+                    StartSequence(
+                        function() 
+                            Say("Thiago", "It's to soon to go back walking all that again", 5.0)
+                            Say("Thiago", "After the medical check-up, I'd like to stop by the bar for a while")
+                        end
+                    )
+                    --SwipeScene("TownView", "Left")
                 end
             end
         end
@@ -95,14 +102,14 @@ return {
     { Quad = { OnConstruct = function() return { NameId = "Thugs", Clickable = false, -- Cursor = "MUp",
         Pos = { x = 580, y = 200 }, Size = { Width = 320, Height = 235 }} end,
         --OnEnter = function() SetClickable("Thugs") end,
-        OnEnter = function() if DrunkMan.Sleeping then SetClickable("Thugs") else SetClickable("Thugs", false) end end,
+        OnEnter = function() if GetFlag("DrunkSlept") then SetClickable("Thugs") else PlayBirds() SetClickable("Thugs", false) end end,
         OnLook = function() StartSequence( function() Say("Who're those people? Something's happening there..", 5.0) Say() end) end,
         OnInteract = function() BlendScene("PlazaThugs", 1.0)  end } -- for testing only
     }, -- THUGS
 
     { Quad = { OnConstruct = function() return { NameId = "TunnelShortcut", Cursor = "MUp",
         Pos = { x = 160, y = 220 }, Size = { Width = 240, Height = 100 }} end, OnInteract = function()
-            if DrunkMan.Sleeping then
+            if GetFlag("DrunkSlept") then
                 StartSequence( function() Say("I should return back to Schwarz Residence", 5.0) Say() end)
             else
                 SwipeScene("PlazaExit", "Down")
@@ -112,7 +119,7 @@ return {
 
     { Quad = { OnConstruct = function() return { NameId = "LupertaStatue", 
         Pos = { x = 450, y = 220 }, Size = { Width = 110, Height = 120 }} end, OnInteract = function() 
-            if DrunkMan.Sleeping then
+            if GetFlag("DrunkSlept") then
                 StartSequence( function() Say("I should return back to Schwarz Residence", 5.0) Say() end)
             else
                 SwipeScene("Luperta", "Down")

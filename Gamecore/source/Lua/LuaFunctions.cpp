@@ -5,7 +5,9 @@
 #include "../Game/Assets.h"
 #include "../Game/Director.h"
 #include "../Game/Game.h"
+#include "../Game/Register.h"
 #include "../Game/Scenes/Credits.h"
+#include "../Game/Scenes/Status.h"
 #include "../Game/Scenes/Entity.h"
 #include "../Game/Scenes/FSM.h"
 #include "../Audio/Audio.h"
@@ -777,13 +779,18 @@ int Lua_StopMusic(lua_State* L)
 
 int Lua_FadeMusic(lua_State* L)
 {
-    bool fadeIn = lua_isnoneornil(L, 1) ? true : (lua_toboolean(L, 1) != 0);
+    float targetVolume = 1.0f;
 
-    if (fadeIn)
-        Audio::Get().FadeMusicIn();
+    if (lua_isnoneornil(L, 1))
+        targetVolume = 1.0f;
+    else if (lua_isboolean(L, 1))
+        targetVolume = lua_toboolean(L, 1) ? 1.0f : 0.0f;
+    else if (lua_isnumber(L, 1))
+        targetVolume = (float)lua_tonumber(L, 1);
     else
-        Audio::Get().FadeMusicOut();
+        return luaL_error(L, "FadeMusic expects nil, boolean, or number");
 
+    Audio::Get().FadeMusic(targetVolume);
     return 0;
 }
 
@@ -799,6 +806,7 @@ int Lua_IsPlayingMusic(lua_State* L)
     return 1;
 }
 
+// Can vary between 0.0 ~ 1.0
 int Lua_SetMusicVolume(lua_State* L)
 {
     float volume = (float)luaL_checknumber(L, 1);
@@ -1023,6 +1031,74 @@ int Lua_CancelScheduled(lua_State* L)
     return 0;
 }
 
+// ---------------------------------- REGISTER
+
+int Lua_GetCompletedThreadCount(lua_State* L)
+{
+    lua_pushinteger(L, Register::Get().GetCompletedThreadCount());
+    return 1;
+}
+
+int Lua_SetRegister(lua_State* L) {
+    const char* Name = luaL_checkstring(L, 1);
+    bool Value = lua_isnoneornil(L, 2) || lua_toboolean(L, 2);
+
+    Register::Get().SetFlag(Name, Value);
+    return 0;
+}
+
+int Lua_GetRegister(lua_State* L) 
+{
+    lua_pushboolean(L, Register::Get().GetFlag(luaL_checkstring(L, 1)));
+    return 1;
+}
+
+int Lua_StartThread(lua_State* L) 
+{
+    Register::Get().StartThread(luaL_checkstring(L, 1));
+    return 0;
+}
+
+int Lua_RandomThread(lua_State* L) 
+{
+    std::string Thread = Register::Get().GetRandomNewThread();
+
+    if (Thread.empty())
+        lua_pushnil(L);
+    else
+        lua_pushstring(L, Thread.c_str());
+
+    return 1;
+}
+
+int Lua_IsThreadStarted(lua_State* L)
+{
+    lua_pushboolean(L, Register::Get().IsThreadStarted(luaL_checkstring(L, 1)));
+    return 1;
+}
+
+int Lua_IsThreadCompleted(lua_State* L) 
+{
+    lua_pushboolean(L, Register::Get().IsThreadCompleted(luaL_checkstring(L, 1)));
+    return 1;
+}
+
+int Lua_SetCurrentThreadCompleted(lua_State* L)
+{
+    Register::Get().SetCurrentThreadCompleted();
+    return 0;
+}
+
+int Lua_GetCurrentThread(lua_State* L)
+{
+    const std::string& Thread = Register::Get().GetCurrentThread();
+
+    lua_pushstring(L, Thread.c_str());
+    return 1;
+}
+
+//-------------------------------------------------------------------------
+
 int Lua_GetEntityTexturesIDs(lua_State* L)
 {
     const char* entityID = luaL_checkstring(L, 1);
@@ -1055,6 +1131,30 @@ int Lua_GetEntityTexturesIDs(lua_State* L)
     */
 
     return 1; // returning one value: the table
+}
+
+
+int Lua_AddStar(lua_State* L)
+{
+    const char* id = luaL_checkstring(L, 1);
+    float x = (float)luaL_checknumber(L, 2);
+    float y = (float)luaL_checknumber(L, 3);
+
+    if (Status* status = dynamic_cast<Status*>(Game::Get().Scenes.GetStatus()))
+        status->AddStar(id, x, y);
+
+    return 0;
+}
+
+int Lua_AddLink(lua_State* L)
+{
+    const char* a = luaL_checkstring(L, 1);
+    const char* b = luaL_checkstring(L, 2);
+
+    if (Status* status = dynamic_cast<Status*>(Game::Get().Scenes.GetStatus()))
+        status->AddLink(a, b);
+
+    return 0;
 }
 
 int Lua_PushCredit(lua_State* L)
@@ -1112,103 +1212,88 @@ void RegisterLuaFunctions() // C++ Foo Register in Lua
     LuaManager::Get().RegisterFunction("traceback", traceback);
 
     LuaManager::Get().RegisterFunction("StartSequence", Lua_StartSequence);
-
     LuaManager::Get().RegisterFunction("EndSequence", Lua_EndSequence);
-
     LuaManager::Get().RegisterFunction("Wait", Lua_Wait);
 
-    LuaManager::Get().RegisterFunction("SetEmotion", Lua_SetEmotion);
 
     LuaManager::Get().RegisterFunction("Schedule", Lua_Schedule);
-
     LuaManager::Get().RegisterFunction("ScheduleRepeat", Lua_ScheduleRepeat);
-
     LuaManager::Get().RegisterFunction("ScheduleDirector", Lua_ScheduleDirector);
-    
     LuaManager::Get().RegisterFunction("ScheduleDirectorRepeat", Lua_ScheduleDirectorRepeat);
-    
     LuaManager::Get().RegisterFunction("CancelScheduled", Lua_CancelScheduled);
 
-    LuaManager::Get().RegisterFunction("SetInventory", Lua_SetInventory);           // SetInventory( enabled = true)
+    LuaManager::Get().RegisterFunction("SetEmotion", Lua_SetEmotion);
+    LuaManager::Get().RegisterFunction("SetShadeAlpha", Lua_SetShadeAlpha);
 
+    LuaManager::Get().RegisterFunction("SetInventory", Lua_SetInventory);           // SetInventory( enabled = true)
     LuaManager::Get().RegisterFunction("ShowInventory", Lua_ShowInventory);           // SetInventory( enabled = true)
 
     LuaManager::Get().RegisterFunction("SetThunder", Lua_SetThunder);               // SetThunder( enabled = true)
-
     LuaManager::Get().RegisterFunction("TriggerThunder", Lua_TriggerThunder);       // TriggerThunder( count = 1)
-
     LuaManager::Get().RegisterFunction("SetNoise", Lua_SetNoise);       // SetNoise(true, 0.7) or  SetNoise(0.7) enables and set alpha value
 
     LuaManager::Get().RegisterFunction("Toast", Lua_ToastMessage);
-
     LuaManager::Get().RegisterFunction("ShowTitle", Lua_SplashTitle);
 
     LuaManager::Get().RegisterFunction("GiveItem", Lua_GiveItem);
-
     LuaManager::Get().RegisterFunction("SetState", Lua_SetState);
 
     LuaManager::Get().RegisterFunction("SetActive", Lua_SetActive);
-
     LuaManager::Get().RegisterFunction("GetActive", Lua_GetActive);
 
     LuaManager::Get().RegisterFunction("SetVisible", Lua_SetVisible);
-
     LuaManager::Get().RegisterFunction("GetVisible", Lua_GetVisible);
 
     LuaManager::Get().RegisterFunction("SetAlpha", Lua_SetAlpha);
-
     LuaManager::Get().RegisterFunction("GetAlpha", Lua_GetAlpha);
 
     LuaManager::Get().RegisterFunction("SetClickable", Lua_SetClickable);
-
     LuaManager::Get().RegisterFunction("GetClickable", Lua_GetClickable);
 
     LuaManager::Get().RegisterFunction("SetPosition", Lua_SetPosition);
-
-    LuaManager::Get().RegisterFunction("SetShadeAlpha", Lua_SetShadeAlpha);
-
-    LuaManager::Get().RegisterFunction("Fade", Lua_FadeEntity);
-
     LuaManager::Get().RegisterFunction("Move", Lua_MoveEntity);
-
+    LuaManager::Get().RegisterFunction("Fade", Lua_FadeEntity);
     LuaManager::Get().RegisterFunction("Scale", Lua_ScaleEntity);
-
     LuaManager::Get().RegisterFunction("Shake", Lua_ShakeEntity);
-
     LuaManager::Get().RegisterFunction("Wobble", Lua_WobbleEntity);
-
     LuaManager::Get().RegisterFunction("StopTween", Lua_StopTween);
 
     LuaManager::Get().RegisterFunction("SetEntityCursor", Lua_SetEntityCursor);
-
     LuaManager::Get().RegisterFunction("SetEntityScene", Lua_SetEntityScene);
-
     LuaManager::Get().RegisterFunction("IsEntityInScene", Lua_IsEntityInScene);
-
     LuaManager::Get().RegisterFunction("SetEntityFront", Lua_SetEntityFront);
-
     LuaManager::Get().RegisterFunction("SetEntityBack", Lua_SetEntityBack);
-
     LuaManager::Get().RegisterFunction("DisableEntity", Lua_DisableEntity);
-
     LuaManager::Get().RegisterFunction("RemoveEntity", Lua_RemoveEntity);
 
     LuaManager::Get().RegisterFunction("SetCurrentScene", Lua_SetCurrentScene);
-
     LuaManager::Get().RegisterFunction("SwipeScene", Lua_SwipeScene);
-
     LuaManager::Get().RegisterFunction("BlendScene", Lua_BlendScene);
 
     LuaManager::Get().RegisterFunction("Initialize", Lua_InitializeScene);
-
     LuaManager::Get().RegisterFunction("Deinitialize", Lua_DeinitializeScene);
 
     LuaManager::Get().RegisterFunction("LoadTexture", Lua_LoadTexture);
-
     LuaManager::Get().RegisterFunction("GetEntityTextureIDs", Lua_GetEntityTexturesIDs);
 
-    LuaManager::Get().RegisterFunction("PushCredit", Lua_PushCredit);
 
+    LuaManager::Get().RegisterFunction("GetCompletedThreadCount", Lua_GetCompletedThreadCount);
+    LuaManager::Get().RegisterFunction("SetFlag", Lua_SetRegister);
+    LuaManager::Get().RegisterFunction("GetFlag", Lua_GetRegister);
+
+    LuaManager::Get().RegisterFunction("GetRandomNewThread", Lua_RandomThread);
+    LuaManager::Get().RegisterFunction("StartThread", Lua_StartThread);
+
+    LuaManager::Get().RegisterFunction("IsThreadStarted", Lua_IsThreadStarted);
+    LuaManager::Get().RegisterFunction("IsThreadCompleted", Lua_IsThreadCompleted);
+
+    LuaManager::Get().RegisterFunction("SetCurrentThreadCompleted", Lua_SetCurrentThreadCompleted);
+    LuaManager::Get().RegisterFunction("GetCurrentThread", Lua_GetCurrentThread);
+
+    LuaManager::Get().RegisterFunction("AddStar", Lua_AddStar);
+    LuaManager::Get().RegisterFunction("AddLink", Lua_AddLink);
+
+    LuaManager::Get().RegisterFunction("PushCredit", Lua_PushCredit);
     LuaManager::Get().RegisterFunction("RollCredits", Lua_RollCredits);
 
     // AUDIO BINDINGS

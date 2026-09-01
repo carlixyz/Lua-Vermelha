@@ -48,10 +48,11 @@ return {
         if itemId == "Beer" and not self.Invite then
             --SetVisible("Beer", false)
             --SetEntityScene("Beer", "BarDrunk")
+            PlaySound("Great")
             RemoveEntity("Beer")
             self.Invite = true
             print("DrunkMan.Invited")
-            DrunkMan.Invited = true
+            SetFlag("DrunkInvited", true)
             SetState("DrunkMan","DrunkHappy")
             StartSequence(self.OnOpenTalk)
         end
@@ -159,6 +160,7 @@ return {
                 if not self.WorkCompleted then
                     self.WorkCompleted = true
                     self.PlaceUnlocked = true
+                    FadeMusic(0.4)
 
                     DrunkMan.StartTalk()
                     Say("BB Torres", "I keep civilization alive", 3.0)
@@ -190,6 +192,7 @@ return {
                     Schedule(2.0, "StopDrunkTalk" )
                     Say("BB Torres", "Did I?", 3.0)
                     Say("Thiago", "You did", 2.0)
+                    FadeMusic(0.1)
 
                     DrunkMan.StartTalk()
                     Say("BB Torres", "Damn beer talks too much", 3.0)
@@ -207,6 +210,10 @@ return {
                 Say("BB Torres", "Wish I could visit him more often", 4.0)
                 Say("BB Torres", "But the cemetery is near the Schwarz land", 4.0)
                 Schedule(3.0, "StopDrunkTalk" )
+                SetMusicVolume(0.2)
+                PlayMusic("Creepy", false)
+                FadeMusic(0.4)
+                PlaySound("Great")
                 Say("BB Torres", "And that place is the Serpent's Egg", 4.0)
 
                 self.Talk()
@@ -285,12 +292,14 @@ return {
             Say("BB Torres", "Some paths run dangerously close to the precipices", 5.0)
             Say("BB Torres", "Sooner or later, you look down into the abyss", 5.0)
             Schedule(3.0, "StopDrunkTalk" )
+            FadeMusic(0.3)
             Say("BB Torres", "And realize it has been looking back at you", 5.0)
 
             Say("Thiago", "That's a bit dramatic", 3.0)
             DrunkMan.StartTalk()
             Say("BB Torres", "You can laugh", 3.0)
             Schedule(3.0, "StopDrunkTalk" )
+            PlaySound("Great")
             Say("BB Torres", "But people vanished in these mountains", 5.0)
 
         elseif self.ValleyTalk == 2 then
@@ -364,6 +373,7 @@ return {
 
             SetState("DrunkMan", "DrunkIdle")
             Say("Thiago", "And the man?", 2.0)
+            FadeMusic(0.2)
 
             DrunkMan.StartTalk()
             Say("BB Torres", "People disappear, Thiago", 4.0)
@@ -377,6 +387,7 @@ return {
         end
 
         DrunkMan.StartTalk()
+        PlaySound("Awesome")
         Say("BB Torres", "Nothing", 2.0)
         Schedule(1.5, "StopDrunkTalk" )
         Schedule(2.0, "SetState", "DrunkMan", "DrunkIdle")
@@ -428,6 +439,7 @@ return {
         SetState("DrunkMan", "DrunkTalk")
         --Wobble("DrunkMan", 20.0, 1.0)
         Shake("DrunkMan", 20.0, 1.0)
+        PlayMusic("Eerie", false)
         Say("BB Torres", "What..", 3.0)
         DrunkMan.StartTalk()
 
@@ -441,17 +453,17 @@ return {
 
         Say("BB Torres", "Oh, such a lucky strike", 3.0)
         DrunkMan.StartTalk()
-        Say("BB Torres", "There're things we shouldn't talk about", 3.0)
+        Say("BB Torres", "There're things we can't talk about", 3.0)
         Say("BB Torres", "Like the family this valley belongs to", 3.0)
         Schedule(1.5, "StopDrunkTalk" )
         Schedule(2.0, "SetState", "DrunkMan", "DrunkIdle")
-        Say("BB Torres", "They were here before the roads\nBefore the civilization", 5.0)
+        Say("BB Torres", "They're the mountains, river, woods and even the moon", 5.0)
 
         Say("Thiago", "That doesn't make sense", 3.0)
         
         DrunkMan.StartTalk()
         Say("BB Torres", "The horror can't be understood", 4.0)
-        Say("BB Torres", "Madness, biker gangs, suicide", 3.0)
+        Say("BB Torres", "Madness, biker gangs, nightmares", 3.0)
         Say("BB Torres", "Smugglers, natural abomination, doppleganger", 3.0)
         Say("BB Torres", "Things nobody has names for", 5.0)
         DrunkMan.StopTalk()
@@ -519,7 +531,7 @@ return {
         SetClickable("DudeLeft", false)
         SetClickable("DudeRight", false)
 
-        DrunkMan.Sleeping = true
+        SetFlag("DrunkSlept", true)
         RemoveEntity("Clown")
         --SetVisible("Clown", false)
         --SetActive("Clown", false)
@@ -537,7 +549,8 @@ return {
         end },
 
         { self.CheckedAlive, "End conversation", function() 
-            Say("Thiago", "I think have heard enough for one night", 4.0) Say() 
+            Say("Thiago", "I think have heard enough for one night", 4.0) Say()
+            FadeMusic(0.0)
         end }
         )
 
@@ -547,6 +560,7 @@ return {
     function self.OnOpenTalk()
         self.TalkOpened = true
         SetEmotion("TDisabled")
+        FadeMusic(0.6)
         Say("Old Drunk", "Hey, that was unexpected, thanks!", 4.0)
         Say("Old Drunk", "You're not from here, are you?", 4.0)
         SetState("DrunkMan", "DrunkIdle")

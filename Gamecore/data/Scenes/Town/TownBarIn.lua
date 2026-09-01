@@ -13,9 +13,9 @@ return {
             {Lighter = "data/Scenes/Inventory/Lighter.png"} }, CurrentID = "LighterMini" } end,
         --OnEnter = function() if IsEntityInScene("Matches", "Inventory") then RemoveEntity("Lighter") end end, 
         OnInit = function() 
-            if IsEntityInScene("Matches", "Inventory") then RemoveEntity("Lighter") end 
-        end, 
-        OnInteract = function() PickUp("Lighter", 2) SetState("Lighter", "Lighter") end,
+            if IsEntityInScene("Matches", "Inventory") then RemoveEntity("Lighter") end
+        end,
+        OnInteract = function() PlaySound("Great") PickUp("Lighter", 2) SetState("Lighter", "Lighter") end,
         OnLook = function() 
             StartSequence( 
                 function() 
@@ -50,13 +50,24 @@ return {
 
     { Quad = { OnConstruct = function() return { NameId = "Bartender", 
         Pos = { x = 270, y = 101 }, Size = { Width = 51, Height = 72 }} end,
-        OnInteract = function() StartSequence( function()
-            Say("Bartender","Hello sir, The pint of beer costs 5 bucks", 5.0) Say() end) 
+        OnInteract = function() 
+            if GetFlag("DrunkSlept") then
+                StartSequence( function() 
+                    Say("Thiago","Hey, that man over there just fainted", 4.0) 
+                    Say("Bartender","Ah, He's fallen asleep again. He always does that.", 5.0) 
+                    Say("Bartender","Don't worry, just leave him there", 4.0) Say() 
+                end) 
+            else
+                StartSequence( function() Say("Bartender","Hello sir, The pint of beer costs 5 bucks", 5.0) Say() end) 
+            end
         end, 
         OnLook = function() StartSequence( function() Say("He's working while talks with the woman", 5.0) Say() end) end,
+        OnInit = function() StopBirds() PlayMusic("Bar")  end,
+        OnEnter = function() StopBirds()  if not GetFlag("DrunkSlept") then PlayMusic("Bar") end end,
         OnCombine = function(itemId) 
-            if itemId == "Wallet" and not IsEntityInScene("Beer", "Inventory") and not DrunkMan.Invited then 
+            if itemId == "Wallet" and not IsEntityInScene("Beer", "Inventory") and not GetFlag("DrunkInvited") then 
                 print("Found Beer")
+                PlaySound("Great")
                 StartSequence( function() Say("Here's you pint sir, keep the change") end)
                 PickUp("Beer",1)
             end

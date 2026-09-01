@@ -106,7 +106,9 @@ return {
         Pos = { x = 100, y = 413 }, Size = { Width = 700, Height = 100 }, Clickable = true } end, 
         OnInteract = function() 
             if IsEntityInScene("MainKey", "Inventory") then
+                PlaySound("DoorOpen")
                 SwipeScene("MansionSide", "Up") 
+                FadeMusic(0.25)
             else
                 StartSequence( function() Say("Entry door is closed", 3.0) Say() end)
             end

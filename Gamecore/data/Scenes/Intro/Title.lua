@@ -1,21 +1,45 @@
 return {
         
-        { Entity = "7Moon", Position = { x = -100, y = -220 }, Textures = "data/Scenes/Intro/7thMoon.jpg", Visible = true, Alpha = 1.0  },
+    { Entity = "7Moon", Position = { x = -100, y = -220 }, Visible = true, Textures = {
+        {TMoonPartial    = "data/Scenes/Intro/7thMoonPartial.jpg"}, 
+        {TMoonHalf       = "data/Scenes/Intro/7thMoonHalf.jpg"}, 
+        {TMoonRed        = "data/Scenes/Intro/7thMoonRed.jpg" } } --, CurrentImage = "TMoonPartial"
+    },
+
         
-        { TitleText = (function() 
-                local self = { MenuEnabled = false, StatusEnabled = true, DemoMode = false }
-                function self.OnConstruct() return 
-                { NameId = "7Title", Position = { x = 0, y = 0 }, Clickable = false, Visible = true, Alpha = 0.0, 
-                Textures = { TITLETEXT = "data/Scenes/Intro/7thText.png"}, --CurrentImage = "data/Scenes/Intro/7thTitle.png" 
-        }
+    { TitleText = (function() 
+        local self = { MenuEnabled = false, DemoMode = false, FirstOption = "Play" }
+        function self.OnConstruct() return 
+            { NameId = "7Title", Clickable = false, Visible = true, Alpha = 0.0, 
+            Textures = { TITLETEXT = "data/Scenes/Intro/7thText.png"}}
+        end
+
+        function self.UpdateBackground()
+            local completedThreads = GetCompletedThreadCount()
+
+            if completedThreads < 2 then
+                SetState("7Moon", "TMoonPartial")
+            elseif completedThreads < 3 then
+                SetState("7Moon", "TMoonHalf")
+            else
+                SetState("7Moon", "TMoonRed")
+            end
         end
 
         -- Main entry point
         function self.DoOptionsMenu()
+	        
+            --SetFlag("StatusEnabled", true) -- self.FirstOption = "Play"
+            if IsThreadCompleted("MadWorld") then
+                self.FirstOption = "Continue"
+                self.UpdateBackground()
+            end
+
             Choice(
                 { "" },
-                { "Play",
+                { self.FirstOption,
                     function()
+                        PlaySound("Unload")
                         if self.DemoMode then
                             Say("Game still under development")
                             Say("Come back later")
@@ -24,16 +48,15 @@ return {
                             Say("So let's jump to the first chapter ", 1.1)
                             --SetThunder(false)
                             SetAlpha("Dark", 1)
+                            StartThread("MadWorld")
                             BlendScene("GuestRoom")
                         end
                     end },
 
-                { self.StatusEnabled, "Status",
+                { GetFlag("StatusEnabled"), "Status",
                     function()
-                        Say("Nothing to show here yet")
-                        --SetThunder(false)
-                        Say()
-                        return self.DoOptionsMenu()
+                        SwipeScene("Status", "Down")
+                        --return self.DoOptionsMenu()
                         --StartSequence(self.DoOptionsMenu)
                     end },
 
@@ -67,16 +90,16 @@ return {
 
         function self.OnInit()
             self.OnEnter()
-        end
-
-        function self.OnEnter()
-            --SetAlpha("Dark", 0.0)
-            SetEmotion("TDisabled")
             PlaySound("TitleFX")
             Fade("Dark", 0.0, 20)
             Fade("7Title", 1.0, 60)
             Move("7Moon", 0, -220, 220)
             SetShadeAlpha( 0)
+        end
+
+        function self.OnEnter()
+            --SetAlpha("Dark", 0.0)
+            SetEmotion("TDisabled")
         end
 
         function self.OnExit()

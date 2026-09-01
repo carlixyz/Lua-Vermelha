@@ -5,6 +5,7 @@
 #include "TestScene.h"
 #include "Inventory.h"
 #include "Credits.h"
+#include "Status.h"
 
 #include <stack>
 #include <map>
@@ -23,6 +24,7 @@ struct SceneID
 	SCENE_ID(Intro)
 	SCENE_ID(Inventory)
 	SCENE_ID(Title)
+	SCENE_ID(Status)
 	SCENE_ID(Credits)
 	SCENE_ID(Test)
 	SCENE_ID(Mansion)
@@ -34,10 +36,11 @@ class SceneFactory;
 class FSM	/// Finite Scene Manager ftw!
 {
 	std::map<std::string, GameScene*> ScenesMap;
-	GameScene* CurrentScene = nullptr;							// &bootState;
-	GameScene* SharedScene = nullptr;
-	GameScene* InventoryScene = nullptr;
-	GameScene* CreditsScene = nullptr;
+	GameScene* CurrentScene		= nullptr;							// &bootState;
+	GameScene* SharedScene		= nullptr;
+	GameScene* InventoryScene	= nullptr;
+	GameScene* CreditsScene		= nullptr;
+	GameScene* StatusScene		= nullptr;
 
 	bool DebugScenes = false;
 	int SceneIndex = 0;
@@ -83,5 +86,6 @@ public:
 	GETTERSETTER(GameScene*, Shared, SharedScene);				// return shared scene layer
 	GETTERSETTER(GameScene*, Inventory, InventoryScene);		// return Inventory scene layer
 	GETTERSETTER(GameScene*, Credits, CreditsScene);			// return Credits scene layer
+	GETTERSETTER(GameScene*, Status, StatusScene);				// return Status scene layer
 };
 

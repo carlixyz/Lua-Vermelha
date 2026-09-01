@@ -23,6 +23,12 @@ return {
             SetClickable("GuestRoomExitDoor", true)
         end
 
+        function self.OnEnter()
+            Schedule(2, "PlayMusic", "WoodNote")
+            Schedule(2, "FadeMusic", 0.5)
+
+        end
+
         function self.Update()
             if self.State == 0 then
                 Move("HallwayStart", 0)

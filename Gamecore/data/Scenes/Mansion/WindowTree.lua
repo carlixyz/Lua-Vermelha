@@ -89,6 +89,7 @@ return {
         end
         function self.OnInteract()
             if not self.FoundAlready then
+                PlayMusic("Creepy", false)
                 StartSequence(self.OnCloseup) 
             else
                 StartSequence(self.OnDone) 

@@ -20,11 +20,11 @@ return {
     { MainKey = { OnConstruct = function() return { Pos = { x = 80, y = 250 }, NameView = "Main Key", 
         Textures = { {MainKeyDetail = "data/Scenes/Inventory/MainKeyDetail.png"}, 
             {MainKeyBase = "data/Scenes/Inventory/MainKey.png"} }, CurrentID = "MainKeyDetail" } end,
-        OnInteract = function() PickUp("MainKey", 2) SetState("MainKey", "MainKeyBase") end,
+        OnInteract = function() PlaySound("Great") PickUp("MainKey", 2) SetState("MainKey", "MainKeyBase") end,
         OnLook = function() 
-            StartSequence( 
-                function() 
-                    if not IsEntityInScene("MainKey", "Inventory") then 
+            StartSequence(
+                function()
+                    if not IsEntityInScene("MainKey", "Inventory") then
                         Say("This might be the main entrance key", 3.0) 
                     else
                         Say("A key from the Schwarz residence", 3.0) 
@@ -40,6 +40,7 @@ return {
         { NewsUnfolded =  "data/Scenes/Mansion/NewsUnfolded.png"} }, CurrentID = "NewsFolded" } end,
         OnInteract = function()
             SetClickable("NewsPaper", false)
+            PlaySound("SwipeOut")
             SetState("NewsPaper", "NewsUnfolded") 
 
             Schedule(0.1, "SetClickable", "Headline")

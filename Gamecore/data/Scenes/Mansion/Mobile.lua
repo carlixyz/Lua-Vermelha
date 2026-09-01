@@ -24,6 +24,7 @@ return {
 
         function self.OnEnter()
             if self.AnimID == 0 then
+                PlaySound("Track")
                 self.AnimID = ScheduleRepeat(0.5, "AnimateMobile", "CancelMobileAnim")
             end
         end
