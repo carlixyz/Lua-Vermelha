@@ -111,11 +111,13 @@ return {
             StopBirds()
             StartSequence(function()
                 Wait(false)
+                SetEmotion("TScary")
                 PlaySound("Bushes")
                 Say("...", 1)
-                Say("Thiago", "What was that?", 3)
+                Say("Thiago", "What was that?", 2)
                 Say("Thiago", "Sounds like an animal or something running..")
                 PlayBirds() 
+                SetEmotion("TNeutral")
             end)
         end
 

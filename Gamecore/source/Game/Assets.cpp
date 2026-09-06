@@ -65,10 +65,11 @@ bool Assets::HasTextureID(const std::string& imageID)
 void Assets::UnloadTextureID(const std::string& imageID)
 {
 	auto it = Textures.find(imageID);
-	if (it != Textures.end())
-	{
-		Textures.erase(it);
-	}
+	if (it == Textures.end())
+		return;
+
+	UnloadTexture(it->second);
+	Textures.erase(it);
 }
 
 bool Assets::HasSoundID(const std::string& soundID)
@@ -235,9 +236,8 @@ void Assets::PreloadSounds()
 			Sounds[Name] = Sound;
 		};
 
-	Load("Crime", "data/Sound/dark-crime-piano-drama.ogg");
-	//Load("Viola", "data/Sound/trumpet-piano-viola.ogg");
-	Load("CarWarning", "data/Sound/CarWarning.ogg");
+	Load("Crime", "data/Sound/dark-crime-piano-drama.mp3");
+	Load("CarWarning", "data/Sound/CarWarning.mp3");
 	Load("CarDoor", "data/Sound/CarDoor.ogg");
 	Load("SeatbeltClick", "data/Sound/SeatbeltClick.ogg");
 	Load("SwipeIn", "data/Sound/SwiftIn.ogg");
@@ -246,13 +246,13 @@ void Assets::PreloadSounds()
 
 	Load("SwitchOn", "data/Sound/SwitchOn.ogg");
 	Load("SwitchOff", "data/Sound/SwitchOff.ogg");
-	Load("PianoMi", "data/Sound/piano-mi.ogg");
+	Load("PianoMi", "data/Sound/piano-mi.mp3");
 	Load("LockedDoor", "data/Sound/LockedDoorKnob.ogg");
-	Load("OldClock", "data/Sound/OldClock.ogg");
+	Load("OldClock", "data/Sound/OldClock.mp3");
 	Load("GlassBreak", "data/Sound/glass-break.ogg");
 	Load("WolfStalk", "data/Sound/werewolf-stalks.ogg");
-	Load("Suspense", "data/Sound/car-drive-soundfx.ogg");
-	Load("TitleFX", "data/Sound/IntroTitle.ogg");
+	//Load("Suspense", "data/Sound/car-drive-soundfx.mp3");
+	Load("TitleFX", "data/Sound/IntroTitle.mp3");
 
 	Load("Bang", "data/Sound/Sonorous_Bang.ogg");
 	Load("Storm", "data/Sound/Storm_Roar.ogg");
@@ -263,16 +263,16 @@ void Assets::PreloadSounds()
 
 	Load("Rumble", "data/Sound/Heavy_Rumble.ogg");
 	Load("Thunderbolt", "data/Sound/Thunderbolt.ogg");
-	Load("Thunder", "data/Sound/Rolling_Thunder.ogg");
+	Load("Thunder", "data/Sound/Rolling_Thunder.mp3");
 	Load("Roar", "data/Sound/Heavenly_Roar.ogg");
 	Load("Loud", "data/Sound/ThunderLoud.ogg");
 	Load("Universal", "data/Sound/ThunderUniversity.ogg");
 
-	Load("Chick", "data/Sound/Sound_button-16.wav");
-	Load("Track", "data/Sound/Sound_button-21.wav");
-	Load("Unload", "data/Sound/Sound_button-30.wav");
-	Load("Plasma", "data/Sound/WeaponReloadPlasma06.wav");
-	Load("Reload", "data/Sound/WeaponReload03.wav");
+	Load("Chick", "data/Sound/Sound_button-16.mp3");
+	Load("Track", "data/Sound/Sound_button-21.mp3");
+	Load("Unload", "data/Sound/Sound_button-30.mp3");
+	Load("Plasma", "data/Sound/WeaponReloadPlasma06.mp3");
+	Load("Reload", "data/Sound/WeaponReload03.mp3");
 
 	Load("Great", "data/Sound/Music/btn13.mp3");
 	Load("Awesome", "data/Sound/Music/btn16.mp3");
@@ -311,8 +311,8 @@ void Assets::PreloadMusic()
 			Musics[Name] = Music;
 		};
 
-	Load("RainDrive", "data/Sound/Music/NightDriveRain.ogg");
-	Load("WetAsphalt", "data/Sound/Music/WetAsphaltSymphony.ogg");
+	Load("RainDrive", "data/Sound/Music/NightDriveRain.mp3");
+	Load("WetAsphalt", "data/Sound/Music/WetAsphaltSymphony.mp3");
 	Load("Abysmal", "data/Sound/Music/MusMus-AMB-001.mp3");
 	Load("Ambient", "data/Sound/Music/MusMus-AMB-005.mp3");
 	Load("Creepy", "data/Sound/Music/MusMus-AMB-014.mp3");

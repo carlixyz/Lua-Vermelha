@@ -8,6 +8,7 @@
 struct StoryThread
 {
 	std::string Name;
+	std::string Scene;
 	bool Started = false;
 	bool Completed = false;
 };
@@ -16,8 +17,8 @@ class Register : public Singleton<Register>
 {
 public:
 
-	void Init();
-	void Deinit();
+	bool Init();
+	bool Deinit();
 
 	// you can check a simple expression like "!var_is_enabled"
 	bool GetFlag(const std::string& key);
@@ -29,14 +30,14 @@ public:
 	void StartThread(const std::string& Name);
 	const std::string GetRandomNewThread() const;
 
+	void ForceThreadCompleted(const std::string& ThreadID = "");
 	void SetCurrentThreadCompleted();
-	const std::string& GetCurrentThread() const;
+
+	inline const std::string& GetCurrentThread() const { return CurrentThread; }
 	
 	bool IsThreadStarted(const std::string& Name) const;
 	bool IsThreadCompleted(const std::string& Name) const;
-
 	int GetCompletedThreadCount() const;
-	//void ForceThread(const std::string& Name, bool completed);
 
 	const std::unordered_map<std::string, bool>& GetFlags() const { return Flags; }
 	const std::vector<StoryThread>& GetThreads() const { return Threads; }

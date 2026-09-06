@@ -48,9 +48,21 @@ public:
 
 	Sound& GetSound(const std::string& NameID) { return Sounds.at(NameID); }
 
+	Sound* TryGetSound(const std::string& NameID)
+	{
+		auto it = Sounds.find(NameID);
+		return (it != Sounds.end()) ? &it->second : nullptr;
+	}
+
 	bool HasSoundID(const std::string& soundID);
 
 	const Music& GetMusic(const std::string& NameID) { return Musics.at(NameID); }
+
+	Music* TryGetMusic(const std::string& NameID)
+	{
+		auto it = Musics.find(NameID);
+		return (it != Musics.end()) ? &it->second : nullptr;
+	}
 
 	bool HasMusicID(const std::string& musicID);
 
@@ -107,7 +119,10 @@ private:
 #define GetImage( NameID ) Assets::Get().GetImage( NameID )
 #define GetFramesCount( NameID ) Assets::Get().GetAnimFrames( NameID )
 #define GetFont( NameID ) Assets::Get().GetFont( NameID )
+
+#define TryGetMusic( NameID ) Assets::Get().TryGetMusic( NameID )
 #define GetMusic( NameID ) Assets::Get().GetMusic( NameID )
+#define TryGetSound( NameID ) Assets::Get().TryGetSound( NameID )
 #define GetSound( NameID ) Assets::Get().GetSound( NameID )
 //#define Stringify(name) #name
 

@@ -1,6 +1,7 @@
 #include "Game.h"
 
 #include "Assets.h"
+#include "Register.h"
 #include "Director.h"
 #include "QuadCapture.h"
 
@@ -25,6 +26,8 @@ bool Game::Init()
 
 	result = result && Assets::Get().Init();
 
+	result = result && Register::Get().Init();
+
 	result = result && Director::Get().Init();		
 
 	result = result && LuaManager::Get().Init();				
@@ -41,6 +44,8 @@ bool Game::Deinit()
 	bool result = Scenes.Deinit();								// cleanup the all states
 
 	result = result && LuaManager::Get().Deinit();
+
+	result = result && Register::Get().Deinit();
 
 	result = result && Assets::Get().Deinit();
 

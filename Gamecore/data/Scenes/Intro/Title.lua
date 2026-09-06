@@ -1,3 +1,16 @@
+
+local ThreadScenes = {
+    Intro           = "Boot",
+    MadWorld        = "GuestRoom",
+    WoodMorning     = "WoodMorningIntro",
+    Maneater        = "RoomRegina",
+    CrimeWave       = "Jail",
+    GhostsAgain     = "Dreamscape",
+    BlindingLights  = "BlindingLightsIntro",
+    BrainJar        = "BrainJarVision",
+}
+
+
 return {
         
     { Entity = "7Moon", Position = { x = -100, y = -220 }, Visible = true, Textures = {
@@ -14,26 +27,27 @@ return {
             Textures = { TITLETEXT = "data/Scenes/Intro/7thText.png"}}
         end
 
-        function self.UpdateBackground()
-            local completedThreads = GetCompletedThreadCount()
+        function self.StartNextChapter()
+            local newThread = "MadWorld"
 
-            if completedThreads < 2 then
-                SetState("7Moon", "TMoonPartial")
-            elseif completedThreads < 3 then
-                SetState("7Moon", "TMoonHalf")
-            else
-                SetState("7Moon", "TMoonRed")
+            if IsThreadCompleted("MadWorld") then
+                newThread = GetRandomNewThread()
+            end
+
+            if newThread ~= "" then
+                StartThread(newThread)
+
+                local scene = ThreadScenes[newThread]
+
+                if scene then
+                    BlendScene(scene)
+                end
             end
         end
 
         -- Main entry point
         function self.DoOptionsMenu()
-	        
-            --SetFlag("StatusEnabled", true) -- self.FirstOption = "Play"
-            if IsThreadCompleted("MadWorld") then
-                self.FirstOption = "Continue"
-                self.UpdateBackground()
-            end
+            --ForceThreadCompleted("MadWorld") # uncomment this for testing
 
             Choice(
                 { "" },
@@ -46,10 +60,9 @@ return {
                             self.DoOptionsMenu()
                         else
                             Say("So let's jump to the first chapter ", 1.1)
-                            --SetThunder(false)
                             SetAlpha("Dark", 1)
-                            StartThread("MadWorld")
-                            BlendScene("GuestRoom")
+                            self.StartNextChapter()
+                            --BlendScene("GuestRoom")
                         end
                     end },
 
@@ -86,9 +99,23 @@ return {
                 StartSequence(self.DoOptionsMenu)
             end
         end
+        
+        function self.UpdateBackground()
+            local completedThreads = GetCompletedThreadCount()
 
+            if completedThreads < 2 then
+                SetState("7Moon", "TMoonPartial")
+            elseif completedThreads < 4 then
+                Deinitialize("Flame")
+                self.FirstOption = "Continue"
+                SetState("7Moon", "TMoonHalf")
+            else
+                SetState("7Moon", "TMoonRed")
+            end
+        end
 
         function self.OnInit()
+            ForceThreadCompleted("Intro")
             self.OnEnter()
             PlaySound("TitleFX")
             Fade("Dark", 0.0, 20)
@@ -99,6 +126,8 @@ return {
 
         function self.OnEnter()
             --SetAlpha("Dark", 0.0)
+            print("Title.OnEnter()")
+            self.UpdateBackground()
             SetEmotion("TDisabled")
         end
 

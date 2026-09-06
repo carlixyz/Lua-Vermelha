@@ -1,6 +1,10 @@
 return {
 
-    { Entity = "GuestRoom", Textures = { GuestRoom = "data/Scenes/Mansion/RoomGuest.jpg"} },
+    { Entity = "GuestRoom", Textures = { 
+        GuestRoom = "data/Scenes/Mansion/RoomGuest.jpg"}, 
+        GuestRoomSunset = "data/Scenes/Mansion/RoomGuestSunset.jpg"}, 
+        GuestRoomNight = "data/Scenes/Mansion/RoomGuestNight.jpg"}, 
+    },
 
     --[[
     { CarKey = (function() local self = {}
@@ -19,7 +23,6 @@ return {
         function self.OnConstruct() return { Textures = "data/Scenes/Inventory/Wallet.png", Visible = false } end
         function self.OnLookComment()
             Say("\nMy Wallet,\nInside is my ID and a few bucks", 4.0)
-            Say("\nBesides that, it's empty as always", 3.0)
             Say()
         end
         function self.OnLook() StartSequence(self.OnLookComment) end
@@ -67,7 +70,7 @@ return {
     }, -- Battery
 
     { Phone = (function() local self = { }
-        function self.OnConstruct() return { NameView = "Dead phone", Textures = "data/Scenes/Inventory/BrokenPhone.png", Visible = false } end
+        function self.OnConstruct() return { NameView = "Dead phone", Textures = "data/Scenes/Inventory/PhoneEmpty.png", Visible = false } end
         function self.OnBrokenComment()
             Say("it's out of power...")
             Say()
@@ -151,7 +154,8 @@ return {
 
         function self.OnIntroStart()
 
-            if GetCurrentThread() ~= "MadWorld" and not IsThreadStarted("MadWorld") then
+            if not IsThreadStarted("MadWorld") then
+                print("Starting MadWorld")
                 StartThread("MadWorld")
             end
 
@@ -187,7 +191,7 @@ return {
             SetThunder(false)
             Say("\n Ohh What the heck", 3.0)
             Say("\n How did I get here??", 3.0)
-            Say("\n And where's all my stuff?")
+            Say("\n And where's all my stuff?", 10.0)
 
             self.SetItemsInScene(true)
             PlayMusic("RoomGuest", false)

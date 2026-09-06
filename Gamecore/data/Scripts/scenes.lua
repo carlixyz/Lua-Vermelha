@@ -145,7 +145,7 @@ Scenes = {
     -- EXTRA PATH -> BLINDING LIGHTS
     -----------------------------------------------------------------------------------------------------------------------------
 
-    BlindingLight = "data/Scenes/Mansion/BlindingLight.lua",
+    BlindingLightsIntro = "data/Scenes/Mansion/BlindingLightsIntro.lua",
 
     --HallwayNight = "data/Scenes/Mansion/HallwayNight.lua", -- enables Ilsa talk in Lobby (too late no uncle)
 
@@ -190,7 +190,7 @@ Scenes = {
     -- DREAM SEQ PATH -> GHOSTS AGAIN
     -----------------------------------------------------------------------------------------------------------------------------
 
-    --Dreamscape = "data/Scenes/Parking/Dreamscape.lua",
+    Dreamscape = "data/Scenes/Parking/Dreamscape.lua",
 
     --DreamCar = "data/Scenes/Parking/DreamCar.lua",
 
@@ -204,7 +204,7 @@ Scenes = {
 
     --UncleRemo = "data/Scenes/Mansion/UncleRemo.lua", -- dialog puzzle to achieve key
 
-    Cemetery = "data/Scenes/Parking/Cemetery.lua", --
+    --Cemetery = "data/Scenes/Parking/Cemetery.lua", --
 
     --FinalReveal = "data/Scenes/Parking/FinalReveal.lua",
 
@@ -213,7 +213,7 @@ Scenes = {
     -- ANOTHER BEDROOM PATH -> MANEATER
     -----------------------------------------------------------------------------------------------------------------------------
 
-    RoomRegina = "data/Scenes/Mansion/RoomRegina.lua", -- INTROA, INTROB, Dialog, Exit  
+    RoomRegina = "data/Scenes/Mansion/RoomRegina.lua", -- INTROA, INTROB, Dialog, Exit 
 
     --DressRoom = "data/Scenes/Mansion/DressRoom.lua", -- small dialog sentences, Whip, photos, secret door 2 GuestRoom
 
@@ -238,6 +238,12 @@ Scenes = {
     --FinalCharade = "data/Scenes/Mansion/FinalCharade.lua",
 
     -----------------------------------------------------------------------------------------------------------------------------
+    -- EXTRA PATH -> BRAIN JAR
+    -----------------------------------------------------------------------------------------------------------------------------
+
+    BrainJarVision = "data/Scenes/Mansion/BrainJarVision.lua",
+
+    -----------------------------------------------------------------------------------------------------------------------------
 
     End = false
 }
@@ -250,9 +256,9 @@ Scenes = {
 --Scenes.StartScene = "GuestRoom"
 --Scenes.StartScene = "Fireplace"
 --Scenes.StartScene = "HallwayInit"
-Scenes.StartScene = "Boot"
+--Scenes.StartScene = "Boot"
 --Scenes.StartScene = "Intro"
---Scenes.StartScene = "Title"
+Scenes.StartScene = "Title"
 --Scenes.StartScene = "Lobby" -- REMOVE FORCED ADA
 --Scenes.StartScene = "MansionSide"
 --Scenes.StartScene = "BarInside"

@@ -723,50 +723,39 @@ int Lua_StopTween(lua_State* L)
 // AUDIO BINDINGS
 int Lua_PlaySound(lua_State* L)
 {
-    const char* soundArg = luaL_checkstring(L, 1);
-    std::string soundIDOrPath = soundArg;
+    if (Game::Get().IsAudioDisabled())
+        return 0;
 
-    if (Assets::Get().HasSoundID(soundIDOrPath))
-    {
-        Sound sound = Assets::Get().GetSound(soundIDOrPath);
-        if (IsSoundValid(sound))
-            PlaySound(sound);
-    }
-    else
-    {
-        Audio::Get().PlaySound(soundIDOrPath);
-    }
+    std::string soundID = luaL_checkstring(L, 1);
+
+    if (const Sound* soundPtr = TryGetSound(soundID))
+        if (IsSoundValid(*soundPtr))
+            PlaySound(*soundPtr);
 
     return 0;
 }
 
 int Lua_PreloadSound(lua_State* L)
 {
-    const char* soundArg = luaL_checkstring(L, 1);
-    std::string soundIDOrPath = soundArg;
+    const std::string soundID = luaL_checkstring(L, 1);
 
-    if (!Assets::Get().HasSoundID(soundIDOrPath))
-        Audio::Get().PreloadSound(soundIDOrPath);
+    if (!Assets::Get().HasSoundID(soundID))
+        Audio::Get().PreloadSound(soundID);
 
     return 0;
 }
 
 int Lua_PlayMusic(lua_State* L)
 {
-    const char* musicArg = luaL_checkstring(L, 1);
-    std::string musicIDOrPath = musicArg;
+    if (Game::Get().IsAudioDisabled())
+        return 0;
 
+    std::string musicID = luaL_checkstring(L, 1);;
     bool isLooping = lua_isnoneornil(L, 2) ? true : (lua_toboolean(L, 2) != 0);
 
-    if (Assets::Get().HasMusicID(musicIDOrPath))
-    {
-        const Music& music = Assets::Get().GetMusic(musicIDOrPath);
-        Audio::Get().PlayMusic(music, isLooping);
-    }
-    else
-    {
-        Audio::Get().PlayMusic(musicIDOrPath, isLooping);
-    }
+    if (const Music* musicPtr = TryGetMusic(musicID))
+        if (IsMusicValid(*musicPtr))
+            Audio::Get().PlayMusic(*musicPtr, isLooping);
 
     return 0;
 }
@@ -1083,9 +1072,11 @@ int Lua_IsThreadCompleted(lua_State* L)
     return 1;
 }
 
-int Lua_SetCurrentThreadCompleted(lua_State* L)
+int Lua_ForceThreadCompleted(lua_State* L)
 {
-    Register::Get().SetCurrentThreadCompleted();
+    const std::string ThreadID = luaL_optstring(L, 1, "");
+
+    Register::Get().ForceThreadCompleted(ThreadID);
     return 0;
 }
 
@@ -1287,7 +1278,7 @@ void RegisterLuaFunctions() // C++ Foo Register in Lua
     LuaManager::Get().RegisterFunction("IsThreadStarted", Lua_IsThreadStarted);
     LuaManager::Get().RegisterFunction("IsThreadCompleted", Lua_IsThreadCompleted);
 
-    LuaManager::Get().RegisterFunction("SetCurrentThreadCompleted", Lua_SetCurrentThreadCompleted);
+    LuaManager::Get().RegisterFunction("ForceThreadCompleted", Lua_ForceThreadCompleted);
     LuaManager::Get().RegisterFunction("GetCurrentThread", Lua_GetCurrentThread);
 
     LuaManager::Get().RegisterFunction("AddStar", Lua_AddStar);

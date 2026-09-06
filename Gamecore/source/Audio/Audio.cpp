@@ -101,7 +101,7 @@ void Audio::PlayMusic(const Music& soundTrack, bool isLooping)
 
 void Audio::StopMusic()
 {
-    if (Game::Get().IsAudioDisabled())
+    if (Game::Get().IsAudioDisabled() || !IsMusicValid(SoundTrack))
         return;
 
     StopMusicStream(SoundTrack);
@@ -154,8 +154,12 @@ void Audio::SetMusicVol(float volume)
 
 void Audio::ToggleMusic()
 {
+    if (Game::Get().IsAudioDisabled() || !IsMusicValid(SoundTrack))
+        return;
+
     Pause = !Pause;
-    if (IsPlayingMusic())
+
+    if (Pause)
         PauseMusicStream(SoundTrack);
     else
         ResumeMusicStream(SoundTrack);
@@ -163,7 +167,7 @@ void Audio::ToggleMusic()
 
 bool Audio::IsPlayingMusic()
 {
-    if (Game::Get().IsAudioDisabled())
+    if (Game::Get().IsAudioDisabled() || !IsMusicValid(SoundTrack))
         return false;
 
     return IsMusicStreamPlaying(SoundTrack);
@@ -171,7 +175,7 @@ bool Audio::IsPlayingMusic()
 
 void Audio::Update()
 {
-    if (Game::Get().IsAudioDisabled())
+    if (Game::Get().IsAudioDisabled() || !IsMusicValid(SoundTrack))
         return;
 
     if (IsMusicFading)

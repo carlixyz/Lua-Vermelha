@@ -41,8 +41,8 @@ return {
         OnInit = function()
 
             if not IsThreadStarted("Intro") then
-                StartThread("Intro")
-                SetCurrentThreadCompleted()
+                --StartThread("Intro")
+                ForceThreadCompleted("Intro")
             end
 
             -- Head

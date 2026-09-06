@@ -2,24 +2,28 @@
 #include "../Utility/Utils.h"
 #include "raylib.h"
 
-void Register::Init()
+bool Register::Init()
 {
     Threads = {
-        { "Intro" },
-        { "MadWorld" },
-        { "WoodMorning" } ///,
-        //{ "Maneater" },
-        //{ "CrimeWave" },
-        //{ "GhostsAgain" },
-        //{ "BrainJar" },
-        //{ "BlindingLights" }
+        { "Intro",          "Boot"              },
+        { "MadWorld",       "GuestRoom"         },
+        { "WoodMorning",    "WoodMorningIntro"  },
+        { "Maneater",       "ReginaRoom"        },
+        { "CrimeWave",      "Jail"              },
+        { "GhostsAgain",    "Dreamscape"        },
+        { "BrainJar",       "BlindingLights"    },
+        { "BlindingLight",  "BrainJarVision"    }
     };
+
+    return true;
 }
 
-void Register::Deinit()
+bool  Register::Deinit()
 {
     Clear();
     Threads.clear();
+
+    return true;
 }
 
 bool Register::CheckNegation(const std::string& key)
@@ -108,14 +112,33 @@ const std::string Register::GetRandomNewThread() const
 {
     std::vector<std::string> Available;
 
-    for (const auto& Thread : Threads)
-        if (!Thread.Started)
+    for (const auto& Thread : Threads)      // Ensure other threads where played be4 BrainJar
+        if (!Thread.Started && (GetCompletedThreadCount() < 6 && Thread.Name != "BrainJar") ) 
             Available.push_back(Thread.Name);
 
     if (Available.empty())
         return {};
 
     return Available[GetRandomValue(0, (int)Available.size() - 1)];
+}
+
+void Register::ForceThreadCompleted(const std::string& ThreadID)
+{
+    if (ThreadID.empty())
+    {
+        SetCurrentThreadCompleted();
+        return;
+    }
+
+    for (auto& Thread : Threads)
+    {
+        if (Thread.Name != ThreadID)
+            continue;
+
+        Thread.Started = true;
+        Thread.Completed = true;
+        return;
+    }
 }
 
 void Register::SetCurrentThreadCompleted()
@@ -129,9 +152,4 @@ void Register::SetCurrentThreadCompleted()
         CurrentThread.clear();
         return;
     }
-}
-
-const std::string& Register::GetCurrentThread() const
-{
-    return CurrentThread;
 }

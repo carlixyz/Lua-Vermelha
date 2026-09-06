@@ -34,7 +34,25 @@ return {
 
     { Entity = "ThugsRunning", Textures = "data/Scenes/Town/PlazaMolotovD.jpg", Alpha = 0.0},
 
-    { Quad = (function() local self = { IntroDone = false}
+    { Quad = (function() local self = {}
+            function self.OnConstruct() return { NameId = "ThugsEscape", Clickable = false, Cursor = "MLeft",
+                Pos = { x = 0, y = 80 }, Size = { Width = 185, Height = 430 }} 
+            end
+
+            function self.OnInit() self.OnEnter() end
+            function self.OnEnter()
+                if IsEntityInScene("Matches", "Inventory") or IsEntityInScene("Lighter", "Inventory") then
+                    SetClickable("ThugsEscape", false) 
+                end
+            end
+
+            function self.OnInteract() BlendScene("PlazaPan", 1.0) end 
+            return self
+        end)()
+    },
+
+
+    { Quad = (function() local self = { IntroDone = false }
         function self.OnConstruct()
             return { NameId = "Suspicious violence", Pos = { x = 345, y = 80 }, Size = { Width = 400, Height = 320 } } 
         end
@@ -59,7 +77,11 @@ return {
 
             Wait(false, 6)
             Say("Help me!", 1)
-            Say("Thiago", "Something's going on, I'd better stay here", 3)
+            if not IntroDone then
+                Say("Thiago", "Something's going on, I'd better stay here", 3)
+            else
+                Say("Thiago", "They're still there, I've to do something!", 3)
+            end
             Say("Help..", 2)
 
             Schedule(10, "ForceThugsCinematic")
@@ -90,11 +112,15 @@ return {
         end
 
         function self.OnCinematic()
+
+            SetEmotion("TSpy")
+
             SetClickable("Suspicious violence", false) --
             PlaySound("Slap")
             Shake("ThugsNear", 20.0, 5)
             Fade("ThugsNear", 1.0)
             Say("Ahhh please stop, I can't breathhh...", 3)
+            SetEmotion("TSuspect")
             PlaySound("Slap")
             Scale("ThugsNear", 1.4, 350)     --
 
@@ -104,16 +130,20 @@ return {
             PlaySound("Slap")
             Shake("ThugsNear", 12.0, 5)
 
+            SetEmotion("TSurprise")
             PlaySound("Smash")
             Say("Thiago","Jeez, this is brutal", 3)
             Say("Thiago","I've to stop it", 2)
+            SetEmotion("TWorry")
             Say("Thiago","But can't fight with them, I'm outnumbered", 4)
 
             Say("...", 1)
             PlaySound("Slap")
             Shake("ThugsNear", 6.0, 5)
+            SetEmotion("TScary")
             PlaySound("Ragdoll")
             Say("Viktor hold on, I'm affraid there won't be a next time..", 4)
+            SetEmotion("TAngry")
             Say("Viktor","Oh really? sue me, I don't give a fuck haha!", 4)
             Say("Come on, let's go, the police is roaming around..", 4)
 
@@ -127,9 +157,16 @@ return {
 
             FadeMusic(0.1)
             Say("Thiago","Must do something right now", 3)
+            SetEmotion("TThink")
             Say("Thiago","Maybe I can create a firework or diversion", 4)
             Say("Thiago","Something to distract them..", 5)
+            SetEmotion("TNeutral")
 
+            if IsEntityInScene("Matches", "Inventory") or IsEntityInScene("Lighter", "Inventory") then
+                SetClickable("ThugsEscape", false)
+            else
+                SetClickable("ThugsEscape", true)
+            end
         end
 
         return self
@@ -148,10 +185,12 @@ return {
             end 
         end                       
 
-        function self.OnCommentEntry() Say("I'm not going closer, they'll see me", 3.0) Say() end
-        function self.OnCommentLook() Say("Maybe I can do something with that trash can", 3.0) Say() end
+        function self.OnCommentEntry()  Say("I'm not going closer, they'll see me", 3.0) Say() end
+        function self.OnCommentLook() SetEmotion("TThink") Say("Maybe I can do something with that trash can", 3.0) Say() SetEmotion("TNeutral") end
         function self.OnInteract() StartSequence(self.OnCommentEntry) end function self.OnLook() StartSequence(self.OnCommentLook) end 
         function self.OnEndSequence()
+            SetClickable("Trash Can", false)
+            SetEmotion("TDisabled")
             Scale("MolotovSequence", 1.4, 50)     --
             SetVisible("MolotovSequence", true)
             Wait(.05, false)
@@ -179,13 +218,14 @@ return {
             Flame.PlayAnimation()
             Wait(2, false)
 
-            Say("Viktor", "Damn it, let's fuck off here!", 1.5)
             Scale("ThugsRunning", 1.0, 20)     --
             SetAlpha("ThugsRunning", 1.0)
             Fade("Dark", 0.0, 2)
             FadeMusic(0.2)
+            Say("Viktor", "Damn it, Show is over..", 1.5)
             Wait(3, false)
-            FadeMusic(0.0)
+            Say("Viktor", "Let's fuck off here!", 1.5)
+            FadeMusic(0.1)
 
             Fade("Flame", 1.0, 20)
             Scale("Flame", 1.5, 100)     --
@@ -223,24 +263,27 @@ return {
 
             Schedule(30, "SetVisible", "Goya" )
             Schedule(30.05, "SetVisible", "Goya",false)
+            
+            Schedule(33, "ShowTitle", "To be continued", 4.0, 48.0)
 
             Schedule(35.1, "SetVisible", "Skull" )
             Schedule(35.15, "SetVisible", "Skull",false)
 
-            Schedule( 36, "ShowTitle", "To be continued", 4.0, 48.0)
-            
+            Schedule(38, "StopFlames") --StopFlames()
             Wait(40, false)
+            Fade("Dark", 1.0, 1)
+
             Flame.OnStopAnimation()
             SetNoise(false)
-            StopFlames()
+            FadeMusic(false)
 
-            if GetCurrentThread() == "MadWorld" and not IsCurrentThreadCompleted() then
-                SetCurrentThreadCompleted()
-                -- Call back Title screen? or let's jump to next thread
-                SetFlag("StatusEnabled", true)
-                BlendScene("Title")
-                TitleText.DoOptionsMenu()
-            end
+            ForceThreadCompleted("Intro")
+            ForceThreadCompleted("MadWorld")
+            SetFlag("StatusEnabled", true)
+
+            Wait(2, false)
+            BlendScene("Title")
+            --end
         end
 
         function self.OnCombine(itemId)

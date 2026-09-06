@@ -153,7 +153,7 @@ public:
 
             if (scene && !sceneName.empty())
             {
-                std::cout << "Created Scene: " << sceneName << " succesfully!" << std::endl;
+                std::cout << "Created Scene: " << sceneName << " successfully!" << std::endl;
                 scenes[sceneName] = scene;
             }
 

@@ -55,12 +55,15 @@ public:
 											{ return Info.TexturesIDs; }
 
 	void SetSprite(const std::string& textureID);
+	
+	inline bool GetIsClickable()			{ return Info.Clickable; }
+	void SetIsClickable(bool clickable);
 
 	virtual bool IsMouseOver();
 
 	GETTERSETTER(bool, IsVisible, Info.Visible)
 	GETTERSETTER(bool, IsActive, Info.Active)
-	GETTERSETTER(bool, IsClickable, Info.Clickable)
+	//GETTERSETTER(bool, IsClickable, Info.Clickable)
 	GETTERSETTER(bool, IsHovered, Hovered)
 	GETTERSETTER(int, PositionX, Info.PositionX )
 	GETTERSETTER(int, PositionY, Info.PositionY )

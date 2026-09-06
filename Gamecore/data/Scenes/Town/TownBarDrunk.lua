@@ -273,6 +273,7 @@ return {
             Say("BB Torres", "Especially beautiful from somewhere else", 4.0)
             Say("BB Torres", "Unfortunately, sometimes a red moon rises", 4.0)
             Say("BB Torres", "Then people start to behave strangely", 3.0)
+            PlaySound("Awesome")
             DrunkMan.StopTalk()
 
 

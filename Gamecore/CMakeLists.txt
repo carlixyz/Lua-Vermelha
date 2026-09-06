@@ -15,14 +15,20 @@ file(GLOB_RECURSE SOURCES
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 if (MSVC)
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /STACK:8388608 /NODEFAULTLIB:MSVCRT")
-    #add_definitions(-DYAML_CPP_STATIC_DEFINE)
-    target_link_libraries(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/lib/raylib.lib)
-    target_link_libraries(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/lib/lua-static.lib)
-    target_link_libraries(${PROJECT_NAME} PRIVATE winmm)
-    target_compile_options(${PROJECT_NAME} PRIVATE /wd4251 /wd4275)
-    #target_link_options
+    target_link_options(${PROJECT_NAME} PRIVATE 
+        /STACK:8388608 
+        /NODEFAULTLIB:MSVCRT 
+        #$<$<CONFIG:Release>:/SUBSYSTEM:WINDOWS> # UNCOMMENT THESE TO HIDE CONSOLE
+        #$<$<CONFIG:Release>:/ENTRY:mainCRTStartup>
+    )
 
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+        ${CMAKE_SOURCE_DIR}/lib/raylib.lib
+        ${CMAKE_SOURCE_DIR}/lib/lua-static.lib
+        winmm
+    )
+
+    target_compile_options(${PROJECT_NAME} PRIVATE /wd4251 /wd4275)
 
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
@@ -46,17 +52,18 @@ if(EMSCRIPTEN)
     set(LINK_OPTS
       "-s USE_GLFW=3"
       "-s ASYNCIFY"
-      "-s TOTAL_MEMORY=67108864"
+      "-s INITIAL_MEMORY=33554432"  # Specified in bytes = 32 MiB   #"-s TOTAL_MEMORY=67108864"
       "-s ALLOW_MEMORY_GROWTH=1"
+      "-s STACK_SIZE=8388608"       # 8 MB
+      #"-s ASSERTIONS=2"
+      #"-s STACK_OVERFLOW_CHECK=2"
       "-s FORCE_FILESYSTEM=1"
       "-s WASM=1"
       "--preload-file data"
-      "--preload-file data/Franklin-Gothic-Heavy-Italic.ttf"
-      "--preload-file data/NotoSansUI-Regular.ttf"
       "-s EXPORTED_FUNCTIONS=['_main']"
       "-s EXPORTED_RUNTIME_METHODS=['ccall','cwrap','HEAPF32']"
-      #"--shell-file minshell.html"
-      "--shell-file shell.html"
+      "--shell-file minshell.html"
+      #"--shell-file shell.html"
       "-DPLATFORM_WEB"
     )
 

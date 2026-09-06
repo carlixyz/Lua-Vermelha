@@ -143,6 +143,7 @@ void EntityLua::OnReturn()
     lua_getfield(LuaContext, -1, "Clickable"); // explicit Clickable has priority
     if (lua_isboolean(LuaContext, -1))
         Info.Clickable = lua_toboolean(LuaContext, -1);
+        //SetIsClickable(lua_toboolean(LuaContext, -1));
     lua_pop(LuaContext, 1);
 
     lua_getfield(LuaContext, -1, "Alpha");
@@ -167,10 +168,21 @@ void Entity::SetSprite(const std::string& textureID)
     if (Assets::Get().HasTextureID(textureID))
     {
         CurrentSprite = Assets::Get().GetTexture(textureID);
-        Mask.BuildAlphaMask(CurrentSprite);
+
+        //if (Info.Clickable)
+        if (Info.Clickable && Mask.Opaque.empty())
+            Mask.BuildAlphaMask(CurrentSprite);
     }
     else
         std::cout << "texture '" << textureID << "' NOT FOUND for entity: '" << Info.NameId << "'\n";
+}
+
+void Entity::SetIsClickable(bool clickable)
+{
+    Info.Clickable = clickable;
+
+    if (Info.Clickable && IsTextureValid(CurrentSprite))
+        Mask.BuildAlphaMask(CurrentSprite);
 }
 
 void Entity::OnInit()

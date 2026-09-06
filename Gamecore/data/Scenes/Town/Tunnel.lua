@@ -95,6 +95,7 @@ return {
             Scale("Clown", 1.0, 10.0)
             SetEmotion("TSurprise")
             Say("Hello Buddie!", 2.0)
+            SetPosition("Clown",300)
             SetState("Clown","ClownFriendly")
             Say("Tapioca", "I'm Tapioca the clown", 4.0)
             Say("...", 1.0)

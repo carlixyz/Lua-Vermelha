@@ -26,7 +26,7 @@ class Status : public GameScene
     std::vector<StatusStar> Stars;
     std::vector<StatusLink> Links;
 
-    Vector2 Origin = { 220.0f, 45.0f };
+    Vector2 Origin = { 20.0f, 20.0f };
     Vector2 Size = { 480.0f, 420.0f };
 
     float Time = 0.0f;

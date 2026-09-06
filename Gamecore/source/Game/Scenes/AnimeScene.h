@@ -61,6 +61,23 @@ public:
 		Loader = nullptr;
 	}
 
+	inline void OnExit() 
+	{
+#ifdef EMSCRIPTEN
+		if (!Frames)
+			return;
+
+		for (Texture2D& texture : *Frames)
+			if (IsTextureValid(texture))
+				UnloadTexture(texture);
+
+		Frames->clear();
+		IntroTexture = {};
+		animTotalFrames = 0;
+		currentAnimFrame = 0;
+#endif
+	}
+
 	inline void OnUpdate(float dt)
 	{
 		// --------------------------------

@@ -312,7 +312,7 @@ void Inventory::OnRender()
                 DragWorldTarget != nullptr;
 
             // Semi-transparent while freely dragging, fully opaque over a possible interaction.
-            iconAlphaFactor = hasValidTarget ? 1.0f : 0.5f;
+            iconAlphaFactor = hasValidTarget ? 1.0f : 0.25f;
         }
 
         if (iconAlphaFactor <= 0.01f)
